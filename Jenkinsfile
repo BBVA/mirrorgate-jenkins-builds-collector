@@ -13,10 +13,10 @@ node ('global') {
       hygieiaBuildPublishStep buildStatus: 'InProgress'
 
       stage('Checkout SCM') {
-        dir (${JENKINS_PLUGIN_BASEDIR}) {
+        dir ('${JENKINS_PLUGIN_BASEDIR}') {
         	git url: "${JENKINS_PLUGIN_REPO}", branch: 'develop'
         }
-        dir (${HYGIEIA_BASEDIR}) {
+        dir ('${HYGIEIA_BASEDIR}') {
         	git url: "${HYGIEIA_REPO}", branch: 'master'
         	sh "rm ${JENKINS_PLUGIN_DIR} -Rf"
         	sh "cp ${WORKSPACE}/${JENKINS_PLUGIN_BASEDIR}/* ${WORKSPACE}/${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR} -R"
@@ -24,13 +24,13 @@ node ('global') {
       }
 
       stage('Clean app') {
-      	dir (${HYGIEIA_BASEDIR}/core) {
+      	dir ('${HYGIEIA_BASEDIR}/core') {
           sh "mvn clean install"
         }
       }
 
       stage('Build app') {
-      	dir (${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR}) {
+      	dir ('${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR}') {
           sh "mvn test"
           sh "mvn clean package"
         }
