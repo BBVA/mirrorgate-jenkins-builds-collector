@@ -11,9 +11,9 @@ node ('global') {
 
       hygieiaBuildPublishStep buildStatus: 'InProgress'
 
-      withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
-        sh 'mkdir $WORKSPACE/.m3'        
-	    sh 'cp -f ${M3_SETTINGS} $WORKSPACE/.m3/settings.xml'
+      withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
+        sh 'mkdir $WORKSPACE/.m2'        
+	    sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
       }
 
       stage('-------- Checkout SCM ---------') {
@@ -37,7 +37,7 @@ node ('global') {
       //}
 
       stage('----------- Build app -----------') {
-        withMaven(maven: 'M3', mavenLocalRepo: '$WORKSPACE/.m3/repository', mavenSettingsFilePath: '$WORKSPACE/.m3/settings.xml') {
+        withMaven(maven: 'M2', mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
 
           sh "cd ${JENKINS_PLUGIN_BASEDIR}"
           sh "mvn test"
