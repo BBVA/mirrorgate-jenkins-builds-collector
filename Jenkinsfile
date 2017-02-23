@@ -12,7 +12,7 @@ node ('global') {
       hygieiaBuildPublishStep buildStatus: 'InProgress'
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
-        sh 'mkdir -f $WORKSPACE/.m3'        
+        sh 'mkdir $WORKSPACE/.m3'        
 	    sh 'cp -f ${M3_SETTINGS} $WORKSPACE/.m3/settings.xml'
       }
 
