@@ -25,13 +25,14 @@ node ('global') {
       }
 
       stage('---------- Clean app -----------') {
-      	dir ('${HYGIEIA_BASEDIR}/core') {
-          sh "mvn clean install"
+      	dir (HYGIEIA_BASEDIR) {
+          sh "cd core; mvn clean install"
         }
       }
 
       stage('----------- Build app -----------') {
-      	dir ('${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR}') {
+      	dir (HYGIEIA_BASEDIR) {
+          sh "cd ${JENKINS_PLUGIN_DIR}"
           sh "mvn test"
           sh "mvn clean package"
         }
