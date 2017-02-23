@@ -40,7 +40,7 @@ node ('global') {
       //}
 
       stage('----------- Build app -----------') {
-        withMaven(maven: 'default', mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
+        withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
 
           sh "cd ${JENKINS_PLUGIN_BASEDIR}"
           sh "ls -la *"
