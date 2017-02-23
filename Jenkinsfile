@@ -7,37 +7,42 @@ HYGIEIA_REPO = "https://github.com/capitalone/Hygieia.git"
 JENKINS_PLUGIN_PACKAGE = "hygieia-publisher.hpi"
 
 node ('global') {
-
   try {
 
       hygieiaBuildPublishStep buildStatus: 'InProgress'
+
+      withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
+        sh 'mkdir -f $WORKSPACE/.m3'        
+	    sh 'cp -f ${M3_SETTINGS} $WORKSPACE/.m3/settings.xml'
+      }
 
       stage('-------- Checkout SCM ---------') {
         dir (JENKINS_PLUGIN_BASEDIR) {
         	git url: "${JENKINS_PLUGIN_REPO}", branch: 'develop'
         }
-        dir (HYGIEIA_BASEDIR) {
-        	git url: "${HYGIEIA_REPO}", branch: 'master'
-        	sh "rm ${JENKINS_PLUGIN_DIR} -Rf"
-        	sh "mkdir ${JENKINS_PLUGIN_DIR}"
-        	sh "cp ${WORKSPACE}/${JENKINS_PLUGIN_BASEDIR}/* ${WORKSPACE}/${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR} -R"
-        	sh "sed -i '/<module>collectors*\$/d' pom.xml"
-        	sh "sed -i '/<module>UI*\$/d' pom.xml"
-        }
+       //dir (HYGIEIA_BASEDIR) {
+       // 	git url: "${HYGIEIA_REPO}", branch: 'master'
+       // 	sh "rm ${JENKINS_PLUGIN_DIR} -Rf"
+       // 	sh "mkdir ${JENKINS_PLUGIN_DIR}"
+       // 	sh "cp ${WORKSPACE}/${JENKINS_PLUGIN_BASEDIR}/* ${WORKSPACE}/${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR} -R"
+       // 	sh "sed -i '/<module>collectors*\$/d' pom.xml"
+       // 	sh "sed -i '/<module>UI*\$/d' pom.xml"
+       //}
       }
 
-      stage('---------- Compile Hygieia Core -----------') {
-      	dir (HYGIEIA_BASEDIR) {
-          sh "cd core; mvn clean install"
-        }
-      }
+      //stage('---------- Compile Hygieia Core -----------') {
+      //	dir (HYGIEIA_BASEDIR) {
+      //   sh "cd core; mvn clean install"
+      //  }
+      //}
 
       stage('----------- Build app -----------') {
-      	dir (HYGIEIA_BASEDIR) {
-          sh "cd ${JENKINS_PLUGIN_DIR}"
+        withMaven(maven: 'M3', mavenLocalRepo: '$WORKSPACE/.m3/repository', mavenSettingsFilePath: '$WORKSPACE/.m3/settings.xml') {
+
+          sh "cd ${JENKINS_PLUGIN_BASEDIR}"
           sh "mvn test"
           sh "mvn clean package"
-        }
+		}        
       }
 
       stage('------------ Publish app -----------') {
