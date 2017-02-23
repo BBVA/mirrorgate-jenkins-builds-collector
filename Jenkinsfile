@@ -15,6 +15,7 @@ node ('global') {
         sh 'rm $WORKSPACE/.m2 -Rf'
         sh 'mkdir $WORKSPACE/.m2'        
 	    sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
+	    sh 'cat $WORKSPACE/.m2/settings.xml'
       }
 
       stage('-------- Checkout SCM ---------') {
