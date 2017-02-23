@@ -21,6 +21,7 @@ node ('global') {
       stage('-------- Checkout SCM ---------') {
         //dir (JENKINS_PLUGIN_BASEDIR) {
         	git url: "${JENKINS_PLUGIN_REPO}", branch: 'develop'
+        	sh "ls -la ${JENKINS_PLUGIN_BASEDIR}"
         //}
        //dir (HYGIEIA_BASEDIR) {
        // 	git url: "${HYGIEIA_REPO}", branch: 'master'
