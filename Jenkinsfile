@@ -1,7 +1,7 @@
 #!groovy
 JENKINS_PLUGIN_REPO = "ssh://git@globaldevtools.bbva.com:7999/bgdfm/jenkins_plugin_collector.git"
 JENKINS_PLUGIN_DIR = "hygieia-jenkins-plugin"
-JENKINS_PLUGIN_BASEDIR = "jenkins_plugin"
+JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 HYGIEIA_BASEDIR = "hygieia" 
 HYGIEIA_REPO = "https://github.com/capitalone/Hygieia.git"
 JENKINS_PLUGIN_PACKAGE = "hygieia-publisher.hpi"
@@ -17,9 +17,9 @@ node ('global') {
       }
 
       stage('-------- Checkout SCM ---------') {
-        dir (JENKINS_PLUGIN_BASEDIR) {
+        //dir (JENKINS_PLUGIN_BASEDIR) {
         	git url: "${JENKINS_PLUGIN_REPO}", branch: 'develop'
-        }
+        //}
        //dir (HYGIEIA_BASEDIR) {
        // 	git url: "${HYGIEIA_REPO}", branch: 'master'
        // 	sh "rm ${JENKINS_PLUGIN_DIR} -Rf"
