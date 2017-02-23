@@ -22,7 +22,7 @@ node ('global') {
         	sh "mkdir ${JENKINS_PLUGIN_DIR}"
         	sh "cp ${WORKSPACE}/${JENKINS_PLUGIN_BASEDIR}/* ${WORKSPACE}/${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR} -R"
         	sh "sed '/<module>collectors*$/d' pom.xml"
-        	sh "sed '/<module>UI*$/d' pom.xml"
+        	sh "sed '/<module>UI*\$/d' pom.xml"
         }
       }
 
