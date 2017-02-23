@@ -15,14 +15,14 @@ node ('global') {
         sh 'rm $WORKSPACE/.m2 -Rf'
         sh 'mkdir $WORKSPACE/.m2'        
 	    sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
-	    sh 'cat $WORKSPACE/.m2/settings.xml'
+	    //sh 'cat $WORKSPACE/.m2/settings.xml'
       }
 
       stage('-------- Checkout SCM ---------') {
         dir (JENKINS_PLUGIN_BASEDIR) {
         	git url: "${JENKINS_PLUGIN_REPO}", branch: 'develop'
         }
-        sh "ls -la ${JENKINS_PLUGIN_BASEDIR}"
+        //sh "ls -la ${JENKINS_PLUGIN_BASEDIR}"
        //dir (HYGIEIA_BASEDIR) {
        // 	git url: "${HYGIEIA_REPO}", branch: 'master'
        // 	sh "rm ${JENKINS_PLUGIN_DIR} -Rf"
@@ -40,7 +40,7 @@ node ('global') {
       //}
 
       stage('----------- Build app -----------') {
-        withMaven(maven: 'M2', mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
+        withMaven(maven: 'default', mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
 
           sh "cd ${JENKINS_PLUGIN_BASEDIR}"
           sh "ls -la *"
