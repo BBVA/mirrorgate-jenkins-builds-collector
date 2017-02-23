@@ -19,6 +19,7 @@ node ('global') {
         dir (HYGIEIA_BASEDIR) {
         	git url: "${HYGIEIA_REPO}", branch: 'master'
         	sh "rm ${JENKINS_PLUGIN_DIR} -Rf"
+        	sh "mkdir ${JENKINS_PLUGIN_DIR}"
         	sh "cp ${WORKSPACE}/${JENKINS_PLUGIN_BASEDIR}/* ${WORKSPACE}/${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR} -R"
         }
       }
