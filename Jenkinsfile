@@ -5,6 +5,7 @@ JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 HYGIEIA_BASEDIR = "hygieia" 
 HYGIEIA_REPO = "https://github.com/capitalone/Hygieia.git"
 JENKINS_PLUGIN_PACKAGE = "hygieia-publisher.hpi"
+JENKINS_HOST="globaldevtools.bbva.com"
 
 node ('global') {
   try {
@@ -37,6 +38,22 @@ node ('global') {
       }
       
       hygieiaBuildPublishStep buildStatus: 'Success'
+
+      stage(' Deploy to Jenkins ') {
+      	withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                          credentialsId: 'bot-globaldevops',
+                          usernameVariable: 'JENKINS_USER',
+                          passwordVariable: 'JENKINS_PWD']]){
+            withEnv([
+                    "PATH=${environmentPath}",
+            ]){
+
+      	  dir (JENKINS_PLUGIN_BASEDIR) {
+      	    sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins/pluginManager/uploadPlugin"
+      	    //sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
+      	  }
+      	}
+      }
 
   } catch(Exception e) {
       sh """
