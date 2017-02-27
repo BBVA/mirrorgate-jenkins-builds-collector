@@ -12,8 +12,8 @@ node ('global') {
       hygieiaBuildPublishStep buildStatus: 'InProgress'
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
-        sh 'rm $WORKSPACE/.m2 -Rf'
-        sh 'mkdir $WORKSPACE/.m2'        
+        //sh 'rm $WORKSPACE/.m2 -Rf'
+        sh 'mkdir $WORKSPACE/.m2 || true'        
 	    sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
 	    //sh 'cat $WORKSPACE/.m2/settings.xml'
       }
@@ -52,7 +52,7 @@ node ('global') {
       }
 
       stage('------------ Publish app -----------') {
-      	step([$class: "ArtifactArchiver", artifacts: "${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
+      	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_DIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
       hygieiaBuildPublishStep buildStatus: 'Success'
