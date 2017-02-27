@@ -12,46 +12,27 @@ node ('global') {
       hygieiaBuildPublishStep buildStatus: 'InProgress'
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
-        //sh 'rm $WORKSPACE/.m2 -Rf'
         sh 'mkdir $WORKSPACE/.m2 || true'        
 	    sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
-	    //sh 'cat $WORKSPACE/.m2/settings.xml'
       }
 
-      stage('-------- Checkout SCM ---------') {
+      stage(' Checkout SCM ') {
 
        dir (JENKINS_PLUGIN_BASEDIR) {
          checkout(scm)
-       //	git url: "${JENKINS_PLUGIN_REPO}", branch: 'develop'
        }
-       //sh "ls -la ${JENKINS_PLUGIN_BASEDIR}"
-       //dir (HYGIEIA_BASEDIR) {
-       // 	git url: "${HYGIEIA_REPO}", branch: 'master'
-       // 	sh "rm ${JENKINS_PLUGIN_DIR} -Rf"
-       // 	sh "mkdir ${JENKINS_PLUGIN_DIR}"
-       // 	sh "cp ${WORKSPACE}/${JENKINS_PLUGIN_BASEDIR}/* ${WORKSPACE}/${HYGIEIA_BASEDIR}/${JENKINS_PLUGIN_DIR} -R"
-       // 	sh "sed -i '/<module>collectors*\$/d' pom.xml"
-       // 	sh "sed -i '/<module>UI*\$/d' pom.xml"
-       //}
       }
 
-      //stage('---------- Compile Hygieia Core -----------') {
-      //	dir (HYGIEIA_BASEDIR) {
-      //   sh "cd core; mvn clean install"
-      //  }
-      //}
-
-      stage('----------- Build app -----------') {
+      stage(' Build app ') {
         withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
           dir (JENKINS_PLUGIN_BASEDIR) {
-            sh "ls -la *"
             sh "mvn test"
             sh "mvn clean package"
           }
 		}        
       }
 
-      stage('------------ Publish app -----------') {
+      stage(' Publish app ') {
       	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
