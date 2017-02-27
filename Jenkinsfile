@@ -43,11 +43,11 @@ node ('global') {
 
       stage('----------- Build app -----------') {
         withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
-
-          sh "cd ${JENKINS_PLUGIN_BASEDIR}"
-          sh "ls -la *"
-          sh "mvn test"
-          sh "mvn clean package"
+          dir (JENKINS_PLUGIN_BASEDIR) {
+            sh "ls -la *"
+            sh "mvn test"
+            sh "mvn clean package"
+          }
 		}        
       }
 
