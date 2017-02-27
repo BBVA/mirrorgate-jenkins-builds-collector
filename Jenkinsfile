@@ -52,7 +52,7 @@ node ('global') {
       }
 
       stage('------------ Publish app -----------') {
-      	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_DIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
+      	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
       hygieiaBuildPublishStep buildStatus: 'Success'
