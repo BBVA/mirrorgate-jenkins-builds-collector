@@ -44,14 +44,15 @@ node ('global') {
                           credentialsId: 'bot-globaldevops',
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
-            withEnv([
+          withEnv([
                     "PATH=${environmentPath}",
-            ]){
+          ]){
 
-      	  dir (JENKINS_PLUGIN_BASEDIR) {
-      	    sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins/pluginManager/uploadPlugin"
-      	    //sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	  }
+      	      dir (JENKINS_PLUGIN_BASEDIR) {
+      	        sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins/pluginManager/uploadPlugin"
+      	        //sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
+      	      }
+      	    }
       	}
       }
 
