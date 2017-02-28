@@ -7,7 +7,7 @@ HYGIEIA_REPO = "https://github.com/capitalone/Hygieia.git"
 JENKINS_PLUGIN_PACKAGE = "hygieia-publisher.hpi"
 JENKINS_HOST="globaldevtools.bbva.com"
 
-node ('global') {
+node ('apx') {
   try {
 
       hygieiaBuildPublishStep buildStatus: 'InProgress'
