@@ -41,7 +41,7 @@ node ('global') {
 
       stage(' Deploy to Jenkins ') {
       	withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                          credentialsId: 'manuel.montesino.contractor',
+                          credentialsId: 'bot-jenkins-ldap',
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
 
