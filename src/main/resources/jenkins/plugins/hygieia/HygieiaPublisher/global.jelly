@@ -11,21 +11,18 @@
     tags they use. Views are always organized according to its owner class,
     so it should be straightforward to find them.
   -->
-<f:section title="Global Hygieia Publisher Settings" name="hygieia-publisher">
-    <f:entry title="Integration Token" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaToken.html">
-        <f:textbox field="hygieiaToken" name="hygieiaToken" value="${descriptor.getHygieiaToken()}" />
+<f:section title="Global MirrorGate Publisher Settings" name="mirrorGate-publisher">
+    <f:entry title="MirrorGate Server URL" help="/plugin/mirrorGate-publisher/help-globalConfig-mirrorGateBuildServerUrl.html">
+        <f:textbox field="mirrorGateAPIUrl" name="mirrorGateAPIUrl" value="${descriptor.getMirrorGateAPIUrl()}" />
     </f:entry>
-    <f:entry title="Hygieia Server URL" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaBuildServerUrl.html">
-        <f:textbox field="hygieiaAPIUrl" name="hygieiaAPIUrl" value="${descriptor.getHygieiaAPIUrl()}" />
-    </f:entry>
-    <f:entry title="Name your Jenkins" help="/plugin/hygieia-publisher/help-globalConfig-hygieiaJenkinsName.html">
-        <f:textbox field="hygieiaJenkinsName" name="hygieiaJenkinsName" value="${descriptor.getHygieiaJenkinsName()}" />
+    <f:entry title="Name your Jenkins" help="/plugin/mirrorGate-publisher/help-globalConfig-mirrorGateJenkinsName.html">
+        <f:textbox field="mirrorGateJenkinsName" name="mirrorGateJenkinsName" value="${descriptor.getMirrorGateJenkinsName()}" />
     </f:entry>
     <f:entry title="Use Proxy">
         <f:checkbox field="useProxy" name="useProxy" checked="${descriptor.isUseProxy()}" />
     </f:entry>
     <f:validateButton
         title="${%Test Connection}" progress="${%Testing...}"
-        method="testConnection" with="hygieiaToken,hygieaAPIUrl" />
+        method="testConnection" with="mirrorGateAPIUrl" />
   </f:section>
 </j:jelly>

@@ -1,16 +1,14 @@
 #!groovy
 JENKINS_PLUGIN_REPO = "ssh://git@globaldevtools.bbva.com:7999/bgdfm/jenkins_plugin_collector.git"
-JENKINS_PLUGIN_DIR = "hygieia-jenkins-plugin"
+JENKINS_PLUGIN_DIR = "mirrorGate-jenkins-plugin"
 JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
-HYGIEIA_BASEDIR = "hygieia" 
-HYGIEIA_REPO = "https://github.com/capitalone/Hygieia.git"
-JENKINS_PLUGIN_PACKAGE = "hygieia-publisher.hpi"
+JENKINS_PLUGIN_PACKAGE = "mirrorGate-publisher.hpi"
 JENKINS_HOST="globaldevtools.bbva.com"
 
 node ('internal-global') {
   try {
 
-      hygieiaBuildPublishStep buildStatus: 'InProgress'
+      mirrorGateBuildPublishStep buildStatus: 'InProgress'
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
         sh 'mkdir $WORKSPACE/.m2 || true'        
@@ -37,7 +35,7 @@ node ('internal-global') {
       	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
-      hygieiaBuildPublishStep buildStatus: 'Success'
+      mirrorGateBuildPublishStep buildStatus: 'Success'
 
       stage(' Deploy to Jenkins ') {
       	withCredentials([[$class: 'UsernamePasswordMultiBinding',
@@ -77,7 +75,7 @@ node ('internal-global') {
       https://hooks.slack.com/services/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
       """
 
-      hygieiaBuildPublishStep buildStatus: 'Failure'
+      mirrorGateBuildPublishStep buildStatus: 'Failure'
 
       throw e;
   } 
