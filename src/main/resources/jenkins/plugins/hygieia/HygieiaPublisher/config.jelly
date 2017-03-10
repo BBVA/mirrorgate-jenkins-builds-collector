@@ -2,7 +2,7 @@
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
     <f:optionalBlock name="mirrorGateBuild" title="Publish Build Status" checked="${instance.getMirrorGateBuild() != null}"
-                     help="/plugin/mirrorGate-publisher/help-projectConfig-sendBuildInfo.html">
+                     help="/plugin/mirrorgate-publisher/help-projectConfig-sendBuildInfo.html">
         <f:entry>
             <f:checkbox name="publishBuildStart" title="Publish Build Start Status" value="true"
                         checked="${instance.getMirrorGateBuild().isPublishBuildStart()}"/>

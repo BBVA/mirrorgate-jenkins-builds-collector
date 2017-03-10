@@ -8,13 +8,13 @@ Run unit tests
 
     mvn test
 
-Create an HPI file to install in Jenkins (HPI file will be in `target/mirrorGate-publisher.hpi`).
+Create an HPI file to install in Jenkins (HPI file will be in `target/mirrorgate-publisher.hpi`).
 
     mvn clean package 
 
 If build fails due to a maven error that looks like this:
 
-`[ERROR] Failed to execute goal on project mirrorGate-publisher: Could not resolve dependencies for project org.jenkins-ci.plugins:mirrorGate-publisher:hpi:1.3-SNAPSHOT: Could not find artifact com.capitalone.dashboard:core:jar:2.0.2-SNAPSHOT in anonymous (https://mycompany.nexus.com/nexus/content/groups/CLM) -> [Help 1][ERROR]`
+`[ERROR] Failed to execute goal on project mirrorgate-publisher: Could not resolve dependencies for project org.jenkins-ci.plugins:mirrorgate-publisher:hpi:1.3-SNAPSHOT: Could not find artifact com.capitalone.dashboard:core:jar:2.0.2-SNAPSHOT in anonymous (https://mycompany.nexus.com/nexus/content/groups/CLM) -> [Help 1][ERROR]`
 
 Clone MirrorGate root, `cd` to `core`, and do `mvn clean install` before building this plugin.
 

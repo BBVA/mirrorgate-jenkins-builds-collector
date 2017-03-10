@@ -28,7 +28,7 @@ node ('internal-global') {
             sh "mvn test"
             sh "mvn clean package"
           }
-		}        
+        }        
       }
 
       stage(' Publish app ') {

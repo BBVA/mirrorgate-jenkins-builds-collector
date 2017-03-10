@@ -15,7 +15,7 @@
     <f:entry title="MirrorGate Server URL" help="/plugin/mirrorgate-publisher/help-globalConfig-mirrorGateBuildServerUrl.html">
         <f:textbox field="mirrorGateAPIUrl" name="mirrorGateAPIUrl" value="${descriptor.getMirrorGateAPIUrl()}" />
     </f:entry>
-    <f:entry title="Name your Jenkins" help="/plugin/mirrorGate-publisher/help-globalConfig-mirrorGateJenkinsName.html">
+    <f:entry title="Name your Jenkins" help="/plugin/mirrorgate-publisher/help-globalConfig-mirrorGateJenkinsName.html">
         <f:textbox field="mirrorGateJenkinsName" name="mirrorGateJenkinsName" value="${descriptor.getMirrorGateJenkinsName()}" />
     </f:entry>
     <f:entry title="Use Proxy">
