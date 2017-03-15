@@ -1,5 +1,6 @@
 package jenkins.plugins.mirrorgate.workflow;
 
+import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildStatus;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
@@ -10,8 +11,6 @@ import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepEx
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-
-import com.capitalone.dashboard.model.BuildStatus;
 
 import hudson.Extension;
 import hudson.model.Run;
@@ -105,7 +104,7 @@ public class MirrorGateBuildPublishStep extends AbstractStepImpl {
 
             MirrorGatePublisher.DescriptorImpl mirrorGateDesc = jenkins.getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
             MirrorGateService mirrorGateService = getMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl(), mirrorGateDesc.isUseProxy());
-            BuildBuilder builder = new BuildBuilder(run, mirrorGateDesc.getMirrorGateJenkinsName(), listener, BuildStatus.fromString(step.buildStatus), true);
+            BuildBuilder builder = new BuildBuilder(run, BuildStatus.fromString(step.buildStatus), true);
             MirrorGateResponse buildResponse = mirrorGateService.publishBuildData(builder.getBuildData());
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("MirrorGate: Published Build Complete Data. " + buildResponse.toString());

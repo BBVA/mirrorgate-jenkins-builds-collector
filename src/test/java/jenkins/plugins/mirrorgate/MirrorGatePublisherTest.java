@@ -1,21 +1,20 @@
 package jenkins.plugins.mirrorgate;
 
+import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
-
 import hudson.model.Descriptor;
 import hudson.util.FormValidation;
 import junit.framework.TestCase;
+import org.json.simple.JSONObject;
 
 @RunWith(Parameterized.class)
 public class MirrorGatePublisherTest extends TestCase {

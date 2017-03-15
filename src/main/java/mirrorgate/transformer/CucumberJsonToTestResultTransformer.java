@@ -1,18 +1,19 @@
 package mirrorgate.transformer;
 
-import com.capitalone.dashboard.model.TestCase;
-import com.capitalone.dashboard.model.TestCaseCondition;
-import com.capitalone.dashboard.model.TestCaseStatus;
-import com.capitalone.dashboard.model.TestCaseStep;
-import com.capitalone.dashboard.model.TestSuite;
-import com.capitalone.dashboard.model.TestSuiteType;
+import com.bbva.arq.devops.ae.mirrorgate.core.model.TestCase;
+import com.bbva.arq.devops.ae.mirrorgate.core.model.TestCaseCondition;
+import com.bbva.arq.devops.ae.mirrorgate.core.model.TestCaseStatus;
+import com.bbva.arq.devops.ae.mirrorgate.core.model.TestCaseStep;
+import com.bbva.arq.devops.ae.mirrorgate.core.model.TestSuite;
+import com.bbva.arq.devops.ae.mirrorgate.core.model.TestSuiteType;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Transforms a Cucumber result JSON string into a TestResult

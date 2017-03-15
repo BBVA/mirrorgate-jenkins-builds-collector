@@ -1,6 +1,6 @@
 package jenkins.plugins.mirrorgate;
 
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
+import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
 
 public interface MirrorGateService {
     MirrorGateResponse publishBuildData(BuildDataCreateRequest request);

@@ -9,8 +9,8 @@ import mirrorgate.builder.BuildBuilder;
 @SuppressWarnings("rawtypes")
 public class ActiveNotifier implements FineGrainedNotifier {
 
-    private MirrorGatePublisher publisher;
-    private BuildListener listener;
+    private final MirrorGatePublisher publisher;
+    private final BuildListener listener;
 
     public ActiveNotifier(MirrorGatePublisher publisher, BuildListener listener) {
         super();
@@ -22,12 +22,13 @@ public class ActiveNotifier implements FineGrainedNotifier {
         return publisher.newMirrorGateService(r, listener);
     }
 
+    @Override
     public void started(AbstractBuild r) {
         boolean publish = ((publisher.getMirrorGateBuild() != null) && publisher.getMirrorGateBuild().isPublishBuildStart());
 
 
         if (publish) {
-            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getMirrorGateJenkinsName(), listener, false, true);
+            BuildBuilder builder = new BuildBuilder(r, false, true);
             MirrorGateResponse response = getMirrorGateService(r).publishBuildData(builder.getBuildData());
             if (response.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("MirrorGate: Published Build Complete Data. " + response.toString());
@@ -38,10 +39,12 @@ public class ActiveNotifier implements FineGrainedNotifier {
 
     }
 
+    @Override
     public void deleted(AbstractBuild r) {
     }
 
 
+    @Override
     public void finalized(AbstractBuild r) {
 
     }
@@ -50,7 +53,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
         boolean publishBuild = (publisher.getMirrorGateBuild() != null);
 
         if (publishBuild) {
-            BuildBuilder builder = new BuildBuilder(r, publisher.getDescriptor().getMirrorGateJenkinsName(), listener, true, true);
+            BuildBuilder builder = new BuildBuilder(r, true, true);
             MirrorGateResponse buildResponse = getMirrorGateService(r).publishBuildData(builder.getBuildData());
             if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                 listener.getLogger().println("MirrorGate: Published Build Complete Data. " + buildResponse.toString());

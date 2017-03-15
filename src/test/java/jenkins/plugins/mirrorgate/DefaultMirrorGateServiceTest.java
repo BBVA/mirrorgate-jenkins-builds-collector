@@ -1,9 +1,7 @@
 package jenkins.plugins.mirrorgate;
 
+import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
 import org.junit.Test;
-
-import com.capitalone.dashboard.model.SCM;
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
 
 public class DefaultMirrorGateServiceTest {
 
@@ -48,18 +46,7 @@ public class DefaultMirrorGateServiceTest {
         build.setBuildStatus("Success");
         build.setStartedBy("foo");
         build.setJobName("MyJob");
-        build.getSourceChangeSet().add(makeScm());
         return build;
     }
 
-    private SCM makeScm() {
-        SCM scm = new SCM();
-        scm.setScmUrl("scmUrl");
-        scm.setScmRevisionNumber("revNum");
-        scm.setNumberOfChanges(20);
-        scm.setScmCommitTimestamp(200);
-        scm.setScmCommitLog("Log message");
-        scm.setScmAuthor("bob");
-        return scm;
-    }
 }

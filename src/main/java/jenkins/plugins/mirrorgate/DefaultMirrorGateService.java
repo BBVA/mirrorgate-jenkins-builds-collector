@@ -1,12 +1,11 @@
 package jenkins.plugins.mirrorgate;
 
+import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HttpStatus;
-
-import com.capitalone.dashboard.request.BuildDataCreateRequest;
 
 import mirrorgate.utils.MirrorGateUtils;
 
@@ -14,7 +13,7 @@ import mirrorgate.utils.MirrorGateUtils;
 
 public class DefaultMirrorGateService implements MirrorGateService {
 
-    private static final Logger logger = Logger.getLogger(DefaultMirrorGateService.class.getName());
+    private static final Logger LOG = Logger.getLogger(DefaultMirrorGateService.class.getName());
 
     private String mirrorGateAPIUrl = "";
     private boolean useProxy = false;
@@ -30,6 +29,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
         this.mirrorGateAPIUrl = mirrorGateAPIUrl;
     }
 
+    @Override
     public MirrorGateResponse publishBuildData(BuildDataCreateRequest request) {
         String responseValue;
         int responseCode = HttpStatus.SC_NO_CONTENT;
@@ -40,17 +40,18 @@ public class DefaultMirrorGateService implements MirrorGateService {
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
             if (responseCode != HttpStatus.SC_CREATED) {
-                logger.log(Level.SEVERE, "mirrorGate: Build Publisher post may have failed. Response: " + responseCode);
+                LOG.log(Level.SEVERE, "mirrorGate: Build Publisher post may have failed. Response: {0}", responseCode);
             }
             return new MirrorGateResponse(responseCode, responseValue);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "mirrorGate: Error posting to mirrorGate", e);
+            LOG.log(Level.SEVERE, "mirrorGate: Error posting to mirrorGate", e);
             responseValue = "";
         }
 
         return new MirrorGateResponse(responseCode, responseValue);
     }
 
+    @Override
     public boolean testConnection() {
         RestCall restCall = new RestCall(useProxy);
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(mirrorGateAPIUrl + "/health");
@@ -58,7 +59,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
 
         if (responseCode == HttpStatus.SC_OK) return true;
 
-        logger.log(Level.WARNING, "mirrorGate Test Connection Failed. Response: " + responseCode);
+        LOG.log(Level.WARNING, "mirrorGate Test Connection Failed. Response: {0}", responseCode);
         return false;
     }
 }
