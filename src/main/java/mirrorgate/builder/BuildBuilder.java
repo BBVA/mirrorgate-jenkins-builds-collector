@@ -37,9 +37,6 @@ public class BuildBuilder {
 
     private void createBuildRequestFromRun() {
         request = new BuildDataCreateRequest();
-        request.setJobName(MirrorGateUtils.getJobName(run));
-        request.setBuildUrl(MirrorGateUtils.getBuildUrl(run));
-        request.setJobUrl(MirrorGateUtils.getJobUrl(run));
         request.setNumber(MirrorGateUtils.getBuildNumber(run));
         request.setStartTime(run.getStartTimeInMillis());
         request.setBuildStatus(result.toString());
@@ -48,13 +45,17 @@ public class BuildBuilder {
             request.setDuration(System.currentTimeMillis() - run.getStartTimeInMillis());
             request.setEndTime(System.currentTimeMillis());
         }
+        
+        String buildUrl = MirrorGateUtils.getBuildUrl(run);
+        String[] buildInfo = MirrorGateUtils.getBuildUrl(run).split("/");
+        request.setBuildUrl(buildUrl);
+        request.setProjectName(buildInfo[5]);
+        request.setRepoName(buildInfo[7]);
+        request.setBranch(buildInfo[9]);
     }
 
     private void createBuildRequest() {
         request = new BuildDataCreateRequest();
-        request.setJobName(MirrorGateUtils.getJobName(build));
-        request.setBuildUrl(MirrorGateUtils.getBuildUrl(build));
-        request.setJobUrl(MirrorGateUtils.getJobUrl(build));
         request.setNumber(MirrorGateUtils.getBuildNumber(build));
         request.setStartTime(build.getStartTimeInMillis());
         if (isComplete) {
@@ -64,6 +65,13 @@ public class BuildBuilder {
         } else {
             request.setBuildStatus(BuildStatus.InProgress.toString());
         }
+        
+        String buildUrl = MirrorGateUtils.getBuildUrl(build);
+        String[] buildInfo = MirrorGateUtils.getBuildUrl(build).split("/");
+        request.setBuildUrl(buildUrl);
+        request.setProjectName(buildInfo[5]);
+        request.setRepoName(buildInfo[7]);
+        request.setBranch(buildInfo[9]);
     }
 
     public BuildDataCreateRequest getBuildData() {

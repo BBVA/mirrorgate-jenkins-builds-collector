@@ -45,7 +45,6 @@ public class DefaultMirrorGateServiceTest {
         build.setDuration(5);
         build.setBuildStatus("Success");
         build.setStartedBy("foo");
-        build.setJobName("MyJob");
         return build;
     }
 
