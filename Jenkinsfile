@@ -5,7 +5,6 @@ JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 HYGIEIA_BASEDIR = "hygieia" 
 HYGIEIA_REPO = "https://github.com/capitalone/Hygieia.git"
 JENKINS_PLUGIN_PACKAGE = "hygieia-publisher.hpi"
-JENKINS_HOST="globaldevtools.bbva.com"
 
 node ('internal-global') {
   try {
@@ -40,19 +39,39 @@ node ('internal-global') {
       hygieiaBuildPublishStep buildStatus: 'Success'
 
       stage(' Deploy to Jenkins ') {
-      	withCredentials([[$class: 'UsernamePasswordMultiBinding',
+      	if (env.BRANCH_NAME == "master") {
+      	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
                           credentialsId: 'bot-jenkins-ldap',
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
 
-      	  dir (JENKINS_PLUGIN_BASEDIR) {
-      	  	//sh "curl ifconfig.co"
-      	    //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	    sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	    //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	    sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
+      	  	JENKINS_HOST="globaldevtools.bbva.com"
+      	    dir (JENKINS_PLUGIN_BASEDIR) {
+
+      	  	  //sh "curl ifconfig.co"
+      	      //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
+      	      //sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
+      	    }
       	  }
-      	}
+      	
+        }else {
+      	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                          credentialsId: 'bot-dev-jenkins-ldap',
+                          usernameVariable: 'JENKINS_USER',
+                          passwordVariable: 'JENKINS_PWD']]){
+      	  	JENKINS_HOST="dev.globaldevtools.bbva.com"
+      	    dir (JENKINS_PLUGIN_BASEDIR) {
+
+      	  	  //sh "curl ifconfig.co"
+      	      //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
+      	      sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
+      	    }
+      	  }
+        }
       }
 
   } catch(Exception e) {
