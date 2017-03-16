@@ -64,7 +64,7 @@ node ('internal-global') {
       	  	JENKINS_HOST="dev.globaldevtools.bbva.com"
       	    dir (JENKINS_PLUGIN_BASEDIR) {
 
-      	  	  //sh "curl ifconfig.co"
+      	  	  sh "curl ifconfig.co"
       	      //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
       	      sh "curl -i -k -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
       	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
