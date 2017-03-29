@@ -23,7 +23,7 @@ node ('internal-global') {
       }
 
       stage(' Build app ') {
-        withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
+        withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '.m2/settings.xml') {
           dir (JENKINS_PLUGIN_BASEDIR) {
             sh "mvn test"
             sh "mvn clean package"
