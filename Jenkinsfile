@@ -3,8 +3,7 @@ JENKINS_PLUGIN_REPO = "ssh://git@globaldevtools.bbva.com:7999/bgdfm/jenkins_plug
 JENKINS_PLUGIN_DIR = "mirrorGate-jenkins-plugin"
 JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
-// JENKINS_HOST="globaldevtools.bbva.com"
-JENKINS_HOST="34.252.112.186:8080"
+JENKINS_HOST="globaldevtools.bbva.com"
 
 node ('global') {
   try {
