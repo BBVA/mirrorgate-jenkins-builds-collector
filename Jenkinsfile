@@ -5,7 +5,7 @@ JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 JENKINS_HOST="globaldevtools.bbva.com"
 
-node ('internal-global') {
+node ('global') {
   try {
 
       mirrorGateBuildPublishStep buildStatus: 'InProgress'
