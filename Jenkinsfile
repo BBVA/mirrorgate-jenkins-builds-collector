@@ -3,7 +3,8 @@ JENKINS_PLUGIN_REPO = "ssh://git@globaldevtools.bbva.com:7999/bgdfm/jenkins_plug
 JENKINS_PLUGIN_DIR = "mirrorGate-jenkins-plugin"
 JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
-JENKINS_HOST="globaldevtools.bbva.com"
+#JENKINS_HOST="globaldevtools.bbva.com"
+JENKINS_HOST="34.252.112.186:8080"
 
 node ('global') {
   try {
@@ -12,7 +13,7 @@ node ('global') {
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
         sh 'mkdir $WORKSPACE/.m2 || true'        
-	    sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
+        sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
       }
 
       stage(' Checkout SCM ') {
