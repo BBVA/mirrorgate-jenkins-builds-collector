@@ -17,7 +17,7 @@ def mirrorGateBuildPublishStep(buildStatus) {
     echo '    \"buildUrl\" : \"${env.BUILD_URL}\",'   >> _msg.json
     echo '    \"buildStatus\" : \"$buildStatus\",' >> _msg.json
     echo '    \"projectName\" : \"MirrorGate\",'  >> _msg.json
-    echo '    \"repoName\" : \"mirrorgate-app\",' >> _msg.json
+    echo '    \"repoName\" : \"jenkins-plugin-collector\",' >> _msg.json
     echo '    \"branch\" : \"${env.GIT_BRANCH}\"'  >> _msg.json
     echo '}'    >> _msg.json
 
