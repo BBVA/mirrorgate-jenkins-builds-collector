@@ -5,10 +5,32 @@ JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 JENKINS_HOST="globaldevtools.bbva.com"
 
-node ('global') {
+def mirrorGateBuildPublishStep(buildStatus) {  
+  sh """
+
+    echo '{'    > _msg.json
+    echo '    \"number\" : \"${env.BUILD_NUMBER}\",'    >> _msg.json
+    echo '    \"timestamp\" : ' >> _msg.json
+    date +%s >> _msg.json
+    echo , >> _msg.json
+    echo '    \"buildUrl\" : \"${env.BUILD_URL}\",'   >> _msg.json
+    echo '    \"buildStatus\" : \"$buildStatus\",' >> _msg.json
+    echo '    \"projectName\" : \"MirrorGate\",'  >> _msg.json
+    echo '    \"repoName\" : \"mirrorgate-app\",' >> _msg.json
+    echo '    \"branch\" : \"${env.GIT_BRANCH}\"'  >> _msg.json
+    echo '}'    >> _msg.json
+
+    cat _msg.json
+
+    curl -H "Content-Type: application/json" -X POST -d @_msg.json http://dev-mirrorgate-alb-167643159.eu-west-1.elb.amazonaws.com/mirrorgate/builds
+
+  """
+}
+
+node ('internal-global') {
   try {
 
-      mirrorGateBuildPublishStep buildStatus: 'InProgress'
+      mirrorGateBuildPublishStep ('InProgress')
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
         sh 'mkdir $WORKSPACE/.m2 || true'        
@@ -35,7 +57,7 @@ node ('global') {
       	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
-      mirrorGateBuildPublishStep buildStatus: 'Success'
+      mirrorGateBuildPublishStep ('Success')
 
       stage(' Deploy to Jenkins ') {
       	withCredentials([[$class: 'UsernamePasswordMultiBinding',
@@ -75,7 +97,7 @@ node ('global') {
       https://hooks.slack.com/services/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
       """
 
-      mirrorGateBuildPublishStep buildStatus: 'Failure'
+      mirrorGateBuildPublishStep ('Failure')
 
       throw e;
   } 
