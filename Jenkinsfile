@@ -1,24 +1,24 @@
 #!groovy
 JENKINS_PLUGIN_REPO = "ssh://git@globaldevtools.bbva.com:7999/bgdfm/jenkins_plugin_collector.git"
-JENKINS_PLUGIN_DIR = "hygieia-jenkins-plugin"
+JENKINS_PLUGIN_DIR = "mirrorGate-jenkins-plugin"
 JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
-HYGIEIA_BASEDIR = "hygieia" 
-HYGIEIA_REPO = "https://github.com/capitalone/Hygieia.git"
-JENKINS_PLUGIN_PACKAGE = "hygieia-publisher.hpi"
+JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
+JENKINS_HOST="globaldevtools.bbva.com"
 
 def mirrorGateBuildPublishStep(buildStatus) {  
+
+  def time = System.currentTimeMillis()  
+  
   sh """
 
     echo '{'    > _msg.json
     echo '    \"number\" : \"${env.BUILD_NUMBER}\",'    >> _msg.json
-    echo '    \"timestamp\" : ' >> _msg.json
-    date +%s >> _msg.json
-    echo , >> _msg.json
+    echo '    \"timestamp\" : ${time},' >> _msg.json
     echo '    \"buildUrl\" : \"${env.BUILD_URL}\",'   >> _msg.json
     echo '    \"buildStatus\" : \"$buildStatus\",' >> _msg.json
     echo '    \"projectName\" : \"MirrorGate\",'  >> _msg.json
     echo '    \"repoName\" : \"jenkins-plugin-collector\",' >> _msg.json
-    echo '    \"branch\" : \"${env.GIT_BRANCH}\"'  >> _msg.json
+    echo '    \"branch\" : \"${env.BRANCH_NAME}\"'  >> _msg.json
     echo '}'    >> _msg.json
 
     cat _msg.json
@@ -35,7 +35,7 @@ node ('internal-global') {
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
         sh 'mkdir $WORKSPACE/.m2 || true'        
-	    sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
+        sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
       }
 
       stage(' Checkout SCM ') {
@@ -46,12 +46,12 @@ node ('internal-global') {
       }
 
       stage(' Build app ') {
-        withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '$WORKSPACE/.m2/settings.xml') {
+        withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '.m2/settings.xml') {
           dir (JENKINS_PLUGIN_BASEDIR) {
             sh "mvn test"
             sh "mvn clean package"
           }
-		}        
+        }        
       }
 
       stage(' Publish app ') {

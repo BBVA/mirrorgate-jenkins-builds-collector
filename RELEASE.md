@@ -1,6 +1,6 @@
 # Steps to release
 
-This outlines the maintainers steps to release the Jenkins Hygieia plugin.  Follow
+This outlines the maintainers steps to release the Jenkins MirrorGate plugin.  Follow
 the Jenkins documentation for [making a new release][plugin-release].
 
 - [ ] Configure your credentials in `~/.m2/settings.xml`. (outlined in [making a
