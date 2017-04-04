@@ -6,6 +6,9 @@ JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 JENKINS_HOST="globaldevtools.bbva.com"
 
 def mirrorGateBuildPublishStep(buildStatus) {  
+
+  def time = System.currentTimeMillis()  
+  
   sh """
 
     echo '{'    > _msg.json
