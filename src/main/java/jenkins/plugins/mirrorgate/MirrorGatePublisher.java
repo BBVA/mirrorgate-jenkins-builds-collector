@@ -88,9 +88,8 @@ public class MirrorGatePublisher extends Notifier {
 
     private MirrorGateService makeService(EnvVars env) {
         String mirrorGateAPIUrl = getDescriptor().getMirrorGateAPIUrl();
-        boolean useProxy = getDescriptor().isUseProxy();
         mirrorGateAPIUrl = env.expand(mirrorGateAPIUrl);
-        return new DefaultMirrorGateService(mirrorGateAPIUrl, useProxy);
+        return new DefaultMirrorGateService(mirrorGateAPIUrl);
     }
 
     @Override
@@ -103,8 +102,6 @@ public class MirrorGatePublisher extends Notifier {
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
         private String mirrorGateAPIUrl;
-        private String mirrorGateJenkinsName;
-        private boolean useProxy;
 
         public DescriptorImpl() {
             load();
@@ -114,14 +111,7 @@ public class MirrorGatePublisher extends Notifier {
             return mirrorGateAPIUrl;
         }
 
-        public String getMirrorGateJenkinsName() {
-            return mirrorGateJenkinsName;
-        }
-
-        public boolean isUseProxy() {
-            return useProxy;
-        }
-
+        @Override
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
             return true;
         }
@@ -135,14 +125,12 @@ public class MirrorGatePublisher extends Notifier {
         @Override
         public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
             mirrorGateAPIUrl = sr.getParameter("mirrorGateAPIUrl");
-            mirrorGateJenkinsName = sr.getParameter("mirrorGateJenkinsName");
-            useProxy = "on".equals(sr.getParameter("useProxy"));
             save();
             return super.configure(sr, formData);
         }
 
-        public MirrorGateService getMirrorGateService(final String mirrorGateAPIUrl, final boolean useProxy) {
-            return new DefaultMirrorGateService(mirrorGateAPIUrl, useProxy);
+        public MirrorGateService getMirrorGateService(final String mirrorGateAPIUrl) {
+            return new DefaultMirrorGateService(mirrorGateAPIUrl);
         }
 
         @Override
@@ -150,18 +138,15 @@ public class MirrorGatePublisher extends Notifier {
             return "MirrorGate Publisher";
         }
 
-        public FormValidation doTestConnection(@QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl,
-                                               @QueryParameter("useProxy") final String sUseProxy) throws FormException {
+        public FormValidation doTestConnection(
+                @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl) throws FormException {
 
             String hostUrl = mirrorGateAPIUrl;
             if (StringUtils.isEmpty(hostUrl)) {
                 hostUrl = this.mirrorGateAPIUrl;
             }
-            boolean bProxy = "true".equalsIgnoreCase(sUseProxy);
-            if (StringUtils.isEmpty(sUseProxy)) {
-                bProxy = this.useProxy;
-            }
-            MirrorGateService testMirrorGateService = getMirrorGateService(hostUrl, bProxy);
+
+            MirrorGateService testMirrorGateService = getMirrorGateService(hostUrl);
             if (testMirrorGateService != null) {
                 boolean success = testMirrorGateService.testConnection();
                 return success ? FormValidation.ok("Success") : FormValidation.error("Failure");

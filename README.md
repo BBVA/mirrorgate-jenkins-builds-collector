@@ -28,12 +28,10 @@ This plugin uses the MirrorGate core package. The main project is JDK 1.8 compil
 2. Restart jenkins.
 3. Configure Global MirrorGate Publisher in Jenkins Manage Jenkins/Configure System. Enter MirrorGate API url such as `http://localhost:8090/api`. There is no API token implented at this time and it is work in progress.
 ![Image](../media/images/jenkins-global.png)
-4. In Jenkins pipeline syntax page, MirrorGate publish steps will show up:
-![Image](../media/images/jenkins2.0-steplist.png)
-5. Select a step (say MirrorGate Deploy Step ), fill in the required information and click "Generate Pipeline Script". The generated scirpt now can be copied to the pipeline script:
+4. Select a step (say MirrorGate Deploy Step ), fill in the required information and click "Generate Pipeline Script". The generated scirpt now can be copied to the pipeline script:
 ![Image](../media/images/jenkins2.0-mirrorGate-deploy-step.png)
 6. Screen shot below shows a simple pipeline script with maven build, mirrorGate artifact and deploy publishing.
-![Image](../media/images/jenkins2.0-pipeline-deploy-publish.png)
+5. [Image](../media/images/jenkins2.0-pipeline-deploy-publish.png)
 
 ## Jenkins (pre Jenkins 2.0) 
 

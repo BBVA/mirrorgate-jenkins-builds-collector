@@ -3,10 +3,8 @@ package jenkins.plugins.mirrorgate;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -20,44 +18,31 @@ import org.apache.commons.lang3.StringUtils;
 
 import hudson.ProxyConfiguration;
 import jenkins.model.Jenkins;
-import mirrorgate.utils.WildCardURL;
 
 
 public class RestCall {
-    private static final Logger logger = Logger.getLogger(RestCall.class.getName());
+    
+    private static final Logger LOGGER = Logger.getLogger(RestCall.class.getName());
 
-    private boolean useProxy;
 
-    public RestCall(boolean useProxy) {
-        this.useProxy = useProxy;
-    }
-
-//Fixme: Need refactoring to remove code duplication.
+    //Fixme: Need refactoring to remove code duplication.
 
     protected HttpClient getHttpClient() {
         HttpClient client = new HttpClient();
         if (Jenkins.getInstance() != null) {
             ProxyConfiguration proxy = Jenkins.getInstance().proxy;
-            if (useProxy && (proxy != null)){
+            if (proxy != null){
                 client.getHostConfiguration().setProxy(proxy.name, proxy.port);
                 String username = proxy.getUserName();
                 String password = proxy.getPassword();
                 if (!StringUtils.isEmpty(username.trim()) && !StringUtils.isEmpty(password.trim())) {
-                    logger.info("Using proxy authentication (user=" + username + ")");
+                    LOGGER.log(Level.INFO, "Using proxy authentication (user={0})", username);
                     client.getState().setProxyCredentials(AuthScope.ANY,
                             new UsernamePasswordCredentials(username.trim(), password.trim()));
                 }
             }
         }
         return client;
-    }
-
-    private boolean bypassProxy (String url, List<Pattern> bypassList)  {
-        for (Pattern bp: bypassList) {
-            WildCardURL wurl = new WildCardURL(bp.toString());
-            if (wurl.matches(url)) return true;
-        }
-        return false;
     }
 
     public RestCallResponse makeRestCallPost(String url, String jsonString) {
@@ -76,7 +61,7 @@ public class RestCall {
             String responseString = getResponseString(post.getResponseBodyAsStream());
             response = new RestCallResponse(responseCode, responseString);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
+            LOGGER.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
             response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             post.releaseConnection();
@@ -94,10 +79,10 @@ public class RestCall {
             String responseString = getResponseString(get.getResponseBodyAsStream());
             response = new RestCallResponse(responseCode, responseString);
         } catch (HttpException e) {
-            logger.log(Level.WARNING, "Error connecting to MirrorGate", e);
+            LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
             response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error connecting to MirrorGate", e);
+            LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
             response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             get.releaseConnection();

@@ -16,13 +16,10 @@ public class DefaultMirrorGateService implements MirrorGateService {
     private static final Logger LOG = Logger.getLogger(DefaultMirrorGateService.class.getName());
 
     private String mirrorGateAPIUrl = "";
-    private boolean useProxy = false;
 
-
-    public DefaultMirrorGateService(String mirrorGateAPIUrl, boolean useProxy) {
+    public DefaultMirrorGateService(String mirrorGateAPIUrl) {
         super();
         this.mirrorGateAPIUrl = mirrorGateAPIUrl;
-        this.useProxy = useProxy;
     }
 
     public void setMirrorGateAPIUrl(String mirrorGateAPIUrl) {
@@ -35,7 +32,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
             String jsonString = new String(MirrorGateUtils.convertObjectToJsonBytes(request));
-            RestCall restCall = new RestCall(useProxy);
+            RestCall restCall = new RestCall();
             RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(mirrorGateAPIUrl + "/build", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
@@ -53,7 +50,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
 
     @Override
     public boolean testConnection() {
-        RestCall restCall = new RestCall(useProxy);
+        RestCall restCall = new RestCall();
         RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(mirrorGateAPIUrl + "/health");
         int responseCode = callResponse.getResponseCode();
 

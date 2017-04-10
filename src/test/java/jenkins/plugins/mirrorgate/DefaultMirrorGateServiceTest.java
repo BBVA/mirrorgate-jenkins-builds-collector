@@ -10,7 +10,7 @@ public class DefaultMirrorGateServiceTest {
      */
     @Test
     public void publishWithBadHostShouldNotRethrowExceptions() {
-        DefaultMirrorGateService service = new DefaultMirrorGateService("foo", false);
+        DefaultMirrorGateService service = new DefaultMirrorGateService("foo");
         service.setMirrorGateAPIUrl("hostvaluethatwillcausepublishtofail");
 
         service.publishBuildData(makeBuildDataRequestData());
@@ -22,7 +22,7 @@ public class DefaultMirrorGateServiceTest {
      */
     @Test
     public void invalidTokenShouldFail() {
-        DefaultMirrorGateService service = new DefaultMirrorGateService("tinyspeck", false);
+        DefaultMirrorGateService service = new DefaultMirrorGateService("tinyspeck");
         service.publishBuildData(makeBuildDataRequestData());
     }
 

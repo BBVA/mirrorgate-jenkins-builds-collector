@@ -4,8 +4,8 @@ public class DefaultMirrorGateServiceStub extends DefaultMirrorGateService {
 
 //    private HttpClientStub httpClientStub;
 
-    public DefaultMirrorGateServiceStub(String host, boolean useProxy) {
-        super(host, useProxy);
+    public DefaultMirrorGateServiceStub(String host) {
+        super(host);
     }
 
 //    @Override

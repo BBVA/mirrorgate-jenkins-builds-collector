@@ -55,7 +55,7 @@ public class MirrorGatePublisherTest extends TestCase {
         }
         descriptor.setMirrorGateService(mirrorGateServiceStub);
         try {
-            FormValidation result = descriptor.doTestConnection("mirrorGateUrl", "true");
+            FormValidation result = descriptor.doTestConnection("mirrorGateUrl");
             assertEquals(result.kind, expectedResult);
         } catch (Descriptor.FormException e) {
             e.printStackTrace();

@@ -15,7 +15,7 @@ public class MirrorGatePublisherStub extends MirrorGatePublisher {
         }
 
         @Override
-        public MirrorGateService getMirrorGateService(final String host, final boolean useProxy) {
+        public MirrorGateService getMirrorGateService(final String host) {
             return mirrorGateService;
         }
 
