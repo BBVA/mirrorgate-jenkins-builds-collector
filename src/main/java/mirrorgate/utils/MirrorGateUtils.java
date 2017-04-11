@@ -65,20 +65,6 @@ public class MirrorGateUtils {
         return file.getName().substring(0, vIndex) + "." + ext;
     }
 
-    public static String guessVersionNumber(String source) {
-        String versionNumber = "";
-        String fileName = source.substring(0, source.lastIndexOf("."));
-        if (fileName.contains(".")) {
-            String majorVersion = fileName.substring(0, fileName.indexOf("."));
-            String minorVersion = fileName.substring(fileName.indexOf("."));
-            int delimiter = majorVersion.lastIndexOf("-");
-            if (majorVersion.indexOf("_") > delimiter) delimiter = majorVersion.indexOf("_");
-            majorVersion = majorVersion.substring(delimiter + 1, fileName.indexOf("."));
-            versionNumber = majorVersion + minorVersion;
-        }
-        return versionNumber;
-    }
-    
     public static String getBuildUrl(AbstractBuild<?, ?> build) {
         return build.getProject().getAbsoluteUrl() + String.valueOf(build.getNumber()) + "/";
     }

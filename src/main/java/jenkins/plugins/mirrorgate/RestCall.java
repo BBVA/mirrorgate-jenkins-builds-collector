@@ -62,7 +62,7 @@ public class RestCall {
             response = new RestCallResponse(responseCode, responseString);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
-            response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
+            response =/*n*/ new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             post.releaseConnection();
         }

@@ -5,10 +5,9 @@ import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
-import jenkins.model.Jenkins;
-
-import javax.annotation.Nonnull;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import jenkins.model.Jenkins;
 import mirrorgate.builder.BuildBuilder;
 import org.apache.commons.httpclient.HttpStatus;
 
@@ -29,7 +28,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
         MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
         this.service = new DefaultMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl());
         
-        LOG.fine(">>> Initialised");
+        LOG.fine(">>> MirrorGateRunListener Initialised");
     }
 
     @Override
@@ -39,8 +38,16 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         LOG.fine(run.toString());
         
-        BuildBuilder builder = new BuildBuilder(run, BuildStatus.Deleted, true);
-        MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
+        /* A deleted build is not marked as a deleted on publish service*/
+        
+//        BuildBuilder builder = new BuildBuilder(run, BuildStatus.Deleted, true);
+//        MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
+//        
+//        if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
+//            LOG.log(Level.WARNING, "MirrorGate: Published Build Complete Data. {0}", buildResponse.toString());
+//        } else {
+//            LOG.log(Level.FINE, "MirrorGate: Failed Publishing Build Complete Data. {0}", buildResponse.toString());
+//        }
         
         LOG.fine("onDeleded ends");
     }
@@ -52,7 +59,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         LOG.fine(run.toString());
         
-        BuildBuilder builder = new BuildBuilder(run, BuildStatus.InProgress, true);
+        BuildBuilder builder = new BuildBuilder(run, BuildStatus.InProgress);
                 
         MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
         
@@ -73,10 +80,8 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         LOG.fine(run.toString());
 
-        BuildBuilder  builder = new BuildBuilder(run, BuildStatus.fromString(run.getResult().toString()), true);
-        
-        LOG.fine(builder.getBuildData().getBuildUrl());
-                
+        BuildBuilder  builder = new BuildBuilder(run, BuildStatus.fromString(run.getResult().toString()));
+                        
         MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
         
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -91,7 +96,6 @@ public class MirrorGateRunListener extends RunListener<Run> {
     
         @Override
     public void onFinalized(final Run run) {
-        
 
     }
 
