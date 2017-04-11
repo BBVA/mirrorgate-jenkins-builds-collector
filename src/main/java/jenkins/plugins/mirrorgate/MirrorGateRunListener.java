@@ -29,33 +29,31 @@ public class MirrorGateRunListener extends RunListener<Run> {
         MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
         this.service = new DefaultMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl());
         
-        LOG.info(">>> Initialised");
+        LOG.fine(">>> Initialised");
     }
 
     @Override
     public void onDeleted(final Run run) {
         
-        LOG.info("onDeleted starts");
+        LOG.fine("onDeleted starts");
 
-        LOG.info(run.toString());
+        LOG.fine(run.toString());
         
         BuildBuilder builder = new BuildBuilder(run, BuildStatus.Deleted, true);
         MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
         
-        LOG.info("onDeleded ends");
+        LOG.fine("onDeleded ends");
     }
 
     @Override
     public void onStarted(final Run run, final TaskListener listener) {
         
-        LOG.info("onStarted starts");
+        LOG.fine("onStarted starts");
 
-        LOG.info(run.toString());
+        LOG.fine(run.toString());
         
         BuildBuilder builder = new BuildBuilder(run, BuildStatus.InProgress, true);
-        
-        LOG.info(builder.getBuildData().getBuildUrl());
-        
+                
         MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
         
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -64,22 +62,20 @@ public class MirrorGateRunListener extends RunListener<Run> {
             listener.getLogger().println("MirrorGate: Failed Publishing Build Complete Data. " + buildResponse.toString());
         }
     
-        LOG.info("onStarted ends");
+        LOG.fine("onStarted ends");
 
     }
 
     @Override
     public void onCompleted(final Run run, final @Nonnull TaskListener listener) {
         
-        LOG.info("onCompleted starts");
+        LOG.fine("onCompleted starts");
 
-        LOG.info(run.toString());
-
-        LOG.info(run.getResult().toString());
+        LOG.fine(run.toString());
 
         BuildBuilder  builder = new BuildBuilder(run, BuildStatus.fromString(run.getResult().toString()), true);
         
-        LOG.info(builder.getBuildData().getBuildUrl());
+        LOG.fine(builder.getBuildData().getBuildUrl());
                 
         MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
         
@@ -89,7 +85,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
             listener.getLogger().println("MirrorGate: Failed Publishing Build Complete Data. " + buildResponse.toString());
         }
       
-        LOG.info("onCompleted ends");
+        LOG.fine("onCompleted ends");
 
     }
     
