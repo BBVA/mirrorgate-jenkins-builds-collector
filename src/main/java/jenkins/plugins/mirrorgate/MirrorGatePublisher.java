@@ -28,58 +28,22 @@ import net.sf.json.JSONObject;
 
 public class MirrorGatePublisher extends Notifier {
 
-    private MirrorGateBuild mirrorGateBuild;
 
     @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl) super.getDescriptor();
     }
 
-    public MirrorGateBuild getMirrorGateBuild() {
-        return mirrorGateBuild;
-    }
-
-    public static class MirrorGateBuild {
-        private final boolean publishBuildStart;
-
-        @DataBoundConstructor
-        public MirrorGateBuild(boolean publishBuildStart) {
-            this.publishBuildStart = publishBuildStart;
-        }
-
-        public boolean isPublishBuildStart() {
-            return publishBuildStart;
-        }
-
-    }
-
-    @DataBoundConstructor
-    public MirrorGatePublisher(final MirrorGateBuild mirrorGateBuild) {
-        super();
-        this.mirrorGateBuild = mirrorGateBuild;
-    }
-
-
+    @Override
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
-    }
-
-    public MirrorGateService newMirrorGateService(AbstractBuild r, BuildListener listener) {
-        EnvVars env;
-        try {
-            env = r.getEnvironment(listener);
-        } catch (Exception e) {
-            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
-            env = new EnvVars();
-        }
-        return makeService(env);
     }
 
     public MirrorGateService newMirrorGateService(Run r, TaskListener listener) {
         EnvVars env;
         try {
             env = r.getEnvironment(listener);
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
             env = new EnvVars();
         }
@@ -114,12 +78,6 @@ public class MirrorGatePublisher extends Notifier {
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> aClass) {
             return true;
-        }
-
-        @Override
-        public MirrorGatePublisher newInstance(StaplerRequest sr, JSONObject json) {
-            MirrorGateBuild mirrorGateBuild = sr.bindJSON(MirrorGateBuild.class, (JSONObject) json.get("mirrorGateBuild"));
-            return new MirrorGatePublisher(mirrorGateBuild);
         }
 
         @Override

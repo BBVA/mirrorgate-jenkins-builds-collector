@@ -16,26 +16,14 @@ public class BuildBuilder {
     private BuildStatus result;
     boolean buildChangeSet;
 
-    public BuildBuilder(AbstractBuild<?, ?> build, boolean isComplete, boolean buildChangeSet) {
-        this.build = build;
-        this.isComplete = isComplete;
-        this.buildChangeSet = buildChangeSet;
-        createBuildRequest();
-    }
-
     public BuildBuilder(Run<?, ?> run, BuildStatus result, boolean buildChangeSet) {
         this.run = run;
         this.result = result;
         this.buildChangeSet = buildChangeSet;
-        if (run instanceof AbstractBuild) {
-            this.build = (AbstractBuild<?, ?>) run;
-            createBuildRequest();
-        } else {
-            createBuildRequestFromRun();
-        }
+        createBuildRequest();
     }
 
-    private void createBuildRequestFromRun() {
+    private void createBuildRequest() {
         request = new BuildDataCreateRequest();
         request.setNumber(MirrorGateUtils.getBuildNumber(run));
         request.setStartTime(run.getStartTimeInMillis());
@@ -49,21 +37,6 @@ public class BuildBuilder {
         parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
     }
 
-    private void createBuildRequest() {
-        request = new BuildDataCreateRequest();
-        request.setNumber(MirrorGateUtils.getBuildNumber(build));
-        request.setStartTime(build.getStartTimeInMillis());
-        if (isComplete) {
-            request.setBuildStatus(build.getResult().toString());
-            request.setDuration(build.getDuration());
-            request.setEndTime(build.getStartTimeInMillis() + build.getDuration());
-        } else {
-            request.setBuildStatus(BuildStatus.InProgress.toString());
-        }
-        
-        parseBuildUrl(MirrorGateUtils.getBuildUrl(build), request);
-    }
-
     public BuildDataCreateRequest getBuildData() {
         return request;
     }
@@ -71,9 +44,11 @@ public class BuildBuilder {
     private void parseBuildUrl(String buildUrl, BuildDataCreateRequest request) {
         String[] buildInfo = buildUrl.split("/job/");
         request.setBuildUrl(buildUrl);
-        request.setProjectName(buildInfo[1]);
-        request.setRepoName(buildInfo[2]);
-        request.setBranch(buildInfo[3].split("/")[0]);    
+        request.setProjectName(buildInfo[1].split("/")[0]);
+        if(buildInfo.length > 2) {
+            request.setRepoName(buildInfo[2].split("/")[0]);
+            request.setBranch(buildInfo[3].split("/")[0]);
+        }
     }
 
 }

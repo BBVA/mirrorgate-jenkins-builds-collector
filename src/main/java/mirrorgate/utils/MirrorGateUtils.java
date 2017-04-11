@@ -2,16 +2,12 @@ package mirrorgate.utils;
 
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.jenkinsci.plugins.multiplescms.MultiSCM;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -22,14 +18,10 @@ import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.plugins.git.GitSCM;
-import hudson.plugins.git.util.Build;
-import hudson.scm.SubversionSCM;
-import jenkins.plugins.mirrorgate.CustomObjectMapper;
 
 
 public class MirrorGateUtils {
-    private static final Logger logger = Logger.getLogger(MirrorGateUtils.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MirrorGateUtils.class.getName());
     public static final String APPLICATION_JSON_VALUE = "application/json";
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
@@ -191,7 +183,7 @@ public class MirrorGateUtils {
         try {
             env = run.getEnvironment(listener);
         } catch (IOException | InterruptedException e) {
-            logger.warning("Error getting environment variables");
+            LOGGER.warning("Error getting environment variables");
         }
         return env;
     }
