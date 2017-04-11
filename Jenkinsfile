@@ -20,17 +20,26 @@ node ('internal-global') {
        }
       }
 
-      stage(' Build app ') {
-        withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '.m2/settings.xml') {
-          dir (JENKINS_PLUGIN_BASEDIR) {
-            sh "mvn test"
-            sh "mvn clean package"
-          }
-        }        
+      stage('API - Clean app') {
+        sh """
+          ./gradlew clean
+        """
+      }
+
+      stage('API - Build app') {
+        sh """
+          ./gradlew build
+        """
+      }
+
+      stage('API - Run tests') {
+        sh """
+          ./gradlew test jacocoTestReport
+        """
       }
 
       stage(' Publish app ') {
-      	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
+      	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
       stage(' Deploy to Jenkins ') {
@@ -44,8 +53,8 @@ node ('internal-global') {
       	    dir (JENKINS_PLUGIN_BASEDIR) {
 
       	  	  //sh "curl ifconfig.co"
-      	      //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      //echo "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      sh "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
       	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
       	      //sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
       	    }
@@ -60,8 +69,8 @@ node ('internal-global') {
       	    dir (JENKINS_PLUGIN_BASEDIR) {
 
       	  	  sh "curl ifconfig.co"
-      	      //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      sh "curl -i -k -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      //echo "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+      	      sh "curl -i -k -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
       	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
       	      sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
       	    }
