@@ -42,13 +42,13 @@ public class BuildBuilder {
         request.setProjectName(buildInfo[1].split("/")[0]);
         
         /* A Job show branchs of a repository */
-        if(buildInfo.length == 2) {
+        if(buildInfo.length == 3) {
             request.setRepoName(buildInfo[1].split("/")[0]);
             request.setBranch(buildInfo[2].split("/")[0]);
         }
         
-        /* A Job show repositositories*/
-        if(buildInfo.length >= 3) {
+        /* A Job show many repositositories*/
+        if(buildInfo.length > 3) {
             request.setRepoName(buildInfo[2].split("/")[0]);
             request.setBranch(buildInfo[3].split("/")[0]);
         }
