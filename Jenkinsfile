@@ -4,10 +4,15 @@ JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 node ('internal-global') {
   try {
 
+      withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
+        sh 'mkdir .m3 || true'
+        sh 'cp -f ${M3_SETTINGS} .m3/settings.xml'
+      }
+        
       withEnv(['CI=true']) {
 
         stage(' Checkout SCM ') {
-           checkout(scm)
+          checkout(scm)
         }
 
         stage('API - Clean app') {
