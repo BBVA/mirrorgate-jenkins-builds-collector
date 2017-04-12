@@ -1,7 +1,7 @@
 #!groovy
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 
-node ('internal-global') {
+node ('global') {
   try {
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
