@@ -97,6 +97,9 @@ node ('internal-global') {
       mirrorGateBuildPublishStep ('Success')
 
   } catch(Exception e) {
+
+      mirrorGateBuildPublishStep ('Failure')
+
       sh """
       curl -X POST \
       -H 'Content-type: application/json' \
@@ -117,7 +120,6 @@ node ('internal-global') {
       }' \
       https://hooks.slack.com/services/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
       """
-      mirrorGateBuildPublishStep ('Failure')
 
       throw e;
   } 
