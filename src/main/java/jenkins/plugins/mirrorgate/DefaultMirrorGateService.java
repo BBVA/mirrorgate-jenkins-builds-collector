@@ -1,7 +1,6 @@
 package jenkins.plugins.mirrorgate;
 
 import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,8 +38,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
             if (responseCode != HttpStatus.SC_CREATED) {
                 LOG.log(Level.SEVERE, "mirrorGate: Build Publisher post may have failed. Response: {0}", responseCode);
             }
-            return new MirrorGateResponse(responseCode, responseValue);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.log(Level.SEVERE, "mirrorGate: Error posting to mirrorGate", e);
             responseValue = "";
         }

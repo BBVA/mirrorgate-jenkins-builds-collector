@@ -18,16 +18,11 @@ import org.apache.commons.httpclient.HttpStatus;
 public class MirrorGateItemListener extends ItemListener {
 
     protected static final Logger LOG = Logger.getLogger(MirrorGateItemListener.class.getName());
-        
-    private final MirrorGateService service;
 
     /**
      * This class is lazy loaded (as required).
      */
     public MirrorGateItemListener() {
-        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
-        this.service = new DefaultMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl());
-        
         LOG.fine(">>> MirrorGateItemListener Initialised");
     }
 
@@ -41,7 +36,7 @@ public class MirrorGateItemListener extends ItemListener {
             if(job.getLastBuild() != null) {
             
                 BuildBuilder  builder = new BuildBuilder(job.getLastBuild(), BuildStatus.Deleted);
-                MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
+                MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
 
                 if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
                     LOG.log(Level.WARNING, "MirrorGate: Published Build Complete Data. {0}", buildResponse.toString());
@@ -54,6 +49,11 @@ public class MirrorGateItemListener extends ItemListener {
         });
  
         LOG.fine("onDeletedItem ends");
+    }
+    
+    private MirrorGateService getMirrorGateService(){
+        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
+        return new DefaultMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl());
     }
 
 }

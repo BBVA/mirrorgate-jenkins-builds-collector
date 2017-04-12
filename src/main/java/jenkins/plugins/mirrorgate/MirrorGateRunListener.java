@@ -18,16 +18,11 @@ import org.apache.commons.httpclient.HttpStatus;
 public class MirrorGateRunListener extends RunListener<Run> {
 
     protected static final Logger LOG = Logger.getLogger(MirrorGateRunListener.class.getName());
-        
-    private final MirrorGateService service;
 
     /**
      * This class is lazy loaded (as required).
      */
     public MirrorGateRunListener() {
-        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
-        this.service = new DefaultMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl());
-        
         LOG.fine(">>> MirrorGateRunListener Initialised");
     }
 
@@ -41,7 +36,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
         /* A deleted build is not marked as a deleted on publish service*/
         
 //        BuildBuilder builder = new BuildBuilder(run, BuildStatus.Deleted, true);
-//        MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
+//        MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
 //        
 //        if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
 //            LOG.log(Level.WARNING, "MirrorGate: Published Build Complete Data. {0}", buildResponse.toString());
@@ -60,8 +55,9 @@ public class MirrorGateRunListener extends RunListener<Run> {
         LOG.fine(run.toString());
         
         BuildBuilder builder = new BuildBuilder(run, BuildStatus.InProgress);
-                
-        MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
+        
+        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
+        MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
         
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build Complete Data. " + buildResponse.toString());
@@ -82,7 +78,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         BuildBuilder  builder = new BuildBuilder(run, BuildStatus.fromString(run.getResult().toString()));
                         
-        MirrorGateResponse buildResponse = service.publishBuildData(builder.getBuildData());
+        MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
         
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build Complete Data. " + buildResponse.toString());
@@ -97,6 +93,11 @@ public class MirrorGateRunListener extends RunListener<Run> {
         @Override
     public void onFinalized(final Run run) {
 
+    }
+    
+    private MirrorGateService getMirrorGateService(){
+        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
+        return new DefaultMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl());
     }
 
 }
