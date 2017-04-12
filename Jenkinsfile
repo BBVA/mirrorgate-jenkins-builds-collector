@@ -13,7 +13,7 @@ def mirrorGateBuildPublishStep(buildStatus) {
     echo '    \"buildUrl\" : \"${env.BUILD_URL}\",'   >> _msg.json
     echo '    \"buildStatus\" : \"$buildStatus\",' >> _msg.json
     echo '    \"projectName\" : \"MirrorGate\",'  >> _msg.json
-    echo '    \"repoName\" : \"jenkins_plugin-collector\",' >> _msg.json
+    echo '    \"repoName\" : \"jenkins-plugin-collector\",' >> _msg.json
     echo '    \"branch\" : \"${env.BRANCH_NAME}\"'  >> _msg.json
     echo '}'    >> _msg.json
 
