@@ -23,6 +23,12 @@ apply plugin: 'jacoco'
     
 sourceCompatibility = 1.8
 
+if(System.getenv('CI')) {
+    mavenSettings {
+        userSettingsFileName = '.m3/settings.xml'
+    }
+}
+
 repositories {
     mavenCentral()
     jcenter()
