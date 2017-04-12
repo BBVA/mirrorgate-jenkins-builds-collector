@@ -4,31 +4,30 @@ JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 node ('internal-global') {
   try {
 
-      withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
-        sh 'mkdir $WORKSPACE/.m2 || true'        
-        sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
-      }
+      withEnv(['CI=true']) {
 
-      stage(' Checkout SCM ') {
-         checkout(scm)
-      }
+        stage(' Checkout SCM ') {
+           checkout(scm)
+        }
 
-      stage('API - Clean app') {
-        sh """
-          ./gradlew clean
-        """
-      }
+        stage('API - Clean app') {
+          sh """
+            ./gradlew clean
+          """
+        }
 
-      stage('API - Build app') {
-        sh """
-          ./gradlew build
-        """
-      }
+        stage('API - Build app') {
+          sh """
+            ./gradlew build
+          """
+        }
 
-      stage('API - Run tests') {
-        sh """
-          ./gradlew test jacocoTestReport
-        """
+        stage('API - Run tests') {
+          sh """
+            ./gradlew test jacocoTestReport
+          """
+        }
+
       }
 
       stage(' Publish app ') {
