@@ -44,8 +44,10 @@ node ('internal-global') {
 
             JENKINS_HOST="globaldevtools.bbva.com"
                 
+            // sh "curl ifconfig.co"
             sh "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	  }
+            // sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart" 
+         }
       	
         }else {
       	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
