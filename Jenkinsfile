@@ -22,19 +22,19 @@ node ('internal-global') {
 
       stage('API - Clean app') {
         sh """
-          ./gradlew clean
+          ${JENKINS_PLUGIN_BASEDIR}/gradlew clean
         """
       }
 
       stage('API - Build app') {
         sh """
-          ./gradlew build
+          ${JENKINS_PLUGIN_BASEDIR}/gradlew build
         """
       }
 
       stage('API - Run tests') {
         sh """
-          ./gradlew test jacocoTestReport
+          ${JENKINS_PLUGIN_BASEDIR}/gradlew test jacocoTestReport
         """
       }
 
