@@ -1,35 +1,8 @@
 #!groovy
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 
-def mirrorGateBuildPublishStep(buildStatus) {
-
-  def time = System.currentTimeMillis()
-
-  sh """
-
-    echo '{'    > _msg.json
-    echo '    \"number\" : \"${env.BUILD_NUMBER}\",'    >> _msg.json
-    echo '    \"timestamp\" : ${time},' >> _msg.json
-    echo '    \"buildUrl\" : \"${env.BUILD_URL}\",'   >> _msg.json
-    echo '    \"buildStatus\" : \"$buildStatus\",' >> _msg.json
-    echo '    \"projectName\" : \"MirrorGate\",'  >> _msg.json
-    echo '    \"repoName\" : \"jenkins-plugin-collector\",' >> _msg.json
-    echo '    \"branch\" : \"${env.BRANCH_NAME}\"'  >> _msg.json
-    echo '}'    >> _msg.json
-
-    cat _msg.json
-
-    curl -H "Content-Type: application/json" -X POST -d @_msg.json http://internal-dev-mirrorgate-alb-internal-1778367606.eu-west-1.elb.amazonaws.com/mirrorgate/build
-
-  """
-}
-
-
-node ('internal-global') {
+node ('global') {
   try {
-
-      mirrorGateBuildPublishStep ('InProgress')
-
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
         sh 'mkdir .m3 || true'
@@ -94,11 +67,7 @@ node ('internal-global') {
         }
       }
 
-      mirrorGateBuildPublishStep ('Success')
-
   } catch(Exception e) {
-
-      mirrorGateBuildPublishStep ('Failure')
 
       sh """
       curl -X POST \
