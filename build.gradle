@@ -19,16 +19,12 @@ apply plugin: 'net.linguica.maven-settings'
 apply plugin: 'org.jenkins-ci.jpi'
 apply plugin: 'java'
 apply plugin: 'jacoco'
-
+    
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        name "artifactory-global-pro-mirror"
-        url "https://globaldevtools.bbva.com/artifactory-api/libs-snapshot-local/"
-    }
 }
 
 jacocoTestReport {
