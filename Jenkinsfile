@@ -1,9 +1,5 @@
 #!groovy
-JENKINS_PLUGIN_REPO = "ssh://git@globaldevtools.bbva.com:7999/bgdfm/jenkins_plugin_collector.git"
-JENKINS_PLUGIN_DIR = "mirrorGate-jenkins-plugin"
-JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
-JENKINS_HOST="globaldevtools.bbva.com"
 
 node ('internal-global') {
   try {
@@ -14,32 +10,29 @@ node ('internal-global') {
       }
 
       stage(' Checkout SCM ') {
-
-       dir (JENKINS_PLUGIN_BASEDIR) {
          checkout(scm)
-       }
       }
 
       stage('API - Clean app') {
         sh """
-          ${JENKINS_PLUGIN_BASEDIR}/gradlew clean
+          ./gradlew clean
         """
       }
 
       stage('API - Build app') {
         sh """
-          ${JENKINS_PLUGIN_BASEDIR}/gradlew build
+          ./gradlew build
         """
       }
 
       stage('API - Run tests') {
         sh """
-          ${JENKINS_PLUGIN_BASEDIR}/gradlew test jacocoTestReport
+          ./gradlew test jacocoTestReport
         """
       }
 
       stage(' Publish app ') {
-      	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
+      	step([$class: "ArtifactArchiver", artifacts: "./build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
       stage(' Deploy to Jenkins ') {
@@ -49,15 +42,9 @@ node ('internal-global') {
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
 
-      	  	JENKINS_HOST="globaldevtools.bbva.com"
-      	    dir (JENKINS_PLUGIN_BASEDIR) {
-
-      	  	  //sh "curl ifconfig.co"
-      	      //echo "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      sh "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	      //sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	    }
+            JENKINS_HOST="globaldevtools.bbva.com"
+                
+            sh "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
       	  }
       	
         }else {
@@ -65,15 +52,11 @@ node ('internal-global') {
                           credentialsId: 'bot-dev-jenkins-ldap',
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
-      	  	JENKINS_HOST="dev.globaldevtools.bbva.com"
-      	    dir (JENKINS_PLUGIN_BASEDIR) {
+            JENKINS_HOST="dev.globaldevtools.bbva.com"
 
-      	  	  sh "curl ifconfig.co"
-      	      //echo "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      sh "curl -i -k -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	      sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	    }
+            sh "curl ifconfig.co"
+            sh "curl -i -k -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+            sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
       	  }
         }
       }
