@@ -1,6 +1,12 @@
 #!groovy
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
 
+properties([[
+    $class: 'GithubProjectProperty',
+    projectUrlStr:'https://globaldevtools.bbva.com/bitbucket/projects/BGDFM/repos/mirrorgate-jenkins-plugin/browse'
+]])
+
+
 node ('global') {
   try {
 
