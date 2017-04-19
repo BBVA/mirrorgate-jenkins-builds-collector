@@ -1,4 +1,4 @@
-package jenkins.plugins.mirrorgate;
+package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,40 +9,18 @@ import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.lang3.StringUtils;
-
-import hudson.ProxyConfiguration;
-import jenkins.model.Jenkins;
 
 
 public class RestCall {
     
     private static final Logger LOGGER = Logger.getLogger(RestCall.class.getName());
-
-
+    
     //Fixme: Need refactoring to remove code duplication.
-
-    protected HttpClient getHttpClient() {
-        HttpClient client = new HttpClient();
-        if (Jenkins.getInstance() != null) {
-            ProxyConfiguration proxy = Jenkins.getInstance().proxy;
-            if (proxy != null){
-                client.getHostConfiguration().setProxy(proxy.name, proxy.port);
-                String username = proxy.getUserName();
-                String password = proxy.getPassword();
-                if (!StringUtils.isEmpty(username.trim()) && !StringUtils.isEmpty(password.trim())) {
-                    LOGGER.log(Level.INFO, "Using proxy authentication (user={0})", username);
-                    client.getState().setProxyCredentials(AuthScope.ANY,
-                            new UsernamePasswordCredentials(username.trim(), password.trim()));
-                }
-            }
-        }
-        return client;
+    public HttpClient getHttpClient() {
+        return new HttpClient();
     }
 
     public RestCallResponse makeRestCallPost(String url, String jsonString) {
@@ -70,6 +48,7 @@ public class RestCall {
     }
 
     public RestCallResponse makeRestCallGet(String url) {
+                
         RestCallResponse response;
         HttpClient client = getHttpClient();
         GetMethod get = new GetMethod(url);
@@ -91,6 +70,10 @@ public class RestCall {
     }
 
     private String getResponseString(InputStream in) throws IOException {
+        if(in == null) {
+            return "";
+        }
+        
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte[] byteArray = new byte[1024];
         int count;
@@ -100,9 +83,9 @@ public class RestCall {
         return new String(outputStream.toByteArray(), "UTF-8");
     }
 
-    public class RestCallResponse {
-        private int responseCode;
-        private String responseString;
+    public static class RestCallResponse {
+        private final int responseCode;
+        private final String responseString;
 
         public RestCallResponse(int responseCode, String responseString) {
             this.responseCode = responseCode;
@@ -113,17 +96,10 @@ public class RestCall {
             return responseCode;
         }
 
-        public void setResponseCode(int responseCode) {
-            this.responseCode = responseCode;
-        }
-
         public String getResponseString() {
             return responseString;
         }
 
-        public void setResponseString(String responseString) {
-            this.responseString = responseString;
-        }
     }
 
 }

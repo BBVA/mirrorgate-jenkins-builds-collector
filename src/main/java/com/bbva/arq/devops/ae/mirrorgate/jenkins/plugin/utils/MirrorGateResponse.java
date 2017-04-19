@@ -1,11 +1,10 @@
-package jenkins.plugins.mirrorgate;
-
+package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class MirrorGateResponse {
-    private int responseCode;
-    private String responseValue;
+    private final int responseCode;
+    private final String responseValue;
 
     public MirrorGateResponse(int responseCode, String responseValue) {
         this.responseCode = responseCode;
@@ -16,18 +15,11 @@ public class MirrorGateResponse {
         return responseCode;
     }
 
-    public void setResponseCode(int responseCode) {
-        this.responseCode = responseCode;
-    }
-
     public String getResponseValue() {
         return responseValue;
     }
 
-    public void setResponseValue(String responseValue) {
-        this.responseValue = responseValue;
-    }
-
+    @Override
     public String toString() {
         String resp = "Response Code: " + responseCode + ". ";
         if (StringUtils.isEmpty(responseValue)) return resp;

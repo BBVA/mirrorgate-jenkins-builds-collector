@@ -1,4 +1,4 @@
-package jenkins.plugins.mirrorgate;
+package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
 import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
 import java.util.logging.Level;
@@ -6,23 +6,20 @@ import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HttpStatus;
 
-import mirrorgate.utils.MirrorGateUtils;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
+import jenkins.model.Jenkins;
+import jenkins.plugins.mirrorgate.MirrorGatePublisher;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 
 //import org.json.simple.JSONArray;
 
 public class DefaultMirrorGateService implements MirrorGateService {
 
     private static final Logger LOG = Logger.getLogger(DefaultMirrorGateService.class.getName());
-
-    private String mirrorGateAPIUrl = "";
-
-    public DefaultMirrorGateService(String mirrorGateAPIUrl) {
+    
+    public DefaultMirrorGateService() {
         super();
-        this.mirrorGateAPIUrl = mirrorGateAPIUrl;
-    }
-
-    public void setMirrorGateAPIUrl(String mirrorGateAPIUrl) {
-        this.mirrorGateAPIUrl = mirrorGateAPIUrl;
     }
 
     @Override
@@ -31,8 +28,8 @@ public class DefaultMirrorGateService implements MirrorGateService {
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
             String jsonString = new String(MirrorGateUtils.convertObjectToJsonBytes(request));
-            RestCall restCall = new RestCall();
-            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(mirrorGateAPIUrl + "/build", jsonString);
+            RestCall restCall = buildRestCall();
+            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/build", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
             if (responseCode != HttpStatus.SC_CREATED) {
@@ -47,14 +44,27 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
 
     @Override
-    public boolean testConnection() {
-        RestCall restCall = new RestCall();
-        RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(mirrorGateAPIUrl + "/health");
+    public boolean testConnection(String hostUrl) {
+        RestCall restCall = buildRestCall();
+        RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(hostUrl + "/health");
         int responseCode = callResponse.getResponseCode();
 
         if (responseCode == HttpStatus.SC_OK) return true;
 
         LOG.log(Level.WARNING, "mirrorGate Test Connection Failed. Response: {0}", responseCode);
         return false;
+    }
+    
+    private String getMirrorGateAPIUrl(){
+        if(Jenkins.getInstance() != null) {
+            MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
+            return mirrorGateDesc.getMirrorGateAPIUrl();
+        }   
+        
+        return "";
+    }
+    
+    protected RestCall buildRestCall() {
+        return new RestCall();
     }
 }

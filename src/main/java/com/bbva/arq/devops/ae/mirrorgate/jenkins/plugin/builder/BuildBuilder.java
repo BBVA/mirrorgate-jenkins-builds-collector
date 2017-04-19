@@ -1,10 +1,10 @@
-package mirrorgate.builder;
+package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder;
 
 import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
 import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildStatus;
 
 import hudson.model.Run;
-import mirrorgate.utils.MirrorGateUtils;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 
 public class BuildBuilder {
 

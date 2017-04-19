@@ -1,4 +1,4 @@
-package mirrorgate.utils;
+package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;

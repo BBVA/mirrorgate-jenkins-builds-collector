@@ -1,32 +1,23 @@
 package jenkins.plugins.mirrorgate;
 
-import java.io.IOException;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 
-import javax.servlet.ServletException;
-
-import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import hudson.EnvVars;
 import hudson.Extension;
-import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.model.Run;
-import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.QueryParameter;
 
 //import org.json.simple.JSONObject;
 
 public class MirrorGatePublisher extends Notifier {
-
 
     @Override
     public DescriptorImpl getDescriptor() {
@@ -37,30 +28,7 @@ public class MirrorGatePublisher extends Notifier {
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
-
-    public MirrorGateService newMirrorGateService(Run r, TaskListener listener) {
-        EnvVars env;
-        try {
-            env = r.getEnvironment(listener);
-        } catch (IOException | InterruptedException e) {
-            listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
-            env = new EnvVars();
-        }
-        return makeService(env);
-    }
-
-    private MirrorGateService makeService(EnvVars env) {
-        String mirrorGateAPIUrl = getDescriptor().getMirrorGateAPIUrl();
-        mirrorGateAPIUrl = env.expand(mirrorGateAPIUrl);
-        return new DefaultMirrorGateService(mirrorGateAPIUrl);
-    }
-
-    @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-        return true;
-    }
-
-
+    
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
@@ -86,8 +54,8 @@ public class MirrorGatePublisher extends Notifier {
             return super.configure(sr, formData);
         }
 
-        public MirrorGateService getMirrorGateService(final String mirrorGateAPIUrl) {
-            return new DefaultMirrorGateService(mirrorGateAPIUrl);
+        public MirrorGateService getMirrorGateService() {
+            return new DefaultMirrorGateService();
         }
 
         @Override
@@ -96,28 +64,17 @@ public class MirrorGatePublisher extends Notifier {
         }
 
         public FormValidation doTestConnection(
-                @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl) throws FormException {
-
+            @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl) throws FormException {
+            
             String hostUrl = mirrorGateAPIUrl;
-            if (StringUtils.isEmpty(hostUrl)) {
-                hostUrl = this.mirrorGateAPIUrl;
-            }
-
-            MirrorGateService testMirrorGateService = getMirrorGateService(hostUrl);
+            
+            MirrorGateService testMirrorGateService = getMirrorGateService();
             if (testMirrorGateService != null) {
-                boolean success = testMirrorGateService.testConnection();
+                boolean success = testMirrorGateService.testConnection(hostUrl);
                 return success ? FormValidation.ok("Success") : FormValidation.error("Failure");
             } else {
                 return FormValidation.error("Failure");
             }
         }
-
-        public FormValidation doCheckValue(@QueryParameter String value) throws IOException, ServletException {
-            if (value.isEmpty()) {
-                return FormValidation.warning("You must fill this box!");
-            }
-            return FormValidation.ok();
-        }
-
     }
 }

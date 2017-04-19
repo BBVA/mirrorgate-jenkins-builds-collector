@@ -1,14 +1,16 @@
-package jenkins.plugins.mirrorgate;
+package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
 import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildStatus;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.listeners.ItemListener;
 import java.util.logging.Level;
-import jenkins.model.Jenkins;
 
 import java.util.logging.Logger;
-import mirrorgate.builder.BuildBuilder;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder.BuildBuilder;
 import org.apache.commons.httpclient.HttpStatus;
 
 /**
@@ -18,11 +20,15 @@ import org.apache.commons.httpclient.HttpStatus;
 public class MirrorGateItemListener extends ItemListener {
 
     protected static final Logger LOG = Logger.getLogger(MirrorGateItemListener.class.getName());
+    
+    private final MirrorGateService service;
 
     /**
      * This class is lazy loaded (as required).
      */
     public MirrorGateItemListener() {
+        this.service = new DefaultMirrorGateService();
+        
         LOG.fine(">>> MirrorGateItemListener Initialised");
     }
 
@@ -35,7 +41,7 @@ public class MirrorGateItemListener extends ItemListener {
             
             if(job.getLastBuild() != null) {
             
-                BuildBuilder  builder = new BuildBuilder(job.getLastBuild(), BuildStatus.Deleted);
+                BuildBuilder builder = new BuildBuilder(job.getLastBuild(), BuildStatus.Deleted);
                 MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
 
                 if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
@@ -51,10 +57,8 @@ public class MirrorGateItemListener extends ItemListener {
         LOG.fine("onDeletedItem ends");
     }
     
-    private MirrorGateService getMirrorGateService(){
-        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
-        return new DefaultMirrorGateService(mirrorGateDesc.getMirrorGateAPIUrl());
+    protected MirrorGateService getMirrorGateService() {
+        return service;
     }
-
 }
 
