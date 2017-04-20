@@ -84,7 +84,7 @@ node ('global') {
             // sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart" 
          }
       	
-        }else {
+        }else if (env.BRANCH_NAME == "develop") {
       	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
                           credentialsId: 'bot-dev-jenkins-ldap',
                           usernameVariable: 'JENKINS_USER',
