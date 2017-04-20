@@ -81,7 +81,7 @@ public class RestCall {
         return new String(outputStream.toByteArray(), "UTF-8");
     }
 
-    public static class Response {
+    public class Response {
         private final int responseCode;
         private final String responseString;
 
