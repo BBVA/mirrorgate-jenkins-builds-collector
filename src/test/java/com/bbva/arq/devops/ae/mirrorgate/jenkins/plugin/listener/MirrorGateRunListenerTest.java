@@ -36,7 +36,7 @@ public class MirrorGateRunListenerTest extends TestCase {
     MirrorGateRunListener listener = new MirrorGateRunListener();
     
     private final MirrorGateResponse responseOk = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
-    private final MirrorGateResponse responseError = new MirrorGateResponse(HttpStatus.SC_FORBIDDEN, "");
+    private final MirrorGateResponse responseError = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
     private final String buildSample = "http://localhost:8080/job/MirrorGate/job/mirrorgate-jenkins-plugin/job/test/5/";
 

@@ -33,11 +33,6 @@ public class MirrorGateRunListener extends RunListener<Run> {
     }
 
     @Override
-    public void onDeleted(final Run run) {
-        /* Do nothing */
-    }
-
-    @Override
     public void onStarted(final Run run, final TaskListener listener) {
         
         LOG.fine("onStarted starts");
@@ -76,11 +71,6 @@ public class MirrorGateRunListener extends RunListener<Run> {
         }
       
         LOG.fine("onCompleted ends");
-
-    }
-    
-    @Override
-    public void onFinalized(final Run run) {
 
     }
     

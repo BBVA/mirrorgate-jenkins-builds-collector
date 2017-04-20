@@ -40,7 +40,7 @@ public class MirrorGateItemListenerTest extends TestCase {
     Job[] jobs = new Job[10];
 
     private final MirrorGateResponse responseOk = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
-    private final MirrorGateResponse responseError = new MirrorGateResponse(HttpStatus.SC_FORBIDDEN, "");
+    private final MirrorGateResponse responseError = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
     private final String buildSample = "http://localhost:8080/job/MirrorGate/job/mirrorgate-jenkins-plugin/job/test/5/";
     

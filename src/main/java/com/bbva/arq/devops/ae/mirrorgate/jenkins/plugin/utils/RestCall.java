@@ -23,8 +23,8 @@ public class RestCall {
         return new HttpClient();
     }
 
-    public RestCallResponse makeRestCallPost(String url, String jsonString) {
-        RestCallResponse response;
+    public Response makeRestCallPost(String url, String jsonString) {
+        Response response;
         HttpClient client = getHttpClient();
 
         PostMethod post = new PostMethod(url);
@@ -36,33 +36,35 @@ public class RestCall {
                     "UTF-8");
             post.setRequestEntity(requestEntity);
             int responseCode = client.executeMethod(post);
-            String responseString = getResponseString(post.getResponseBodyAsStream());
-            response = new RestCallResponse(responseCode, responseString);
+            String responseString = post.getResponseBodyAsStream() != null ? 
+                    getResponseString(post.getResponseBodyAsStream()) : "";
+            response = new Response(responseCode, responseString);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
-            response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
+            response = new Response(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             post.releaseConnection();
         }
         return response;
     }
 
-    public RestCallResponse makeRestCallGet(String url) {
+    public Response makeRestCallGet(String url) {
                 
-        RestCallResponse response;
+        Response response;
         HttpClient client = getHttpClient();
         GetMethod get = new GetMethod(url);
         try {
             get.getParams().setContentCharset("UTF-8");
             int responseCode = client.executeMethod(get);
-            String responseString = getResponseString(get.getResponseBodyAsStream());
-            response = new RestCallResponse(responseCode, responseString);
+            String responseString = get.getResponseBodyAsStream() != null ? 
+                    getResponseString(get.getResponseBodyAsStream()) : "";
+            response = new Response(responseCode, responseString);
         } catch (HttpException e) {
             LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
-            response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
+            response = new Response(HttpStatus.SC_BAD_REQUEST, "");
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
-            response = new RestCallResponse(HttpStatus.SC_BAD_REQUEST, "");
+            response = new Response(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             get.releaseConnection();
         }
@@ -70,10 +72,6 @@ public class RestCall {
     }
 
     private String getResponseString(InputStream in) throws IOException {
-        if(in == null) {
-            return "";
-        }
-        
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         byte[] byteArray = new byte[1024];
         int count;
@@ -83,11 +81,11 @@ public class RestCall {
         return new String(outputStream.toByteArray(), "UTF-8");
     }
 
-    public static class RestCallResponse {
+    public static class Response {
         private final int responseCode;
         private final String responseString;
 
-        public RestCallResponse(int responseCode, String responseString) {
+        public Response(int responseCode, String responseString) {
             this.responseCode = responseCode;
             this.responseString = responseString;
         }

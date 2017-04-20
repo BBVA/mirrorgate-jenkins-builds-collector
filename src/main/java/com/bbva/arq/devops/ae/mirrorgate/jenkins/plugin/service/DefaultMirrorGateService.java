@@ -11,8 +11,7 @@ import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
-
-//import org.json.simple.JSONArray;
+import java.io.IOException;
 
 public class DefaultMirrorGateService implements MirrorGateService {
 
@@ -29,13 +28,13 @@ public class DefaultMirrorGateService implements MirrorGateService {
         try {
             String jsonString = new String(MirrorGateUtils.convertObjectToJsonBytes(request));
             RestCall restCall = buildRestCall();
-            RestCall.RestCallResponse callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/build", jsonString);
+            RestCall.Response callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/build", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
             if (responseCode != HttpStatus.SC_CREATED) {
                 LOG.log(Level.SEVERE, "mirrorGate: Build Publisher post may have failed. Response: {0}", responseCode);
-            }
-        } catch (Exception e) {
+            }           
+        } catch (IOException e) {
             LOG.log(Level.SEVERE, "mirrorGate: Error posting to mirrorGate", e);
             responseValue = "";
         }
@@ -46,7 +45,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
     @Override
     public boolean testConnection(String hostUrl) {
         RestCall restCall = buildRestCall();
-        RestCall.RestCallResponse callResponse = restCall.makeRestCallGet(hostUrl + "/health");
+        RestCall.Response callResponse = restCall.makeRestCallGet(hostUrl + "/health");
         int responseCode = callResponse.getResponseCode();
 
         if (responseCode == HttpStatus.SC_OK) return true;
@@ -56,12 +55,8 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
     
     private String getMirrorGateAPIUrl(){
-        if(Jenkins.getInstance() != null) {
-            MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
-            return mirrorGateDesc.getMirrorGateAPIUrl();
-        }   
-        
-        return "";
+        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
+        return mirrorGateDesc.getMirrorGateAPIUrl();
     }
     
     protected RestCall buildRestCall() {
