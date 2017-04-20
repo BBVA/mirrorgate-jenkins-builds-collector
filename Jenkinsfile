@@ -67,7 +67,7 @@ node ('global') {
       }
 
       stage(' Publish app ') {
-      	step([$class: "ArtifactArchiver", artifacts: "./build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
+      	step([$class: "ArtifactArchiver", artifacts: "build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
       stage(' Deploy to Jenkins ') {
