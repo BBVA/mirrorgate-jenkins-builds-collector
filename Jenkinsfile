@@ -1,12 +1,12 @@
 #!groovy
-JENKINS_PLUGIN_REPO = "ssh://git@globaldevtools.bbva.com:7999/bgdfm/jenkins_plugin_collector.git"
-JENKINS_PLUGIN_DIR = "mirrorGate-jenkins-plugin"
-JENKINS_PLUGIN_BASEDIR = "jenkins_plugin_collector"
 JENKINS_PLUGIN_PACKAGE = "mirrorgate-publisher.hpi"
-JENKINS_HOST="globaldevtools.bbva.com"
+
+properties([[
+    $class: 'GithubProjectProperty',
+    projectUrlStr:'https://globaldevtools.bbva.com/bitbucket/projects/BGDFM/repos/mirrorgate-jenkins-plugin/browse'
+]])
 
 def mirrorGateBuildPublishStep(buildStatus) {  
-
   def time = System.currentTimeMillis()  
   
   sh """
@@ -17,49 +17,59 @@ def mirrorGateBuildPublishStep(buildStatus) {
     echo '    \"buildUrl\" : \"${env.BUILD_URL}\",'   >> _msg.json
     echo '    \"buildStatus\" : \"$buildStatus\",' >> _msg.json
     echo '    \"projectName\" : \"MirrorGate\",'  >> _msg.json
-    echo '    \"repoName\" : \"jenkins-plugin-collector\",' >> _msg.json
+    echo '    \"repoName\" : \"mirrorgate-jenkins-plugin\",' >> _msg.json
     echo '    \"branch\" : \"${env.BRANCH_NAME}\"'  >> _msg.json
     echo '}'    >> _msg.json
 
     cat _msg.json
 
-    curl -H "Content-Type: application/json" -X POST -d @_msg.json http://internal-dev-mirrorgate-alb-internal-1778367606.eu-west-1.elb.amazonaws.com/mirrorgate/builds
+    curl -H "Content-Type: application/json" -X POST -d @_msg.json http://internal-dev-mirrorgate-alb-internal-1778367606.eu-west-1.elb.amazonaws.com/mirrorgate/build
 
   """
 }
 
-node ('internal-global') {
+
+
+node ('global') {
   try {
 
       mirrorGateBuildPublishStep ('InProgress')
 
-      withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M2_SETTINGS']]) {
-        sh 'mkdir $WORKSPACE/.m2 || true'        
-        sh 'cp -f ${M2_SETTINGS} $WORKSPACE/.m2/settings.xml'
+      withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
+        sh 'mkdir .m3 || true'
+        sh 'cp -f ${M3_SETTINGS} .m3/settings.xml'
       }
+        
+      withEnv(['CI=true']) {
 
-      stage(' Checkout SCM ') {
+        stage(' Checkout SCM ') {
+          checkout(scm)
+        }
 
-       dir (JENKINS_PLUGIN_BASEDIR) {
-         checkout(scm)
-       }
-      }
+        stage('API - Clean app') {
+          sh """
+            ./gradlew clean
+          """
+        }
 
-      stage(' Build app ') {
-        withMaven(mavenLocalRepo: '$WORKSPACE/.m2/repository', mavenSettingsFilePath: '.m2/settings.xml') {
-          dir (JENKINS_PLUGIN_BASEDIR) {
-            sh "mvn test"
-            sh "mvn clean package"
-          }
-        }        
+        stage('API - Build app') {
+          sh """
+            ./gradlew build
+          """
+        }
+
+        stage('API - Run tests') {
+          sh """
+            ./gradlew test jacocoTestReport
+          """
+        }
+
       }
 
       stage(' Publish app ') {
-      	step([$class: "ArtifactArchiver", artifacts: "${JENKINS_PLUGIN_BASEDIR}/target/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
+      	step([$class: "ArtifactArchiver", artifacts: "build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
       }
       
-      mirrorGateBuildPublishStep ('Success')
-
       stage(' Deploy to Jenkins ') {
       	if (env.BRANCH_NAME == "master") {
       	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
@@ -67,36 +77,31 @@ node ('internal-global') {
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
 
-      	  	JENKINS_HOST="globaldevtools.bbva.com"
-      	    dir (JENKINS_PLUGIN_BASEDIR) {
-
-      	  	  //sh "curl ifconfig.co"
-      	      //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      sh "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	      //sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	    }
-      	  }
+            JENKINS_HOST="globaldevtools.bbva.com"
+                
+            // sh "curl ifconfig.co"
+            sh "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+            // sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart" 
+         }
       	
-        }else {
+        }else if (env.BRANCH_NAME == "develop") {
       	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
                           credentialsId: 'bot-dev-jenkins-ldap',
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
-      	  	JENKINS_HOST="dev.globaldevtools.bbva.com"
-      	    dir (JENKINS_PLUGIN_BASEDIR) {
+            JENKINS_HOST="dev.globaldevtools.bbva.com"
 
-      	  	  sh "curl ifconfig.co"
-      	      //echo "curl -i -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      sh "curl -i -k -F file=@target/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
-      	      //echo "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	      sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
-      	    }
+            sh "curl ifconfig.co"
+            sh "curl -i -k -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+            sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart"
       	  }
         }
       }
 
+      mirrorGateBuildPublishStep ('Success')
+
   } catch(Exception e) {
+
       sh """
       curl -X POST \
       -H 'Content-type: application/json' \
@@ -117,7 +122,6 @@ node ('internal-global') {
       }' \
       https://hooks.slack.com/services/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
       """
-
       mirrorGateBuildPublishStep ('Failure')
 
       throw e;

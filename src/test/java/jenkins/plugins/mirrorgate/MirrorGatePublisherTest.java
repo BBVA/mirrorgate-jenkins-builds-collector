@@ -1,100 +1,59 @@
 package jenkins.plugins.mirrorgate;
 
-import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import org.junit.Before;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import hudson.model.Descriptor;
 import hudson.util.FormValidation;
-import junit.framework.TestCase;
-import org.json.simple.JSONObject;
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import org.mockito.Spy;
 
-@RunWith(Parameterized.class)
-public class MirrorGatePublisherTest extends TestCase {
+public class MirrorGatePublisherTest {
 
-    private MirrorGatePublisherStub.DescriptorImplStub descriptor;
-    private MirrorGateServiceStub mirrorGateServiceStub;
-    private boolean responseBoolean;
-    private MirrorGateResponse mirrorGateResponse;
-    private FormValidation.Kind expectedResult;
-
-    @Before
-    @Override
-    public void setUp() {
-        descriptor = new MirrorGatePublisherStub.DescriptorImplStub();
-    }
-
-    public MirrorGatePublisherTest(MirrorGateServiceStub mirrorGateServiceStub, boolean responseBoolean, FormValidation.Kind expectedResult) {
-        this.mirrorGateServiceStub = mirrorGateServiceStub;
-        this.responseBoolean = responseBoolean;
-//        this.responseString = responseString;
-        this.expectedResult = expectedResult;
-    }
-
-    @Parameterized.Parameters
-    public static Collection businessTypeKeys() {
-        return Arrays.asList(new Object[][]{
-                {new MirrorGateServiceStub(), true, FormValidation.Kind.OK},
-                {new MirrorGateServiceStub(), false, FormValidation.Kind.ERROR},
-                {null, false, FormValidation.Kind.ERROR}
-        });
-    }
-
+    @Mock
+    MirrorGateService service = mock(MirrorGateService.class);
+        
+    @Spy
+    MirrorGatePublisher publisher = spy(new MirrorGatePublisher());
+    
+    @Spy
+    MirrorGatePublisherStub.DescriptorImplStub descriptor  
+            = spy(new MirrorGatePublisherStub.DescriptorImplStub());
+    
     @Test
-    public void testDoTestConnection() throws Exception {
-        if (mirrorGateServiceStub != null) {
-            mirrorGateServiceStub.setResponse(responseBoolean);
-            mirrorGateServiceStub.setMirrorGateResponse(mirrorGateResponse);
-        }
-        descriptor.setMirrorGateService(mirrorGateServiceStub);
-        try {
-            FormValidation result = descriptor.doTestConnection("mirrorGateUrl", "true");
-            assertEquals(result.kind, expectedResult);
-        } catch (Descriptor.FormException e) {
-            e.printStackTrace();
-            assertTrue(false);
-        }
+    public void testDoTestOKConnectionTest() throws Exception {
+//        when(publisher.getDescriptor()).thenReturn(descriptor)
+
+        when(service.testConnection(anyString())).thenReturn(true);
+        when(descriptor.getMirrorGateService()).thenReturn(service);
+        
+        FormValidation result = descriptor.doTestConnection("http://localhost/");
+        assertEquals(FormValidation.Kind.OK, result.kind);
     }
+    
+    @Test
+    public void testDoTestErrorConnectionTest() throws Exception {
+//        when(publisher.getDescriptor()).thenReturn(descriptor)
 
-    public static class MirrorGateServiceStub implements MirrorGateService {
-
-        private boolean responseBoolean;
-        private MirrorGateResponse mirrorGateResponse;
-
-
-        public void setResponse(boolean response) {
-            this.responseBoolean = response;
-        }
-
-        public MirrorGateResponse getMirrorGateResponse() {
-            return mirrorGateResponse;
-        }
-
-        public void setMirrorGateResponse(MirrorGateResponse mirrorGateResponse) {
-            this.mirrorGateResponse = mirrorGateResponse;
-        }
-
-        public MirrorGateResponse publishBuildData(BuildDataCreateRequest request) {
-            return mirrorGateResponse;
-        }
-
-        public boolean testConnection() {
-            return responseBoolean;
-        }
-        public List<JSONObject> getCollectorItemOptions(String type) {
-            return null;
-        }
-
-        public Set<String> getDeploymentEnvironments(String appName) {
-            return null;
-        }
-
+        when(service.testConnection(anyString())).thenReturn(false);
+        when(descriptor.getMirrorGateService()).thenReturn(service);
+        
+        FormValidation result = descriptor.doTestConnection("http://localhost/");
+        assertEquals(FormValidation.Kind.ERROR, result.kind);
     }
+    
+    @Test
+    public void testDoTestConnectionWithoutServiveConnectionTest() throws Exception {
+//        when(publisher.getDescriptor()).thenReturn(descriptor)
+
+        when(service.testConnection(anyString())).thenReturn(false);
+        when(descriptor.getMirrorGateService()).thenReturn(null);
+        
+        FormValidation result = descriptor.doTestConnection("http://localhost/");
+        assertEquals(FormValidation.Kind.ERROR, result.kind);
+    }
+    
 }
