@@ -19,7 +19,7 @@ import org.apache.commons.httpclient.HttpStatus;
 @Extension
 public class MirrorGateItemListener extends ItemListener {
 
-    protected static final Logger LOG = Logger.getLogger(MirrorGateItemListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(MirrorGateItemListener.class.getName());
     
     private final MirrorGateService service;
 

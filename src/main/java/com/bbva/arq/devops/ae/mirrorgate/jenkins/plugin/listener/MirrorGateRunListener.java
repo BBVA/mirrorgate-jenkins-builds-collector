@@ -34,23 +34,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
     @Override
     public void onDeleted(final Run run) {
-        
-        LOG.fine("onDeleted starts");
-
-        LOG.fine(run.toString());
-        
-        /* A deleted build is not marked as a deleted on publish service*/
-        
-//        BuildBuilder builder = new BuildBuilder(run, BuildStatus.Deleted, true);
-//        MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
-//        
-//        if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-//            LOG.log(Level.WARNING, "MirrorGate: Published Build Complete Data. {0}", buildResponse.toString());
-//        } else {
-//            LOG.log(Level.FINE, "MirrorGate: Failed Publishing Build Complete Data. {0}", buildResponse.toString());
-//        }
-        
-        LOG.fine("onDeleded ends");
+        /* Do nothing */
     }
 
     @Override
