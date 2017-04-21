@@ -81,7 +81,7 @@ node ('global') {
             CONTEXT_URL='https://globaldevtools.bbva.com/artifactory'
             REPO_KEY = "libs-release-local"
 
-            curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} "${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}"
+            curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'
           }
         } else if (env.BRANCH_NAME == "develop") {
           withCredentials([[$class: 'UsernamePasswordMultiBinding',
@@ -92,7 +92,7 @@ node ('global') {
             CONTEXT_URL='https://globaldevtools.bbva.com/artifactory'
             REPO_KEY = 'libs-snapshot-local'
 
-            curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} "${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}"
+            curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'
           }        
         }
       }
