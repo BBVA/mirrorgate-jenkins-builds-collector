@@ -72,7 +72,7 @@ node ('global') {
       	step([$class: "ArtifactArchiver", artifacts: "build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
 
         /* Publish on Artifactory */
-      	if (env.BRANCH_NAME == "master") {
+      	if (env.BRANCH_NAME == 'master') {
       	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
                           credentialsId: 'artifactory-maven-settings-global',
                           usernameVariable: 'ARTIFACTORY_USER',
@@ -81,9 +81,9 @@ node ('global') {
             CONTEXT_URL='https://globaldevtools.bbva.com/artifactory'
             REPO_KEY='libs-release-local'
 
-            curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'
+            sh "curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'"
           }
-        } else if (env.BRANCH_NAME == "develop") {
+        } else if (env.BRANCH_NAME == 'develop') {
           withCredentials([[$class: 'UsernamePasswordMultiBinding',
                           credentialsId: 'artifactory-maven-settings-global',
                           usernameVariable: 'ARTIFACTORY_USER',
@@ -92,7 +92,7 @@ node ('global') {
             CONTEXT_URL='https://globaldevtools.bbva.com/artifactory'
             REPO_KEY='libs-snapshot-local'
 
-            curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'
+            sh "curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'"
           }        
         }
       }
