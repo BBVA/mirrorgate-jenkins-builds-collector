@@ -71,7 +71,7 @@ node ('global') {
         /* Publish on Jenkings */ 
       	step([$class: "ArtifactArchiver", artifacts: "build/libs/${JENKINS_PLUGIN_PACKAGE}", fingerprint: true])
 
-        /* Publish on Artifactory
+        /* Publish on Artifactory */
       	if (env.BRANCH_NAME == "master") {
       	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
                           credentialsId: 'artifactory-maven-settings-global',
