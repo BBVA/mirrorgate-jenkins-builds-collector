@@ -73,27 +73,25 @@ node ('global') {
 
         /* Publish on Artifactory */
       	if (env.BRANCH_NAME == 'master') {
-      	  withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                          credentialsId: 'artifactory-maven-settings-global',
-                          usernameVariable: 'ARTIFACTORY_USER',
-                          passwordVariable: 'ARITFACTORY_PWD']]){
-
-            CONTEXT_URL='https://globaldevtools.bbva.com/artifactory'
+          withCredentials([[$class: 'UsernamePasswordMultiBinding',
+            credentialsId: "${jenkins_artifactory_credentials}",
+            usernameVariable: 'ARTIFACTORY_USER',
+            passwordVariable: 'ARITFACTORY_PWD']]){
+             
             REPO_KEY='libs-release-local'
 
-            sh "curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'"
-          }
+            sh "curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} 'http://${env.artifactory_server_internal}/artifactory/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'"
+          }      
         } else if (env.BRANCH_NAME == 'develop') {
           withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                          credentialsId: 'artifactory-maven-settings-global',
-                          usernameVariable: 'ARTIFACTORY_USER',
-                          passwordVariable: 'ARITFACTORY_PWD']]){
-
-            CONTEXT_URL='https://globaldevtools.bbva.com/artifactory'
+            credentialsId: "${jenkins_artifactory_credentials}",
+            usernameVariable: 'ARTIFACTORY_USER',
+            passwordVariable: 'ARITFACTORY_PWD']]){
+             
             REPO_KEY='libs-snapshot-local'
 
-            sh "curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} '${CONTEXT_URL}/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'"
-          }        
+            sh "curl -X PUT -u${ARTIFACTORY_USER}:${ARITFACTORY_PWD} -T build/libs/${JENKINS_PLUGIN_PACKAGE} 'http://${env.artifactory_server_internal}/artifactory/${REPO_KEY}/mirrorgate-jenkins-plugin/${JENKINS_PLUGIN_PACKAGE}'"
+          }
         }
       }
       
