@@ -105,7 +105,7 @@ node ('global') {
             JENKINS_HOST="globaldevtools.bbva.com"
                 
             // sh "curl ifconfig.co"
-            sh "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
+            // sh "curl -i -F file=@build/libs/${JENKINS_PLUGIN_PACKAGE} https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/jenkins-api/pluginManager/uploadPlugin"
             // sh "curl -kX POST https://${JENKINS_USER}:${JENKINS_PWD}@${JENKINS_HOST}/safeRestart" 
          }
       	
@@ -114,6 +114,7 @@ node ('global') {
                           credentialsId: 'bot-dev-jenkins-ldap',
                           usernameVariable: 'JENKINS_USER',
                           passwordVariable: 'JENKINS_PWD']]){
+            
             JENKINS_HOST="dev.globaldevtools.bbva.com"
 
             sh "curl ifconfig.co"
