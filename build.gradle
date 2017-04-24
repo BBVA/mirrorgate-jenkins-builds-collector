@@ -1,0 +1,78 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            url 'http://repo.jenkins-ci.org/releases/'
+        }
+    }
+
+    dependencies {
+        classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.18.1'
+    }
+}
+
+apply plugin: 'net.linguica.maven-settings'
+apply plugin: 'org.jenkins-ci.jpi'
+apply plugin: 'java'
+apply plugin: 'jacoco'
+    
+sourceCompatibility = 1.8
+
+if(System.getenv('CI')) {
+    mavenSettings {
+        userSettingsFileName = '.m3/settings.xml'
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        name 'artifactory-global-dev-mirror'
+        url 'https://dev.globaldevtools.bbva.com/artifactory-api/repository'
+    }
+    maven {
+        name 'artifactory-global-pro-mirror'
+        url 'https://globaldevtools.bbva.com/artifactory-api/repository'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/reports/coverage"
+    }
+}
+
+jenkinsPlugin {
+    // always use latest LTS!
+    coreVersion = '2.7.1'
+    shortName = pluginName
+    displayName = jenkinsDisplayName
+    url = "https://wiki.jenkins-ci.org/display/JENKINS/$jenkinsDisplayName"
+    gitHubUrl = "https://github.com/jenkinsci/$project.name"
+    developers {
+        developer {
+            id 'kdaimiel'
+            name 'Enrique Daimiel'
+            email 'enrique.daimiel@bbva.com'
+        }
+    }
+}
+
+defaultTasks 'clean', 'jpi'
+
+dependencies {
+    compile('com.bbva.arq.devops.ae.mirrorgate:mirrorgate-core:0.0.1-SNAPSHOT')
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    
+    testCompile group: 'org.powermock', name: 'powermock-mockito-release-full', version: '1.6.4'
+}
