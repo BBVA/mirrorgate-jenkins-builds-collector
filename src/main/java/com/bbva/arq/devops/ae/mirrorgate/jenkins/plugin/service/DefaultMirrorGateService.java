@@ -1,22 +1,20 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
 import com.bbva.arq.devops.ae.mirrorgate.core.model.BuildDataCreateRequest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.httpclient.HttpStatus;
-
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
-import jenkins.model.Jenkins;
-import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jenkins.model.Jenkins;
+import jenkins.plugins.mirrorgate.MirrorGatePublisher;
+import org.apache.commons.httpclient.HttpStatus;
 
 public class DefaultMirrorGateService implements MirrorGateService {
 
     private static final Logger LOG = Logger.getLogger(DefaultMirrorGateService.class.getName());
-    
+
     public DefaultMirrorGateService() {
         super();
     }
@@ -28,12 +26,12 @@ public class DefaultMirrorGateService implements MirrorGateService {
         try {
             String jsonString = new String(MirrorGateUtils.convertObjectToJsonBytes(request));
             RestCall restCall = buildRestCall();
-            RestCall.Response callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/build", jsonString);
+            RestCall.Response callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/builds", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
             if (responseCode != HttpStatus.SC_CREATED) {
                 LOG.log(Level.SEVERE, "mirrorGate: Build Publisher post may have failed. Response: {0}", responseCode);
-            }           
+            }
         } catch (IOException e) {
             LOG.log(Level.SEVERE, "mirrorGate: Error posting to mirrorGate", e);
             responseValue = "";
@@ -53,12 +51,12 @@ public class DefaultMirrorGateService implements MirrorGateService {
         LOG.log(Level.WARNING, "mirrorGate Test Connection Failed. Response: {0}", responseCode);
         return false;
     }
-    
+
     private String getMirrorGateAPIUrl(){
         MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
         return mirrorGateDesc.getMirrorGateAPIUrl();
     }
-    
+
     protected RestCall buildRestCall() {
         return new RestCall();
     }
