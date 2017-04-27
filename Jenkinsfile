@@ -23,7 +23,7 @@ def mirrorGateBuildPublishStep(buildStatus) {
 
     cat _msg.json
 
-    curl -H "Content-Type: application/json" -X POST -d @_msg.json http://internal-dev-mirrorgate-bg-alb-1289428049.eu-west-1.elb.amazonaws.com/mirrorgate/build
+    curl -H "Content-Type: application/json" -X POST -d @_msg.json http://internal-dev-mirrorgate-bg-alb-1289428049.eu-west-1.elb.amazonaws.com/mirrorgate/api/builds
 
   """
 }
