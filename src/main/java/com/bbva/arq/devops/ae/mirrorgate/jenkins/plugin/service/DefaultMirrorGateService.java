@@ -26,7 +26,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
         try {
             String jsonString = new String(MirrorGateUtils.convertObjectToJsonBytes(request));
             RestCall restCall = buildRestCall();
-            RestCall.Response callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/builds", jsonString);
+            RestCall.Response callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/api/builds", jsonString);
             responseCode = callResponse.getResponseCode();
             responseValue = callResponse.getResponseString().replaceAll("\"", "");
             if (responseCode != HttpStatus.SC_CREATED) {
