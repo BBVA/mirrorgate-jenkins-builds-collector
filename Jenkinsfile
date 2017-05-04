@@ -6,34 +6,8 @@ properties([[
     projectUrlStr:'https://globaldevtools.bbva.com/bitbucket/projects/BGDFM/repos/mirrorgate-jenkins-plugin/browse'
 ]])
 
-def mirrorGateBuildPublishStep(buildStatus) {  
-  def time = System.currentTimeMillis()  
-  
-  sh """
-
-    echo '{'    > _msg.json
-    echo '    \"number\" : \"${env.BUILD_NUMBER}\",'    >> _msg.json
-    echo '    \"timestamp\" : ${time},' >> _msg.json
-    echo '    \"buildUrl\" : \"${env.BUILD_URL}\",'   >> _msg.json
-    echo '    \"buildStatus\" : \"$buildStatus\",' >> _msg.json
-    echo '    \"projectName\" : \"MirrorGate\",'  >> _msg.json
-    echo '    \"repoName\" : \"mirrorgate-jenkins-plugin\",' >> _msg.json
-    echo '    \"branch\" : \"${env.BRANCH_NAME}\"'  >> _msg.json
-    echo '}'    >> _msg.json
-
-    cat _msg.json
-
-    curl -H "Content-Type: application/json" -X POST -d @_msg.json http://internal-dev-mirrorgate-bg-alb-1289428049.eu-west-1.elb.amazonaws.com/mirrorgate-dev/api/builds
-
-  """
-}
-
-
-
 node ('global') {
   try {
-
-      mirrorGateBuildPublishStep ('InProgress')
 
       withCredentials([[$class: 'FileBinding', credentialsId: 'artifactory-maven-settings-global', variable: 'M3_SETTINGS']]) {
         sh 'mkdir .m3 || true'
@@ -124,8 +98,6 @@ node ('global') {
         }
       }
 
-      mirrorGateBuildPublishStep ('Success')
-
   } catch(Exception e) {
 
       sh """
@@ -148,7 +120,6 @@ node ('global') {
       }' \
       https://hooks.slack.com/services/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
       """
-      mirrorGateBuildPublishStep ('Failure')
 
       throw e;
   } 
