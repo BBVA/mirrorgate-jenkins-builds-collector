@@ -32,14 +32,10 @@ if(System.getenv('CI')) {
 repositories {
     mavenCentral()
     jcenter()
-    /*maven {
-        name 'artifactory-global-dev-mirror'
-        url 'https://dev.globaldevtools.bbva.com/artifactory-api/repository'
-    }
     maven {
         name 'artifactory-global-pro-mirror'
         url 'https://globaldevtools.bbva.com/artifactory-api/repository'
-    }*/
+    }
 }
 
 jacocoTestReport {
