@@ -6,6 +6,9 @@ deploy:
     script: gradle uploadArchives
     on:
       branch: develop
+  - provider: script
+    script: gradlew uploadArchives
+    on:
       branch: master
 
 before_cache:
