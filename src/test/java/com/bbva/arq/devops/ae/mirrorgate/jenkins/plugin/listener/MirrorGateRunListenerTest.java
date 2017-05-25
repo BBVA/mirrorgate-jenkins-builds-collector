@@ -16,6 +16,9 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import hudson.model.Job;
@@ -27,12 +30,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.Matchers.any;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -41,20 +39,20 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Job.class})
 public class MirrorGateRunListenerTest extends TestCase {
-    
+
     @Mock
     Run build;
 
     @Mock
     MirrorGateService service;
-    
+
     @Spy
     MirrorGateRunListener listener = new MirrorGateRunListener();
-    
+
     private final MirrorGateResponse responseOk = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
     private final MirrorGateResponse responseError = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
-    private final String buildSample = "http://localhost:8080/job/MirrorGate/job/mirrorgate-jenkins-plugin/job/test/5/";
+    private String buildSample = "http://localhost:8080/job/MirrorGate/job/mirrorgate-jenkins-builds-collector/job/test/5/";
 
     @Before
     @Override
@@ -64,22 +62,22 @@ public class MirrorGateRunListenerTest extends TestCase {
 
         when(listener.getMirrorGateService()).thenReturn(service);
     }
-        
+
     @Test
     public void onStartedBuildTest() {
         when(service.publishBuildData(any())).thenReturn(responseOk);
-        
+
         listener.onStarted(build, TaskListener.NULL);
-        
+
         verify(service, times(1)).publishBuildData(any());
     }
-    
+
         @Test
     public void onStartedBuildTestWhenServiceResponseError() {
         when(service.publishBuildData(any())).thenReturn(responseError);
-        
+
         listener.onStarted(build, TaskListener.NULL);
-        
+
         verify(service, times(1)).publishBuildData(any());
     }
 
@@ -89,56 +87,56 @@ public class MirrorGateRunListenerTest extends TestCase {
         when(build.getResult()).thenReturn(Result.SUCCESS);
 
         listener.onCompleted(build, TaskListener.NULL);
-        
+
         verify(service, times(1)).publishBuildData(any());
     }
-    
+
     @Test
     public void onCompletedFailureBuildTest() {
         when(service.publishBuildData(any())).thenReturn(responseOk);
         when(build.getResult()).thenReturn(Result.FAILURE);
 
         listener.onCompleted(build, TaskListener.NULL);
-        
+
         verify(service, times(1)).publishBuildData(any());
     }
-    
+
     @Test
     public void onCompletedBuildWhenTestServiceResponseError() {
         when(service.publishBuildData(any())).thenReturn(responseError);
         when(build.getResult()).thenReturn(Result.FAILURE);
 
         listener.onCompleted(build, TaskListener.NULL);
-        
+
         verify(service, times(1)).publishBuildData(any());
     }
-    
+
     @Test
     public void onDeletedBuildTest() {
         listener.onDeleted(build);
-        
+
         /* Should not do anything */
-        verify(service, times(0));    
+        verify(service, times(0));
     }
-    
+
     @Test
     public void onFinalizedBuildTest() {
         listener.onDeleted(build);
-        
+
         /* Should not do anything */
-        verify(service, times(0));    
+        verify(service, times(0));
     }
-    
+
     private Run createMockingBuild() {
         Job job = PowerMockito.mock(Job.class);
         Run run = mock(Run.class);
-        
+
         when(job.getLastBuild()).thenReturn(run);
         PowerMockito.when(job.getAbsoluteUrl()).thenReturn(buildSample);
         when(run.getParent()).thenReturn(job);
-        
+
         return run;
     }
-    
+
 }
 

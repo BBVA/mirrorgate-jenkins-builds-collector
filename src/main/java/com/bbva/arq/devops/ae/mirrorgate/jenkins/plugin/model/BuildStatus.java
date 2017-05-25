@@ -33,15 +33,15 @@ public enum BuildStatus {
     NotBuilt,
     Unknown;
 
-    private static Map<String, BuildStatus> MAPPING = new HashMap<>();
+    private static final Map<String, BuildStatus> MAPPING = new HashMap<>();
 
-    static{
+    static {
         MAPPING.put("not_built", NotBuilt);
         for (BuildStatus buildStatus : values()) {
             MAPPING.put(buildStatus.toString().toLowerCase(), buildStatus);
         }
     }
-    
+
     public static BuildStatus fromString(String value) {
         String key = value.toLowerCase();
         return MAPPING.containsKey(key) ? MAPPING.get(key): Unknown;

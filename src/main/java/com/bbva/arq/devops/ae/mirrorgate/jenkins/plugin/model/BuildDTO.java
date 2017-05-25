@@ -16,7 +16,6 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model;
 
-
 public class BuildDTO {
 
     private String number;
@@ -31,8 +30,6 @@ public class BuildDTO {
     private String repoName;
     private String branch;
 
-    private long timestamp;
-    
     public String getNumber() {
         return number;
     }
@@ -112,5 +109,5 @@ public class BuildDTO {
     public void setBranch(String branch) {
         this.branch = branch;
     }
-    
+
 }

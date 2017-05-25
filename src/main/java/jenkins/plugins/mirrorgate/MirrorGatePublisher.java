@@ -16,11 +16,8 @@
 
 package jenkins.plugins.mirrorgate;
 
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
-
-import org.kohsuke.stapler.StaplerRequest;
-
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.tasks.BuildStepDescriptor;
@@ -30,8 +27,7 @@ import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
-
-//import org.json.simple.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
 
 public class MirrorGatePublisher extends Notifier {
 
@@ -44,7 +40,7 @@ public class MirrorGatePublisher extends Notifier {
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
-    
+
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
@@ -53,7 +49,7 @@ public class MirrorGatePublisher extends Notifier {
         public DescriptorImpl() {
             load();
         }
-        
+
         public String getMirrorGateAPIUrl() {
             return mirrorGateAPIUrl;
         }
@@ -81,16 +77,7 @@ public class MirrorGatePublisher extends Notifier {
 
         public FormValidation doTestConnection(
             @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl) throws FormException {
-            
-            String hostUrl = mirrorGateAPIUrl;
-            
-            MirrorGateService testMirrorGateService = getMirrorGateService();
-            if (testMirrorGateService != null) {
-                boolean success = testMirrorGateService.testConnection(hostUrl);
-                return success ? FormValidation.ok("Success") : FormValidation.error("Failure");
-            } else {
-                return FormValidation.error("Failure");
-            }
+            return getMirrorGateService().testConnection(mirrorGateAPIUrl) ? FormValidation.ok("Success") : FormValidation.error("Failure");
         }
     }
 }

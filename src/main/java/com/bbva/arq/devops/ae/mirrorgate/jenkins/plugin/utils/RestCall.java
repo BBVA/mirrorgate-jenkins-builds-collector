@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
@@ -31,9 +30,9 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 
 public class RestCall {
-    
+
     private static final Logger LOGGER = Logger.getLogger(RestCall.class.getName());
-    
+
     //Fixme: Need refactoring to remove code duplication.
     public HttpClient getHttpClient() {
         return new HttpClient();
@@ -52,7 +51,7 @@ public class RestCall {
                     "UTF-8");
             post.setRequestEntity(requestEntity);
             int responseCode = client.executeMethod(post);
-            String responseString = post.getResponseBodyAsStream() != null ? 
+            String responseString = post.getResponseBodyAsStream() != null ?
                     getResponseString(post.getResponseBodyAsStream()) : "";
             response = new Response(responseCode, responseString);
         } catch (Exception e) {
@@ -65,14 +64,14 @@ public class RestCall {
     }
 
     public Response makeRestCallGet(String url) {
-                
+
         Response response;
         HttpClient client = getHttpClient();
         GetMethod get = new GetMethod(url);
         try {
             get.getParams().setContentCharset("UTF-8");
             int responseCode = client.executeMethod(get);
-            String responseString = get.getResponseBodyAsStream() != null ? 
+            String responseString = get.getResponseBodyAsStream() != null ?
                     getResponseString(get.getResponseBodyAsStream()) : "";
             response = new Response(responseCode, responseString);
         } catch (HttpException e) {
