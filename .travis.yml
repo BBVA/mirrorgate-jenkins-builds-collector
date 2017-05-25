@@ -1,4 +1,10 @@
 language: java
 jdk:
   - oraclejdk8
-script: ./gradlew clean build uploadArchives
+script: gradle clean build
+deploy:
+  - provider: script
+    script: gradle uploadArchives
+    on:
+      branch: develop
+      branch: master
