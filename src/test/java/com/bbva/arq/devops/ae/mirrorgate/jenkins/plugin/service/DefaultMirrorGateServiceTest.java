@@ -17,7 +17,7 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
 
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDataCreateRequest;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import java.io.IOException;
@@ -101,8 +101,8 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         assertFalse(service.testConnection(""));
     }
 
-    private BuildDataCreateRequest makeBuildDataRequestData() {
-        BuildDataCreateRequest build = new BuildDataCreateRequest();
+    private BuildDTO makeBuildDataRequestData() {
+        BuildDTO build = new BuildDTO();
         build.setNumber("1");
         build.setBuildUrl("buildUrl");
         build.setStartTime(3);

@@ -16,11 +16,11 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDataCreateRequest;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 
 public interface MirrorGateService {
-    MirrorGateResponse publishBuildData(BuildDataCreateRequest request);
+    MirrorGateResponse publishBuildData(BuildDTO request);
 
     boolean testConnection(String hostUrl);
 }

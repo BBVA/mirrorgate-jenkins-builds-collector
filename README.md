@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/BBVA/mirrorgate-jenkins-builds-collector.svg?branch=develop)](https://travis-ci.org/BBVA/mirrorgate-jenkins-builds-collector)
+
 # MirrorGate plugin for Jenkins
 
 ![MirrorGate](./media/images/logo-ae.png)

@@ -17,7 +17,7 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model;
 
 
-public class BuildDataCreateRequest {
+public class BuildDTO {
 
     private String number;
     private String buildUrl;

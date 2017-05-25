@@ -16,7 +16,7 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDataCreateRequest;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
@@ -36,7 +36,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
 
     @Override
-    public MirrorGateResponse publishBuildData(BuildDataCreateRequest request) {
+    public MirrorGateResponse publishBuildData(BuildDTO request) {
         String responseValue;
         int responseCode = HttpStatus.SC_NO_CONTENT;
         try {

@@ -16,7 +16,7 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder;
 
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDataCreateRequest;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
 import hudson.model.Run;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
@@ -24,7 +24,7 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 public class BuildBuilder {
 
     private Run<?, ?> run;
-    private BuildDataCreateRequest request;
+    private BuildDTO request;
     private BuildStatus result;
 
     public BuildBuilder(Run<?, ?> run, BuildStatus result) {
@@ -34,7 +34,7 @@ public class BuildBuilder {
     }
 
     private void createBuildRequest() {
-        request = new BuildDataCreateRequest();
+        request = new BuildDTO();
         request.setNumber(MirrorGateUtils.getBuildNumber(run));
         request.setStartTime(run.getStartTimeInMillis());
         request.setBuildStatus(result.toString());
@@ -47,11 +47,11 @@ public class BuildBuilder {
         parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
     }
     
-    public BuildDataCreateRequest getBuildData() {
+    public BuildDTO getBuildData() {
         return request;
     }
 
-    private void parseBuildUrl(String buildUrl, BuildDataCreateRequest request) {
+    private void parseBuildUrl(String buildUrl, BuildDTO request) {
         String[] buildInfo = buildUrl.split("/job/");
         request.setBuildUrl(buildUrl);
         request.setProjectName(buildInfo[1].split("/")[0]);
