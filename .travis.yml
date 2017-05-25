@@ -3,11 +3,11 @@ jdk:
   - oraclejdk8
 deploy:
   - provider: script
-    script: gradle uploadArchives
+    script: ./gradlew uploadArchives
     on:
       branch: develop
   - provider: script
-    script: gradlew uploadArchives
+    script: ./gradlew uploadArchives
     on:
       branch: master
 
