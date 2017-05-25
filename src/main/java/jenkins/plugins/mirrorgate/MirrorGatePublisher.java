@@ -77,7 +77,13 @@ public class MirrorGatePublisher extends Notifier {
 
         public FormValidation doTestConnection(
             @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl) throws FormException {
-            return getMirrorGateService().testConnection(mirrorGateAPIUrl) ? FormValidation.ok("Success") : FormValidation.error("Failure");
+            MirrorGateService testMirrorGateService = getMirrorGateService();
+            if (testMirrorGateService != null) {
+                boolean success = testMirrorGateService.testConnection(mirrorGateAPIUrl);
+                return success ? FormValidation.ok("Success") : FormValidation.error("Failure");
+            } else {
+                return FormValidation.error("Failure");
+            }
         }
     }
 }

@@ -55,8 +55,6 @@ public class MirrorGatePublisherTest {
 
     @Test
     public void testDoTestConnectionWithoutServiveConnectionTest() throws Exception {
-//        when(publisher.getDescriptor()).thenReturn(descriptor)
-
         when(service.testConnection(anyString())).thenReturn(false);
         when(descriptor.getMirrorGateService()).thenReturn(null);
 

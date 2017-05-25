@@ -65,7 +65,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
 
         if (responseCode == HttpStatus.SC_OK) return true;
 
-        LOG.log(Level.WARNING, "mirrorGate Test Connection Failed. Response: {0}", responseCode);
+        LOG.log(Level.WARNING, "MirrorGate Test Connection Failed. Response: {0}", responseCode);
         return false;
     }
 
