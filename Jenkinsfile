@@ -34,19 +34,23 @@ node('global') {
         }
     }
 
-    try {
-        stage(' Publish app ') {
-            withCredentials([[$class          : 'UsernamePasswordMultiBinding',
-                              credentialsId   : "bot-mirrorgate-st",
-                              usernameVariable: 'mavenUser',
-                              passwordVariable: 'mavenPassword']]) {
+    if(env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') {
 
-                sh "./gradlew uploadArchives"
+        try {
+            stage(' Publish app ') {
+                withCredentials([[$class          : 'UsernamePasswordMultiBinding',
+                                  credentialsId   : "bot-mirrorgate-st",
+                                  usernameVariable: 'mavenUser',
+                                  passwordVariable: 'mavenPassword']]) {
+
+                    sh "./gradlew uploadArchives"
+
+                }
 
             }
-
+        } catch(Exception e) {
+            currentBuild.result = "UNSTABLE"
         }
-    } catch(Exception e) {
-        currentBuild.result = "UNSTABLE"
     }
+
 }
