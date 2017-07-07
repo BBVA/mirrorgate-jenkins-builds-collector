@@ -1,21 +1,17 @@
 language: java
+
 jdk:
   - oraclejdk8
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew uploadArchives
-    on:
-      branch: develop
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew uploadArchives
-    on:
-      branch: master
+
+branches:
+  only:
+    - master
+    - develop
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 cache:
   directories:
     - $HOME/.gradle/caches/
