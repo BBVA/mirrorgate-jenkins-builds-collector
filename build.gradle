@@ -92,6 +92,8 @@ uploadArchives {
                 name pluginName
                 artifactId pluginName
                 packaging 'hpi'
+                description 'WallBoard application meant to give teams fast feedback in all the different areas related to software development.'
+
                 url 'https://github.com/bbva/mirrorgate-jenkins-builds-collector'
 
                 scm {
@@ -102,6 +104,13 @@ uploadArchives {
                     license {
                         name 'The Apache License, Version 2.0'
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'mirrorgate'
+                        name 'mirrorgate.group@bbva.com'
                     }
                 }
             }
