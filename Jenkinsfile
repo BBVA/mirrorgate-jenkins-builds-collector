@@ -36,18 +36,35 @@ node('global') {
 
     if(env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') {
 
-        try {
-            stage(' Publish app ') {
-                withCredentials([[$class          : 'UsernamePasswordMultiBinding',
-                                  credentialsId   : "bot-mirrorgate-st",
-                                  usernameVariable: 'mavenUser',
-                                  passwordVariable: 'mavenPassword']]) {
+        try{
+
+            withCredentials([usernamePassword(
+                              credentialsId   : "bot-mirrorgate-st",
+                              usernameVariable: 'mavenUser',
+                              passwordVariable: 'mavenPassword')]) {
+
+                if(env.BRANCH_NAME == 'develop'){
 
                     sh "./gradlew uploadArchives"
+
+                } else if(env.BRANCH_NAME == 'master'){
+
+                    withCredentials([usernamePassword(
+                                    credentialsId   : 'bot-mirrorgate-gpg',
+                                    passwordVariable: 'GPG_ID',
+                                    usernameVariable: 'GPG_PASSWORD'),
+                                file(
+                                    credentialsId: 'mirrorgate-secring',
+                                    variable: 'FILE'),]) {
+
+                                        sh "./gradlew uploadArchive -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
+
+                    }
 
                 }
 
             }
+
         } catch(Exception e) {
             currentBuild.result = "UNSTABLE"
         }
