@@ -51,8 +51,8 @@ node('global') {
 
                     withCredentials([usernamePassword(
                                     credentialsId   : 'bot-mirrorgate-gpg',
-                                    passwordVariable: 'GPG_ID',
-                                    usernameVariable: 'GPG_PASSWORD'),
+                                    usernameVariable: 'GPG_ID',
+                                    passwordVariable: 'GPG_PASSWORD'),
                                 file(
                                     credentialsId: 'mirrorgate-secring',
                                     variable: 'FILE'),]) {
