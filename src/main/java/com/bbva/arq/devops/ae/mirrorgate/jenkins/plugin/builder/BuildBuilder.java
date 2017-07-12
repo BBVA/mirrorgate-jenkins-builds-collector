@@ -16,16 +16,24 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder;
 
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener.MirrorGateRunListener;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
-import hudson.model.Run;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
+import hudson.model.Cause.UserIdCause;
+import hudson.model.Run;
+import hudson.scm.ChangeLogSet;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BuildBuilder {
 
-    private Run<?, ?> run;
+    private final Run<?, ?> run;
     private BuildDTO request;
-    private BuildStatus result;
+    private final BuildStatus result;
 
     public BuildBuilder(Run<?, ?> run, BuildStatus result) {
         this.run = run;
@@ -43,10 +51,13 @@ public class BuildBuilder {
             request.setDuration(System.currentTimeMillis() - run.getStartTimeInMillis());
             request.setEndTime(System.currentTimeMillis());
         }
-        
+
+        // Get culprits if build comes from a SCM Source
+        setCulprits(run);
+
         parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
     }
-    
+
     public BuildDTO getBuildData() {
         return request;
     }
@@ -55,17 +66,50 @@ public class BuildBuilder {
         String[] buildInfo = buildUrl.split("/job/");
         request.setBuildUrl(buildUrl);
         request.setProjectName(buildInfo[1].split("/")[0]);
-        
+
         /* A Job show branchs of a repository */
         if(buildInfo.length == 3) {
             request.setRepoName(buildInfo[1].split("/")[0]);
             request.setBranch(buildInfo[2].split("/")[0]);
         }
-        
+
         /* A Job show many repositositories*/
         if(buildInfo.length > 3) {
             request.setRepoName(buildInfo[2].split("/")[0]);
             request.setBranch(buildInfo[3].split("/")[0]);
+        }
+    }
+
+    private void setCulprits(Run run) {
+
+        // Get culprits from the causes of the build
+        run.getCauses().forEach((cause -> {
+            switch (cause.getClass().getSimpleName()) {
+                case "UserIdCause":
+                    if (request.getCulprits().contains(((UserIdCause) cause).getUserName())) {
+                        request.getCulprits().add(((UserIdCause) cause).getUserName());
+                    }
+                    break;
+            }
+        }));
+
+        // Use introspective class to avoid plugins compatibility problems
+        try {
+            Method method = run.getClass().getMethod("getChangeSets");
+            if (method != null) {
+                method.setAccessible(true);
+                ((List<ChangeLogSet>) method.invoke(run, new Object[]{})).forEach(cset -> {
+                    for (Object object : ((ChangeLogSet) cset).getItems()) {
+                        ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
+                        if (request.getCulprits().contains(change.getAuthor().getFullName())) {
+                            request.getCulprits().add(change.getAuthor().getFullName());
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException | IllegalAccessException |
+                IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
+            Logger.getLogger(MirrorGateRunListener.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
