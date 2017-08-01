@@ -25,6 +25,7 @@ import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,12 +83,14 @@ public class BuildBuilder {
 
     private void setCulprits(Run run) {
 
+        List<String> culprits = Collections.emptyList();
+
         // Get culprits from the causes of the build
         run.getCauses().forEach((cause -> {
             switch (cause.getClass().getSimpleName()) {
                 case "UserIdCause":
-                    if (request.getCulprits().contains(((UserIdCause) cause).getUserName())) {
-                        request.getCulprits().add(((UserIdCause) cause).getUserName());
+                    if (!culprits.contains(((UserIdCause) cause).getUserName())) {
+                        culprits.add(((UserIdCause) cause).getUserName());
                     }
                     break;
             }
@@ -101,8 +104,8 @@ public class BuildBuilder {
                 ((List<ChangeLogSet>) method.invoke(run, new Object[]{})).forEach(cset -> {
                     for (Object object : ((ChangeLogSet) cset).getItems()) {
                         ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
-                        if (request.getCulprits().contains(change.getAuthor().getFullName())) {
-                            request.getCulprits().add(change.getAuthor().getFullName());
+                        if (!culprits.contains(change.getAuthor().getFullName())) {
+                            culprits.add(change.getAuthor().getFullName());
                         }
                     }
                 });
@@ -111,6 +114,8 @@ public class BuildBuilder {
                 IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
             Logger.getLogger(MirrorGateRunListener.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        request.setCulprits(culprits);
     }
 
 }
