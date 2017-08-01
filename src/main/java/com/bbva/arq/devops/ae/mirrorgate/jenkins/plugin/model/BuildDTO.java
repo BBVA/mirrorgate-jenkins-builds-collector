@@ -16,6 +16,8 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model;
 
+import java.util.List;
+
 public class BuildDTO {
 
     private String number;
@@ -25,7 +27,7 @@ public class BuildDTO {
 
     private long endTime;
     private long duration;
-    private String startedBy;
+    private List<String> culprits;
     private String projectName;
     private String repoName;
     private String branch;
@@ -78,12 +80,12 @@ public class BuildDTO {
         this.buildStatus = buildStatus;
     }
 
-    public String getStartedBy() {
-        return startedBy;
+    public List<String> getCulprits() {
+        return culprits;
     }
 
-    public void setStartedBy(String startedBy) {
-        this.startedBy = startedBy;
+    public void setCulprits(List<String> culprits) {
+        this.culprits = culprits;
     }
 
     public String getProjectName() {
