@@ -16,7 +16,6 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BuildDTO {
@@ -28,7 +27,7 @@ public class BuildDTO {
 
     private long endTime;
     private long duration;
-    private List<String> culprits = new ArrayList<>();
+    private List<String> culprits;
     private String projectName;
     private String repoName;
     private String branch;

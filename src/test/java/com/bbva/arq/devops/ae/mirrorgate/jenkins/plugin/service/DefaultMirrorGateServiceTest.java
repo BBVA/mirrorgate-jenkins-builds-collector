@@ -25,6 +25,7 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import java.io.IOException;
+import java.util.Arrays;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import junit.framework.TestCase;
@@ -110,7 +111,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         build.setEndTime(8);
         build.setDuration(5);
         build.setBuildStatus("Success");
-        build.getCulprits().add("foo");
+        build.setCulprits(Arrays.asList("foo"));
         return build;
     }
 
