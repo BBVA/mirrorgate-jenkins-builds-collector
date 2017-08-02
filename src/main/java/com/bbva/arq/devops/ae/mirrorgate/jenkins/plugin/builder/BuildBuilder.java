@@ -25,7 +25,7 @@ import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,7 +83,7 @@ public class BuildBuilder {
 
     private void setCulprits(Run run) {
 
-        List<String> culprits = Collections.emptyList();
+        List<String> culprits = new ArrayList<>(0);
 
         // Get culprits from the causes of the build
         run.getCauses().forEach((cause -> {
