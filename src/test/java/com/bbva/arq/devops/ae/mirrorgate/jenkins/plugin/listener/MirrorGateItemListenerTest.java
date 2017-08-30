@@ -21,11 +21,14 @@ import static org.mockito.Mockito.*;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import java.util.Arrays;
 import java.util.Collection;
+import jenkins.model.Jenkins;
+import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
@@ -38,8 +41,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Job.class})
+@PrepareForTest({Job.class, Jenkins.class, MirrorGateUtils.class})
 public class MirrorGateItemListenerTest extends TestCase {
+
+    @Mock
+    Jenkins jenkins;
+
+    @Mock
+    MirrorGatePublisher.DescriptorImpl descriptor;
 
     @Mock
     Item item = mock(Item.class);
@@ -52,14 +61,29 @@ public class MirrorGateItemListenerTest extends TestCase {
 
     Job[] jobs = new Job[10];
 
-    private final MirrorGateResponse responseOk = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
-    private final MirrorGateResponse responseError = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
+    private final MirrorGateResponse responseOk
+            = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
+    private final MirrorGateResponse responseError
+            = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
-    private String buildSample = "http://localhost:8080/job/MirrorGate/job/mirrorgate-jenkins-builds-collector/job/test/5/";
+    private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+
+    private final String buildSample = "http://localhost:8080/job/MirrorGate"
+            + "/job/mirrorgate-jenkins-builds-collector/job/test/5/";
 
     @Before
     @Override
     public void setUp() {
+        PowerMockito.mockStatic(Jenkins.class);
+        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(jenkins.getDescriptorByType(any()))
+                .thenReturn(descriptor);
+
+        PowerMockito.when(MirrorGateUtils.getMirrorGateAPIUrl())
+                .thenReturn(MIRRORGATE_URL);
+        PowerMockito.when(MirrorGateUtils.getUsernamePasswordCredentials())
+                .thenReturn(null);
+
         Arrays.fill(jobs, createMockingJob());
 
         when(item.getAllJobs()).thenReturn((Collection) Arrays.asList(jobs));
@@ -68,20 +92,24 @@ public class MirrorGateItemListenerTest extends TestCase {
 
     @Test
     public void onDeletedTestWhenServiceResponseOK() {
-        when(service.publishBuildData(any())).thenReturn(responseOk);
+        when(service.publishBuildData(any(), any(), any(), any()))
+                .thenReturn(responseOk);
 
         listener.onDeleted(item);
 
-        verify(service, times(jobs.length)).publishBuildData(any());
+        verify(service, times(jobs.length))
+                .publishBuildData(any(), any(), any(), any());
     }
 
     @Test
     public void onDeletedTestWhenServiceResponseError() {
-        when(service.publishBuildData(any())).thenReturn(responseError);
+        when(service.publishBuildData(any(), any(), any(), any()))
+                .thenReturn(responseError);
 
         listener.onDeleted(item);
 
-        verify(service, times(jobs.length)).publishBuildData(any());
+        verify(service, times(jobs.length))
+                .publishBuildData(any(), any(), any(), any());
     }
 
     private Job createMockingJob() {

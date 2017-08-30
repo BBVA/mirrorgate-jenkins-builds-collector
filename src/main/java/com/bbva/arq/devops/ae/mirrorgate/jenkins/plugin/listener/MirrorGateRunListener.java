@@ -17,10 +17,12 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder.BuildBuilder;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
@@ -51,7 +53,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         BuildBuilder builder = new BuildBuilder(run, BuildStatus.InProgress);
 
-        MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
+        MirrorGateResponse buildResponse = publishBuild(builder.getBuildData());
 
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build Complete Data. " + buildResponse.toString());
@@ -70,9 +72,9 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         LOG.fine(run.toString());
 
-        BuildBuilder  builder = new BuildBuilder(run, BuildStatus.fromString(run.getResult().toString()));
+        BuildBuilder builder = new BuildBuilder(run, BuildStatus.fromString(run.getResult().toString()));
 
-        MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
+        MirrorGateResponse buildResponse = publishBuild(builder.getBuildData());
 
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build Complete Data. " + buildResponse.toString());
@@ -88,5 +90,22 @@ public class MirrorGateRunListener extends RunListener<Run> {
         return service;
     }
 
-}
+    private MirrorGateResponse publishBuild(BuildDTO build) {
+        String mirrorGateAPIUrl = MirrorGateUtils.getMirrorGateAPIUrl();
+        String mirrorGateUser
+                = MirrorGateUtils.getUsernamePasswordCredentials() != null
+                        ? MirrorGateUtils.getUsernamePasswordCredentials()
+                        .getUsername()
+                        : null;
+        String mirrorGatePassword
+                = MirrorGateUtils.getUsernamePasswordCredentials() != null
+                        ? MirrorGateUtils.getUsernamePasswordCredentials()
+                        .getPassword().getPlainText() : null;
 
+        return getMirrorGateService().publishBuildData(
+                mirrorGateAPIUrl,
+                build,
+                mirrorGateUser,
+                mirrorGatePassword);
+    }
+}

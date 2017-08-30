@@ -23,6 +23,6 @@ public class MirrorGatePublisherStub extends MirrorGatePublisher {
         @Override
         public synchronized void load() {
         }
-        
+
     }
 }
