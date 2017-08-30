@@ -62,7 +62,7 @@ public class MirrorGatePublisherTest extends TestCase {
 
     @Test
     public void testDoTestOKConnectionTest() throws Exception {
-        when(service.testConnection(any(), any(), any()))
+        when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_OK, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
 
@@ -74,7 +74,7 @@ public class MirrorGatePublisherTest extends TestCase {
 
     @Test
     public void testDoTestErrorConnectionTest() throws Exception {
-        when(service.testConnection(any(), any(), any()))
+        when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
 
@@ -86,7 +86,7 @@ public class MirrorGatePublisherTest extends TestCase {
 
     @Test
     public void testDoTestConnectionWithoutServiveConnectionTest() throws Exception {
-        when(service.testConnection(any(), any(), any()))
+        when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(null);
 

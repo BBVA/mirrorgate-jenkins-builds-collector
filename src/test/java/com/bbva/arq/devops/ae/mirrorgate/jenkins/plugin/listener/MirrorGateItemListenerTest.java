@@ -92,24 +92,20 @@ public class MirrorGateItemListenerTest extends TestCase {
 
     @Test
     public void onDeletedTestWhenServiceResponseOK() {
-        when(service.publishBuildData(any(), any(), any(), any()))
-                .thenReturn(responseOk);
+        when(service.publishBuildData(any())).thenReturn(responseOk);
 
         listener.onDeleted(item);
 
-        verify(service, times(jobs.length))
-                .publishBuildData(any(), any(), any(), any());
+        verify(service, times(jobs.length)).publishBuildData(any());
     }
 
     @Test
     public void onDeletedTestWhenServiceResponseError() {
-        when(service.publishBuildData(any(), any(), any(), any()))
-                .thenReturn(responseError);
+        when(service.publishBuildData(any())).thenReturn(responseError);
 
         listener.onDeleted(item);
 
-        verify(service, times(jobs.length))
-                .publishBuildData(any(), any(), any(), any());
+        verify(service, times(jobs.length)).publishBuildData(any());
     }
 
     private Job createMockingJob() {

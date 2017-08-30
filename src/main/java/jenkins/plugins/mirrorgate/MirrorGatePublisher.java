@@ -18,12 +18,10 @@ package jenkins.plugins.mirrorgate;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.CredentialsUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Item;
@@ -99,17 +97,8 @@ public class MirrorGatePublisher extends Publisher {
 
             MirrorGateService testMirrorGateService = getMirrorGateService();
             if (testMirrorGateService != null) {
-                UsernamePasswordCredentials credentials
-                        = CredentialsUtils.getJenkinsCredentials(
-                                credentialsId, UsernamePasswordCredentials.class);
-
-                String user = (credentials != null)
-                        ? credentials.getUsername() : null;
-                String password = (credentials != null)
-                        ? credentials.getPassword().getEncryptedValue() : null;
-
-                MirrorGateResponse response = testMirrorGateService
-                        .testConnection(mirrorGateAPIUrl, user, password);
+                MirrorGateResponse response
+                        = testMirrorGateService.testConnection();
                 return response.getResponseCode() == HttpStatus.SC_OK
                         ? FormValidation.ok("Success")
                         : FormValidation.error("Failure<"

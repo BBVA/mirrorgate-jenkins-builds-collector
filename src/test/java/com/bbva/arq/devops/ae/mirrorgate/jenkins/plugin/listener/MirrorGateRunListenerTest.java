@@ -89,55 +89,50 @@ public class MirrorGateRunListenerTest extends TestCase {
 
     @Test
     public void onStartedBuildTest() {
-        when(service.publishBuildData(any(), any(), any(), any()))
-                .thenReturn(responseOk);
+        when(service.publishBuildData(any())).thenReturn(responseOk);
 
         listener.onStarted(build, TaskListener.NULL);
 
-        verify(service, times(1)).publishBuildData(any(), any(), any(), any());
+        verify(service, times(1)).publishBuildData(any());
     }
 
     @Test
     public void onStartedBuildTestWhenServiceResponseError() {
-        when(service.publishBuildData(any(), any(), any(), any()))
-                .thenReturn(responseError);
+        when(service.publishBuildData(any())).thenReturn(responseError);
 
         listener.onStarted(build, TaskListener.NULL);
 
-        verify(service, times(1)).publishBuildData(any(), any(), any(), any());
+        verify(service, times(1)).publishBuildData(any());
     }
 
     @Test
     public void onCompletedSuccessBuildTest() {
-        when(service.publishBuildData(any(), any(), any(), any()))
-                .thenReturn(responseOk);
+        when(service.publishBuildData(any())).thenReturn(responseOk);
         when(build.getResult()).thenReturn(Result.SUCCESS);
 
         listener.onCompleted(build, TaskListener.NULL);
 
-        verify(service, times(1)).publishBuildData(any(), any(), any(), any());
+        verify(service, times(1)).publishBuildData(any());
     }
 
     @Test
     public void onCompletedFailureBuildTest() {
-        when(service.publishBuildData(any(), any(), any(), any()))
-                .thenReturn(responseOk);
+        when(service.publishBuildData(any())).thenReturn(responseOk);
         when(build.getResult()).thenReturn(Result.FAILURE);
 
         listener.onCompleted(build, TaskListener.NULL);
 
-        verify(service, times(1)).publishBuildData(any(), any(), any(), any());
+        verify(service, times(1)).publishBuildData(any());
     }
 
     @Test
     public void onCompletedBuildWhenTestServiceResponseError() {
-        when(service.publishBuildData(any(), any(), any(), any()))
-                .thenReturn(responseError);
+        when(service.publishBuildData(any())).thenReturn(responseError);
         when(build.getResult()).thenReturn(Result.FAILURE);
 
         listener.onCompleted(build, TaskListener.NULL);
 
-        verify(service, times(1)).publishBuildData(any(), any(), any(), any());
+        verify(service, times(1)).publishBuildData(any());
     }
 
     @Test

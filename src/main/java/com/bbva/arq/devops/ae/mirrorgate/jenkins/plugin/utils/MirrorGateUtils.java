@@ -21,14 +21,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Run;
 import java.io.IOException;
-import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 
 public class MirrorGateUtils {
 
-    protected static final Logger LOG
-            = Logger.getLogger(MirrorGateUtils.class.getName());
+    private MirrorGateUtils() {
+    }
 
     public static final String APPLICATION_JSON_VALUE = "application/json";
 
@@ -51,6 +50,18 @@ public class MirrorGateUtils {
         return Jenkins.getInstance().getDescriptorByType(
                 MirrorGatePublisher.DescriptorImpl.class)
                 .getMirrorGateAPIUrl();
+    }
+
+    public static String getMirrorGateUser() {
+        return MirrorGateUtils.getUsernamePasswordCredentials() != null
+                ? MirrorGateUtils.getUsernamePasswordCredentials()
+                .getUsername() : null;
+    }
+
+    public static String getMirrorGatePassword() {
+        return MirrorGateUtils.getUsernamePasswordCredentials() != null
+                ? MirrorGateUtils.getUsernamePasswordCredentials()
+                .getPassword().getPlainText() : null;
     }
 
     public static UsernamePasswordCredentials getUsernamePasswordCredentials() {

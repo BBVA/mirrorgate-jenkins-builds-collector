@@ -34,12 +34,14 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
 
     @Override
-    public MirrorGateResponse publishBuildData(String hostUrl, BuildDTO request, String user, String password) {
+    public MirrorGateResponse publishBuildData(BuildDTO request) {
         try {
-            String jsonString = new String(MirrorGateUtils.convertObjectToJsonBytes(request));
+            MirrorGateResponse callResponse = buildRestCall().makeRestCallPost(
+                    MirrorGateUtils.getMirrorGateAPIUrl() + "/api/builds",
+                    new String(MirrorGateUtils.convertObjectToJsonBytes(request)),
+                    MirrorGateUtils.getMirrorGateUser(),
+                    MirrorGateUtils.getMirrorGatePassword());
 
-            RestCall restCall = buildRestCall();
-            MirrorGateResponse callResponse = restCall.makeRestCallPost(hostUrl + "/api/builds", jsonString, user, password);
             if (callResponse.getResponseCode() != HttpStatus.SC_CREATED) {
                 LOG.log(Level.SEVERE, "MirrorGate: Build Publisher post may have failed. Response: {0}", callResponse.getResponseCode());
             }
@@ -51,9 +53,11 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
 
     @Override
-    public MirrorGateResponse testConnection(String hostUrl, String user, String password) {
-        MirrorGateResponse callResponse = buildRestCall()
-                .makeRestCallGet(hostUrl + "/health", user, password);
+    public MirrorGateResponse testConnection() {
+        MirrorGateResponse callResponse = buildRestCall().makeRestCallGet(
+                MirrorGateUtils.getMirrorGateAPIUrl() + "/health",
+                MirrorGateUtils.getMirrorGateUser(),
+                MirrorGateUtils.getMirrorGatePassword());
         return new MirrorGateResponse(callResponse.getResponseCode(),
                 callResponse.getResponseValue().replaceAll("\"", ""));
     }

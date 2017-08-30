@@ -17,12 +17,10 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder.BuildBuilder;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.listeners.ItemListener;
@@ -52,17 +50,19 @@ public class MirrorGateItemListener extends ItemListener {
 
             if(job.getLastBuild() != null) {
 
-                BuildBuilder builder = new BuildBuilder(job.getLastBuild(), BuildStatus.Deleted);
-                MirrorGateResponse buildResponse = publishBuild(builder.getBuildData());
+                BuildBuilder builder = new BuildBuilder(
+                        job.getLastBuild(), BuildStatus.Deleted);
+                MirrorGateResponse buildResponse = getMirrorGateService()
+                        .publishBuildData(builder.getBuildData());
 
                 if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                    LOG.log(Level.WARNING, "MirrorGate: Published Build Complete Data. {0}", buildResponse.toString());
+                    LOG.log(Level.WARNING, "MirrorGate: Published Build "
+                            + "Complete Data. {0}", buildResponse.toString());
                 } else {
-                    LOG.log(Level.FINE, "MirrorGate: Failed Publishing Build Complete Data. {0}", buildResponse.toString());
+                    LOG.log(Level.FINE, "MirrorGate: Failed Publishing "
+                            + "Build Complete Data. {0}", buildResponse.toString());
                 }
-
             }
-
         });
 
         LOG.fine("onDeletedItem ends");
@@ -71,25 +71,4 @@ public class MirrorGateItemListener extends ItemListener {
     protected MirrorGateService getMirrorGateService() {
         return service;
     }
-
-    private MirrorGateResponse publishBuild(BuildDTO build) {
-        String mirrorGateAPIUrl = MirrorGateUtils.getMirrorGateAPIUrl();
-        String mirrorGateUser
-                = MirrorGateUtils.getUsernamePasswordCredentials() != null
-                        ? MirrorGateUtils.getUsernamePasswordCredentials()
-                        .getUsername()
-                        : null;
-        String mirrorGatePassword
-                = MirrorGateUtils.getUsernamePasswordCredentials() != null
-                        ? MirrorGateUtils.getUsernamePasswordCredentials()
-                        .getPassword().getPlainText() : null;
-
-        return getMirrorGateService().publishBuildData(
-                mirrorGateAPIUrl,
-                build,
-                mirrorGateUser,
-                mirrorGatePassword);
-    }
-
 }
-

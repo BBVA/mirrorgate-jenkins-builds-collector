@@ -21,7 +21,6 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.security.ACL;
 import java.util.Collections;
-import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
@@ -29,8 +28,8 @@ import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 public class CredentialsUtils {
 
-    private static final Logger LOG
-            = Logger.getLogger(CredentialsUtils.class.getName());
+    private CredentialsUtils() {
+    }
 
     /**
      * Get the token from the credentials identified by the given id.

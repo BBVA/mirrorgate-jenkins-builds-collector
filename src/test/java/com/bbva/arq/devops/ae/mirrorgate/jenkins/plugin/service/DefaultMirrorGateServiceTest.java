@@ -82,11 +82,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         when(htppClient.executeMethod(any(PostMethod.class)))
                 .thenReturn(HttpStatus.SC_OK);
 
-        MirrorGateResponse response = service.publishBuildData(
-                MIRRORGATE_URL,
-                makeBuildDataRequestData(),
-                null,
-                null);
+        MirrorGateResponse response = service.publishBuildData(makeBuildRequest());
 
         assertEquals(HttpStatus.SC_OK, response.getResponseCode());
     }
@@ -96,11 +92,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         when(htppClient.executeMethod(any(PostMethod.class)))
                 .thenReturn(HttpStatus.SC_NOT_FOUND);
 
-        MirrorGateResponse response = service.publishBuildData(
-                MIRRORGATE_URL,
-                makeBuildDataRequestData(),
-                null,
-                null);
+        MirrorGateResponse response = service.publishBuildData(makeBuildRequest());
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getResponseCode());
     }
@@ -110,11 +102,8 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         when(htppClient.executeMethod(any(GetMethod.class)))
                 .thenReturn(HttpStatus.SC_OK);
 
-        assertEquals(service.testConnection(
-                MIRRORGATE_URL,
-                null,
-                null
-        ).getResponseCode(), HttpStatus.SC_OK);
+        assertEquals(service.testConnection().getResponseCode(),
+                HttpStatus.SC_OK);
     }
 
     @Test
@@ -122,14 +111,11 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         when(htppClient.executeMethod(any(GetMethod.class)))
                 .thenReturn(HttpStatus.SC_NOT_FOUND);
 
-        assertEquals(service.testConnection(
-                MIRRORGATE_URL,
-                null,
-                null
-        ).getResponseCode(), HttpStatus.SC_NOT_FOUND);
+        assertEquals(service.testConnection().getResponseCode(),
+                HttpStatus.SC_NOT_FOUND);
     }
 
-    private BuildDTO makeBuildDataRequestData() {
+    private BuildDTO makeBuildRequest() {
         BuildDTO build = new BuildDTO();
         build.setNumber("1");
         build.setBuildUrl("buildUrl");

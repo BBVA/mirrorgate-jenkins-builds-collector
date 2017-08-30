@@ -25,28 +25,15 @@ public interface MirrorGateService {
      *
      * Publish Build Data to an endpoint
      *
-     * @param hostUrl
      * @param requestBuild
-     * @param user
-     * @param password
-     * @return
+     * @return MirrorGateResponse
      */
-    MirrorGateResponse publishBuildData(
-            String hostUrl,
-            BuildDTO requestBuild,
-            String user,
-            String password);
+    MirrorGateResponse publishBuildData(BuildDTO requestBuild);
 
     /**
      * Test a endpoint availability
      *
-     * @param hostUrl
-     * @param user
-     * @param password
-     * @return
+     * @return MirrorGateResponse
      */
-    MirrorGateResponse testConnection(
-            String hostUrl,
-            String user,
-            String password);
+    MirrorGateResponse testConnection();
 }
