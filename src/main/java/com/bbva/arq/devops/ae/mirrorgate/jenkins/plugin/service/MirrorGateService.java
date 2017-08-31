@@ -20,7 +20,20 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 
 public interface MirrorGateService {
-    MirrorGateResponse publishBuildData(BuildDTO request);
 
-    boolean testConnection(String hostUrl);
+    /**
+     *
+     * Publish Build Data to an endpoint
+     *
+     * @param requestBuild
+     * @return MirrorGateResponse
+     */
+    MirrorGateResponse publishBuildData(BuildDTO requestBuild);
+
+    /**
+     * Test a endpoint availability
+     *
+     * @return MirrorGateResponse
+     */
+    MirrorGateResponse testConnection();
 }

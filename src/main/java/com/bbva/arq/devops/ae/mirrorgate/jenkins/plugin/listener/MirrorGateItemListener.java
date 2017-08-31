@@ -50,17 +50,19 @@ public class MirrorGateItemListener extends ItemListener {
 
             if(job.getLastBuild() != null) {
 
-                BuildBuilder builder = new BuildBuilder(job.getLastBuild(), BuildStatus.Deleted);
-                MirrorGateResponse buildResponse = getMirrorGateService().publishBuildData(builder.getBuildData());
+                BuildBuilder builder = new BuildBuilder(
+                        job.getLastBuild(), BuildStatus.Deleted);
+                MirrorGateResponse buildResponse = getMirrorGateService()
+                        .publishBuildData(builder.getBuildData());
 
                 if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                    LOG.log(Level.WARNING, "MirrorGate: Published Build Complete Data. {0}", buildResponse.toString());
+                    LOG.log(Level.WARNING, "MirrorGate: Published Build "
+                            + "Complete Data. {0}", buildResponse.toString());
                 } else {
-                    LOG.log(Level.FINE, "MirrorGate: Failed Publishing Build Complete Data. {0}", buildResponse.toString());
+                    LOG.log(Level.FINE, "MirrorGate: Failed Publishing "
+                            + "Build Complete Data. {0}", buildResponse.toString());
                 }
-
             }
-
         });
 
         LOG.fine("onDeletedItem ends");
@@ -70,4 +72,3 @@ public class MirrorGateItemListener extends ItemListener {
         return service;
     }
 }
-

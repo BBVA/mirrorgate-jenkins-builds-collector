@@ -1,22 +1,15 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <!--
-    This Jelly script is used to produce the global configuration option.
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
 
-    Hudson uses a set of tag libraries to provide uniformity in forms.
-    To determine where this tag is defined, first check the namespace URI,
-    and then look under $HUDSON/views/. For example, <f:section> is defined
-    in $HUDSON/views/lib/form/section.jelly.
-
-    It's also often useful to just check other similar scripts to see what
-    tags they use. Views are always organized according to its owner class,
-    so it should be straightforward to find them.
-  -->
-<f:section title="Global MirrorGate Publisher Settings" name="mirrorgate-publisher">
-    <f:entry title="MirrorGate Server URL" help="/plugin/mirrorgate-publisher/help-globalConfig-mirrorGateBuildServerUrl.html">
+  <f:section title="${%Global MirrorGate Publisher Settings}" name="mirrorgate-publisher">
+    <f:entry title="${%MirrorGate Server URL}" help="/plugin/mirrorgate-publisher/help-globalConfig-mirrorGateBuildServerUrl.html">
         <f:textbox field="mirrorGateAPIUrl" name="mirrorGateAPIUrl" value="${descriptor.getMirrorGateAPIUrl()}" />
+    </f:entry>
+    <f:entry field="mirrorgateCredentialsId" name="mirrorgateCredentialsId" title="${%MirrorGate Server Credentials}" help="/plugin/mirrorgate-publisher/help-globalConfig-credentials.html">
+        <c:select/>
     </f:entry>
     <f:validateButton
         title="${%Test Connection}" progress="${%Testing...}"
-        method="testConnection" with="mirrorGateAPIUrl" />
+        method="testConnection" with="mirrorGateAPIUrl,mirrorgateCredentialsId"/>
   </f:section>
+
 </j:jelly>

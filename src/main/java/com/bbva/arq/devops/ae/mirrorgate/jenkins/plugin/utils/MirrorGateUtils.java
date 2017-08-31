@@ -16,15 +16,19 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
-import java.io.IOException;
-
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import hudson.model.Run;
+import java.io.IOException;
+import jenkins.model.Jenkins;
+import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 
 public class MirrorGateUtils {
-    
+
+    private MirrorGateUtils() {
+    }
+
     public static final String APPLICATION_JSON_VALUE = "application/json";
 
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
@@ -34,10 +38,37 @@ public class MirrorGateUtils {
     }
 
     public static String getBuildUrl(Run<?, ?> run) {
-        return run.getParent().getAbsoluteUrl() + String.valueOf(run.getNumber()) + "/";
+        return run.getParent().getAbsoluteUrl()
+                + String.valueOf(run.getNumber()) + "/";
     }
 
     public static String getBuildNumber(Run<?, ?> run) {
         return String.valueOf(run.getNumber());
+    }
+
+    public static String getMirrorGateAPIUrl() {
+        return Jenkins.getInstance().getDescriptorByType(
+                MirrorGatePublisher.DescriptorImpl.class)
+                .getMirrorGateAPIUrl();
+    }
+
+    public static String getMirrorGateUser() {
+        return MirrorGateUtils.getUsernamePasswordCredentials() != null
+                ? MirrorGateUtils.getUsernamePasswordCredentials()
+                .getUsername() : null;
+    }
+
+    public static String getMirrorGatePassword() {
+        return MirrorGateUtils.getUsernamePasswordCredentials() != null
+                ? MirrorGateUtils.getUsernamePasswordCredentials()
+                .getPassword().getPlainText() : null;
+    }
+
+    public static UsernamePasswordCredentials getUsernamePasswordCredentials() {
+        String credentialsId = Jenkins.getInstance().getDescriptorByType(
+                MirrorGatePublisher.DescriptorImpl.class)
+                .getMirrorgateCredentialsId();
+        return CredentialsUtils.getJenkinsCredentials(
+                credentialsId, UsernamePasswordCredentials.class);
     }
 }

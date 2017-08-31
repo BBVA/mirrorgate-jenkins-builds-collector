@@ -61,12 +61,15 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     @Spy
     DefaultMirrorGateService service = new DefaultMirrorGateService();
 
+    private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+
     @Before
     @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
-        PowerMockito.when(jenkins.getDescriptorByType(any())).thenReturn(descriptor);
+        PowerMockito.when(jenkins.getDescriptorByType(any()))
+                .thenReturn(descriptor);
 
         htppClient = mock(HttpClient.class);
 
@@ -76,34 +79,43 @@ public class DefaultMirrorGateServiceTest extends TestCase {
 
     @Test
     public void testSuccessfulPublishBuildDataTest() throws IOException {
-        when(htppClient.executeMethod(any(PostMethod.class))).thenReturn(HttpStatus.SC_OK);
+        when(htppClient.executeMethod(any(PostMethod.class)))
+                .thenReturn(HttpStatus.SC_OK);
 
-        MirrorGateResponse response = service.publishBuildData(makeBuildDataRequestData());
+        MirrorGateResponse response = service.publishBuildData(makeBuildRequest());
+
         assertEquals(HttpStatus.SC_OK, response.getResponseCode());
     }
 
     @Test
     public void testFailedPublishBuildDataTest() throws IOException {
-        when(htppClient.executeMethod(any(PostMethod.class))).thenReturn(HttpStatus.SC_NOT_FOUND);
+        when(htppClient.executeMethod(any(PostMethod.class)))
+                .thenReturn(HttpStatus.SC_NOT_FOUND);
 
-        MirrorGateResponse response = service.publishBuildData(makeBuildDataRequestData());
+        MirrorGateResponse response = service.publishBuildData(makeBuildRequest());
+
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getResponseCode());
     }
 
     @Test
     public void testSuccessConnectionTest() throws IOException {
-        when(htppClient.executeMethod(any(GetMethod.class))).thenReturn(HttpStatus.SC_OK);
-        assertTrue(service.testConnection("http://localhost/"));
+        when(htppClient.executeMethod(any(GetMethod.class)))
+                .thenReturn(HttpStatus.SC_OK);
+
+        assertEquals(service.testConnection().getResponseCode(),
+                HttpStatus.SC_OK);
     }
 
     @Test
     public void testFailedConnectionTest() throws IOException {
-        when(htppClient.executeMethod(any(GetMethod.class))).thenReturn(HttpStatus.SC_NOT_FOUND);
+        when(htppClient.executeMethod(any(GetMethod.class)))
+                .thenReturn(HttpStatus.SC_NOT_FOUND);
 
-        assertFalse(service.testConnection(""));
+        assertEquals(service.testConnection().getResponseCode(),
+                HttpStatus.SC_NOT_FOUND);
     }
 
-    private BuildDTO makeBuildDataRequestData() {
+    private BuildDTO makeBuildRequest() {
         BuildDTO build = new BuildDTO();
         build.setNumber("1");
         build.setBuildUrl("buildUrl");

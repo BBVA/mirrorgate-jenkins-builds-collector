@@ -21,10 +21,13 @@ import static org.mockito.Mockito.*;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import jenkins.model.Jenkins;
+import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
@@ -37,8 +40,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Job.class})
+@PrepareForTest({Job.class, Jenkins.class, MirrorGateUtils.class})
 public class MirrorGateRunListenerTest extends TestCase {
+
+    @Mock
+    Jenkins jenkins;
+
+    @Mock
+    MirrorGatePublisher.DescriptorImpl descriptor;
 
     @Mock
     Run build;
@@ -49,14 +58,29 @@ public class MirrorGateRunListenerTest extends TestCase {
     @Spy
     MirrorGateRunListener listener = new MirrorGateRunListener();
 
-    private final MirrorGateResponse responseOk = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
-    private final MirrorGateResponse responseError = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
+    private final MirrorGateResponse responseOk
+            = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
+    private final MirrorGateResponse responseError
+            = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
-    private String buildSample = "http://localhost:8080/job/MirrorGate/job/mirrorgate-jenkins-builds-collector/job/test/5/";
+    private final String buildSample = "http://localhost:8080/job/MirrorGate"
+            + "/job/mirrorgate-jenkins-builds-collector/job/test/5/";
+
+    private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
     @Before
     @Override
     public void setUp() {
+        PowerMockito.mockStatic(Jenkins.class);
+        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(jenkins.getDescriptorByType(any()))
+                .thenReturn(descriptor);
+
+        PowerMockito.when(MirrorGateUtils.getMirrorGateAPIUrl())
+                .thenReturn(MIRRORGATE_URL);
+        PowerMockito.when(MirrorGateUtils.getUsernamePasswordCredentials())
+                .thenReturn(null);
+
         build = createMockingBuild();
         service = mock(MirrorGateService.class);
 
@@ -72,7 +96,7 @@ public class MirrorGateRunListenerTest extends TestCase {
         verify(service, times(1)).publishBuildData(any());
     }
 
-        @Test
+    @Test
     public void onStartedBuildTestWhenServiceResponseError() {
         when(service.publishBuildData(any())).thenReturn(responseError);
 

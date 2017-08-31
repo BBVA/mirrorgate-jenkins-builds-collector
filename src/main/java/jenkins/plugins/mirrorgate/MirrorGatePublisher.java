@@ -18,18 +18,28 @@ package jenkins.plugins.mirrorgate;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.tasks.BuildStepDescriptor;
+import hudson.model.Descriptor;
+import hudson.model.Item;
+import hudson.security.ACL;
 import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
+import java.util.logging.Logger;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-public class MirrorGatePublisher extends Notifier {
+public class MirrorGatePublisher extends Publisher {
 
     @Override
     public DescriptorImpl getDescriptor() {
@@ -42,9 +52,13 @@ public class MirrorGatePublisher extends Notifier {
     }
 
     @Extension
-    public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+    public static class DescriptorImpl extends Descriptor<Publisher> {
+
+        protected static final Logger LOG
+                = Logger.getLogger(DescriptorImpl.class.getName());
 
         private String mirrorGateAPIUrl;
+        private String mirrorgateCredentialsId;
 
         public DescriptorImpl() {
             load();
@@ -54,14 +68,15 @@ public class MirrorGatePublisher extends Notifier {
             return mirrorGateAPIUrl;
         }
 
-        @Override
-        public boolean isApplicable(Class<? extends AbstractProject> aClass) {
-            return true;
+        public String getMirrorgateCredentialsId() {
+            return mirrorgateCredentialsId;
         }
 
         @Override
-        public boolean configure(StaplerRequest sr, JSONObject formData) throws FormException {
+        public boolean configure(StaplerRequest sr, JSONObject formData)
+                throws Descriptor.FormException {
             mirrorGateAPIUrl = sr.getParameter("mirrorGateAPIUrl");
+            mirrorgateCredentialsId = sr.getParameter("_.mirrorgateCredentialsId");
             save();
             return super.configure(sr, formData);
         }
@@ -76,14 +91,62 @@ public class MirrorGatePublisher extends Notifier {
         }
 
         public FormValidation doTestConnection(
-            @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl) throws FormException {
+                @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl,
+                @QueryParameter("mirrorgateCredentialsId") final String credentialsId)
+                throws Descriptor.FormException {
+
             MirrorGateService testMirrorGateService = getMirrorGateService();
             if (testMirrorGateService != null) {
-                boolean success = testMirrorGateService.testConnection(mirrorGateAPIUrl);
-                return success ? FormValidation.ok("Success") : FormValidation.error("Failure");
+                MirrorGateResponse response
+                        = testMirrorGateService.testConnection();
+                return response.getResponseCode() == HttpStatus.SC_OK
+                        ? FormValidation.ok("Success")
+                        : FormValidation.error("Failure<"
+                                + response.getResponseCode() + ">");
             } else {
                 return FormValidation.error("Failure");
             }
         }
+
+        public ListBoxModel doFillMirrorgateCredentialsIdItems(
+                @AncestorInPath Item item,
+                @QueryParameter("mirrorgateCredentialsId") String credentialsId) {
+
+            StandardListBoxModel result = new StandardListBoxModel();
+            if (item == null) {
+                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                    return result.includeCurrentValue(credentialsId);
+                }
+            } else if (!item.hasPermission(Item.EXTENDED_READ)
+                    && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                return result.includeCurrentValue(credentialsId);
+            }
+            return result
+                    .includeEmptyValue()
+                    .includeAs(ACL.SYSTEM, item, StandardUsernamePasswordCredentials.class);
+        }
+
+        public FormValidation doCheckMirrorgateCredentialsId(
+                @AncestorInPath Item item,
+                @QueryParameter("mirrorgateCredentialsId") String credentialsId) {
+
+            if (item == null) {
+                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                    return FormValidation.ok();
+                }
+            } else if (!item.hasPermission(Item.EXTENDED_READ)
+                    && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                return FormValidation.ok();
+            }
+            if (StringUtils.isBlank(credentialsId)) {
+                return FormValidation.ok();
+            }
+            if (credentialsId.startsWith("${") && credentialsId.endsWith("}")) {
+                return FormValidation.warning(
+                        "Cannot validate expression based credentials");
+            }
+            return FormValidation.ok();
+        }
     }
+
 }
