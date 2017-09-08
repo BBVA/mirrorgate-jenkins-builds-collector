@@ -106,7 +106,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         String mirrorgateUrl =
             HyperlinkNote.encodeTo(MirrorGateUtils.getMirrorGateAPIUrl() + "/dashboard.html?board="+projectName,
-                "Mirrorgate");
+                "MirrorGate");
 
         String image = ImgConsoleNote.encodeTo(MirrorGateUtils.getBase64image());
 
