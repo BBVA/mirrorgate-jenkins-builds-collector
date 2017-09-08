@@ -17,11 +17,14 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder.BuildBuilder;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.console.ImgConsoleNote;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
+import hudson.console.HyperlinkNote;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
@@ -32,9 +35,10 @@ import org.apache.commons.httpclient.HttpStatus;
 @Extension
 public class MirrorGateRunListener extends RunListener<Run> {
 
-    protected static final Logger LOG = Logger.getLogger(MirrorGateRunListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(MirrorGateRunListener.class.getName());
 
     private final MirrorGateService service;
+
 
     public MirrorGateRunListener() {
         this.service = new DefaultMirrorGateService();
@@ -51,6 +55,9 @@ public class MirrorGateRunListener extends RunListener<Run> {
 
         MirrorGateResponse buildResponse = getMirrorGateService()
                 .publishBuildData(builder.getBuildData());
+
+        listener.getLogger().println("Follow this project's builds progress at: "
+            + createMirrorgateLink(builder.getBuildData().getProjectName()));
 
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build "
@@ -76,6 +83,9 @@ public class MirrorGateRunListener extends RunListener<Run> {
         MirrorGateResponse buildResponse = getMirrorGateService()
                 .publishBuildData(builder.getBuildData());
 
+        listener.getLogger().println("Check this project's builds results at: "
+            + createMirrorgateLink(builder.getBuildData().getProjectName()));
+
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build "
                     + "Complete Data. " + buildResponse.toString());
@@ -88,6 +98,18 @@ public class MirrorGateRunListener extends RunListener<Run> {
     }
 
     protected MirrorGateService getMirrorGateService() {
+
         return service;
+    }
+
+    private String createMirrorgateLink(String projectName){
+
+        String mirrorgateUrl =
+            HyperlinkNote.encodeTo(MirrorGateUtils.getMirrorGateAPIUrl() + "/dashboard.html?board="+projectName,
+                "MirrorGate");
+
+        String image = ImgConsoleNote.encodeTo(MirrorGateUtils.getBase64image());
+
+        return mirrorgateUrl +" "+ image;
     }
 }
