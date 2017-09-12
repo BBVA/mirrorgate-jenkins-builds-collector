@@ -130,7 +130,7 @@ public class MirrorGateRunListener extends RunListener<Run> {
                 .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
 
             if (response.getResponseCode() != HttpStatus.SC_CREATED) {
-                listener.getLogger().println("POST to " + u + " failed!");
+                listener.getLogger().println("POST to " + u + " failed with code: "+response.getResponseCode());
             } else {
                 listener.getLogger().println("POST to " + u + " succeeded!");
             }

@@ -70,7 +70,6 @@ public class DefaultMirrorGateService implements MirrorGateService {
     public MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO request, String URL){
 
         try{
-
             return buildRestCall().makeRestCallPost(URL, new String(MirrorGateUtils.convertObjectToJsonBytes(request)),null, null);
         }catch (IOException e){
             LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + URL, e);

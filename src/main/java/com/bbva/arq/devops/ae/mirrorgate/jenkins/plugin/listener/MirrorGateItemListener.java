@@ -67,7 +67,6 @@ public class MirrorGateItemListener extends ItemListener {
                 }
 
                 sendBuildExtraData(builder);
-
             }
         });
 
@@ -84,6 +83,12 @@ public class MirrorGateItemListener extends ItemListener {
         extraUrl.forEach(u -> {
             MirrorGateResponse response = getMirrorGateService()
                 .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
+
+            if (response.getResponseCode() != HttpStatus.SC_CREATED) {
+                LOG.log(Level.WARNING, "POST to " + u + " failed with code: "+response.getResponseCode());
+            } else {
+                LOG.log(Level.FINE, "POST to " + u + " succeeded!");
+            }
         });
     }
 }

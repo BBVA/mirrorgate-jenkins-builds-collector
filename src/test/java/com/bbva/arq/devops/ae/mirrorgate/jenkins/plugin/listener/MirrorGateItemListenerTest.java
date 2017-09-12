@@ -99,6 +99,7 @@ public class MirrorGateItemListenerTest extends TestCase {
     @Test
     public void onDeletedTestWhenServiceResponseOK() {
         when(service.publishBuildData(any())).thenReturn(responseOk);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
 
         listener.onDeleted(item);
 
@@ -108,6 +109,7 @@ public class MirrorGateItemListenerTest extends TestCase {
     @Test
     public void onDeletedTestWhenServiceResponseError() {
         when(service.publishBuildData(any())).thenReturn(responseError);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseError);
 
         listener.onDeleted(item);
 
