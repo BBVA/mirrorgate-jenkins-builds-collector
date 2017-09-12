@@ -50,7 +50,6 @@ node('global') {
                         sh "./gradlew uploadArchives"
 
                     } else if(env.BRANCH_NAME == 'master'){
-
                         withCredentials([usernamePassword(
                                         credentialsId   : 'bot-mirrorgate-gpg',
                                         usernameVariable: 'GPG_ID',
@@ -58,11 +57,8 @@ node('global') {
                                     file(
                                         credentialsId: 'mirrorgate-secring',
                                         variable: 'FILE'),]) {
-
                                             sh "./gradlew uploadArchive -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
-
-                        }
-
+                                        }
                     }
 
                 }
@@ -70,7 +66,6 @@ node('global') {
             } catch(Exception e) {
                 currentBuild.result = "UNSTABLE"
             }
-        
         }
     }
 
