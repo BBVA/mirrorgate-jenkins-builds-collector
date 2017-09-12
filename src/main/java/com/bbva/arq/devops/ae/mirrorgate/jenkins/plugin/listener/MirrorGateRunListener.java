@@ -28,7 +28,10 @@ import hudson.console.HyperlinkNote;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.apache.commons.httpclient.HttpStatus;
 
@@ -54,18 +57,20 @@ public class MirrorGateRunListener extends RunListener<Run> {
         BuildBuilder builder = new BuildBuilder(run, BuildStatus.InProgress);
 
         MirrorGateResponse buildResponse = getMirrorGateService()
-                .publishBuildData(builder.getBuildData());
+            .publishBuildData(builder.getBuildData());
 
         listener.getLogger().println("Follow this project's builds progress at: "
             + createMirrorgateLink(builder.getBuildData().getProjectName()));
 
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build "
-                    + "Complete Data. " + buildResponse.toString());
+                + "Complete Data. " + buildResponse.toString());
         } else {
             listener.getLogger().println("MirrorGate: Failed Publishing "
-                    + "Build Complete Data. " + buildResponse.toString());
+                + "Build Complete Data. " + buildResponse.toString());
         }
+
+        sendBuildExtraData(builder, listener);
 
         LOG.fine("onStarted ends");
     }
@@ -78,21 +83,23 @@ public class MirrorGateRunListener extends RunListener<Run> {
         LOG.fine(run.toString());
 
         BuildBuilder builder = new BuildBuilder(
-                run, BuildStatus.fromString(run.getResult().toString()));
+            run, BuildStatus.fromString(run.getResult().toString()));
 
         MirrorGateResponse buildResponse = getMirrorGateService()
-                .publishBuildData(builder.getBuildData());
+            .publishBuildData(builder.getBuildData());
 
         listener.getLogger().println("Check this project's builds results at: "
             + createMirrorgateLink(builder.getBuildData().getProjectName()));
 
         if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
             listener.getLogger().println("MirrorGate: Published Build "
-                    + "Complete Data. " + buildResponse.toString());
+                + "Complete Data. " + buildResponse.toString());
         } else {
             listener.getLogger().println("MirrorGate: Failed Publishing "
-                    + "Build Complete Data. " + buildResponse.toString());
+                + "Build Complete Data. " + buildResponse.toString());
         }
+
+        sendBuildExtraData(builder, listener);
 
         LOG.fine("onCompleted ends");
     }
@@ -102,14 +109,32 @@ public class MirrorGateRunListener extends RunListener<Run> {
         return service;
     }
 
-    private String createMirrorgateLink(String projectName){
+    private String createMirrorgateLink(String projectName) {
 
         String mirrorgateUrl =
-            HyperlinkNote.encodeTo(MirrorGateUtils.getMirrorGateAPIUrl() + "/dashboard.html?board="+projectName,
+            HyperlinkNote.encodeTo(
+                MirrorGateUtils.getMirrorGateAPIUrl() + "/dashboard.html?board=" + projectName,
                 "MirrorGate");
 
         String image = ImgConsoleNote.encodeTo(MirrorGateUtils.getBase64image());
 
-        return mirrorgateUrl +" "+ image;
+        return mirrorgateUrl + " " + image;
     }
+
+    private void sendBuildExtraData(BuildBuilder builder, TaskListener listener) {
+
+        List<String> extraUrl = MirrorGateUtils.getURLList();
+
+        extraUrl.forEach(u -> {
+            MirrorGateResponse response = getMirrorGateService()
+                .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
+
+            if (response.getResponseCode() != HttpStatus.SC_CREATED) {
+                listener.getLogger().println("POST to " + u + " failed with code: "+response.getResponseCode());
+            } else {
+                listener.getLogger().println("POST to " + u + " succeeded!");
+            }
+        });
+    }
+
 }

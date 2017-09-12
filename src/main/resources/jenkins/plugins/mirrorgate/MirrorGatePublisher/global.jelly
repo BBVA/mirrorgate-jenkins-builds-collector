@@ -10,6 +10,10 @@
     <f:validateButton
         title="${%Test Connection}" progress="${%Testing...}"
         method="testConnection" with="mirrorGateAPIUrl,mirrorgateCredentialsId"/>
+
+    <f:entry title="${%Extra urls}" help="/plugin/mirrorgate-publisher/help-globalConfig-mirrorGateExtraURLs.html">
+      <f:textbox field="extraURLs" name="extraURLs" value="${descriptor.getExtraURLs()}" />
+    </f:entry>
   </f:section>
 
 </j:jelly>

@@ -21,9 +21,12 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.TaskListener;
 import hudson.model.listeners.ItemListener;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpStatus;
@@ -56,12 +59,14 @@ public class MirrorGateItemListener extends ItemListener {
                         .publishBuildData(builder.getBuildData());
 
                 if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                    LOG.log(Level.WARNING, "MirrorGate: Published Build "
+                    LOG.log(Level.FINE, "MirrorGate: Published Build "
                             + "Complete Data. {0}", buildResponse.toString());
                 } else {
-                    LOG.log(Level.FINE, "MirrorGate: Failed Publishing "
+                    LOG.log(Level.WARNING, "MirrorGate: Failed Publishing "
                             + "Build Complete Data. {0}", buildResponse.toString());
                 }
+
+                sendBuildExtraData(builder);
             }
         });
 
@@ -70,5 +75,20 @@ public class MirrorGateItemListener extends ItemListener {
 
     protected MirrorGateService getMirrorGateService() {
         return service;
+    }
+
+    private void sendBuildExtraData(BuildBuilder builder) {
+        List<String> extraUrl = MirrorGateUtils.getURLList();
+
+        extraUrl.forEach(u -> {
+            MirrorGateResponse response = getMirrorGateService()
+                .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
+
+            if (response.getResponseCode() != HttpStatus.SC_CREATED) {
+                LOG.log(Level.WARNING, "POST to " + u + " failed with code: "+response.getResponseCode());
+            } else {
+                LOG.log(Level.FINE, "POST to " + u + " succeeded!");
+            }
+        });
     }
 }

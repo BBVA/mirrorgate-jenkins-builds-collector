@@ -25,7 +25,9 @@ The main project is JDK 1.8 compiled, if you have Jenkins running on previous Ja
 1. Install the plugin by using "Advanced" option in Jenkins Plugin Management option to manually upload the file
 from local disk.
 2. Restart jenkins.
-3. Configure Global MirrorGate Publisher in Jenkins Manage Jenkins/Configure System. Enter MirrorGate API url such
- as `http://localhost:8080/mirrorgate/api`. There is no API token implented at this time and it is work in progress.
-
+3. Configure Global MirrorGate Publisher in Jenkins Manage Jenkins/Configure System. Enter MirrorGate API URL such
+ as `http://localhost:8080/mirrorgate/api`. 
+4. Add the credentials to be used for the API call. This field can be empty if no credentials are needed.
 ![Image](media/images/mirrorgate-jenkins-plugin-global-configuration.png)
+
+5. You can, additionally, configure extra URLs that will receive the build information. This is done via POST and they don't use credentials. 

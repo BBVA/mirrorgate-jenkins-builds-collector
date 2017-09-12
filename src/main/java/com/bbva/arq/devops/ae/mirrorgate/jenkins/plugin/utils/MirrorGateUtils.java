@@ -21,6 +21,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Run;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 
@@ -60,6 +63,11 @@ public class MirrorGateUtils {
                 .getMirrorGateAPIUrl();
     }
 
+    public static String getExtraUrls() {
+        return Jenkins.getInstance().getDescriptorByType(
+            MirrorGatePublisher.DescriptorImpl.class).getExtraURLs();
+    }
+
     public static String getMirrorGateUser() {
         return MirrorGateUtils.getUsernamePasswordCredentials() != null
                 ? MirrorGateUtils.getUsernamePasswordCredentials()
@@ -78,5 +86,16 @@ public class MirrorGateUtils {
                 .getMirrorgateCredentialsId();
         return CredentialsUtils.getJenkinsCredentials(
                 credentialsId, UsernamePasswordCredentials.class);
+    }
+
+    public static List<String> getURLList(){
+
+        String commaSeparatedList = getExtraUrls();
+        String[] urlArray = commaSeparatedList.split(",");
+
+        return Arrays.stream(urlArray)
+            .map(String::trim)
+            .filter( u -> (u !=null && !u.isEmpty()) )
+            .collect(Collectors.toList());
     }
 }
