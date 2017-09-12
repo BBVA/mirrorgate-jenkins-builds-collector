@@ -21,10 +21,12 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jenkins.model.Jenkins;
-import jenkins.plugins.mirrorgate.MirrorGatePublisher;
+import java.util.stream.Collectors;
 import org.apache.commons.httpclient.HttpStatus;
 
 public class DefaultMirrorGateService implements MirrorGateService {
@@ -37,41 +39,42 @@ public class DefaultMirrorGateService implements MirrorGateService {
 
     @Override
     public MirrorGateResponse publishBuildData(BuildDTO request) {
-        String responseValue;
-        int responseCode = HttpStatus.SC_NO_CONTENT;
         try {
-            String jsonString = new String(MirrorGateUtils.convertObjectToJsonBytes(request));
+            MirrorGateResponse callResponse = buildRestCall().makeRestCallPost(
+                    MirrorGateUtils.getMirrorGateAPIUrl() + "/api/builds",
+                    new String(MirrorGateUtils.convertObjectToJsonBytes(request)),
+                    MirrorGateUtils.getMirrorGateUser(),
+                    MirrorGateUtils.getMirrorGatePassword());
 
-            RestCall restCall = buildRestCall();
-            RestCall.Response callResponse = restCall.makeRestCallPost(getMirrorGateAPIUrl() + "/api/builds", jsonString);
-            responseCode = callResponse.getResponseCode();
-            responseValue = callResponse.getResponseString().replaceAll("\"", "");
-            if (responseCode != HttpStatus.SC_CREATED) {
-                LOG.log(Level.SEVERE, "mirrorGate: Build Publisher post may have failed. Response: {0}", responseCode);
+            if (callResponse.getResponseCode() != HttpStatus.SC_CREATED) {
+                LOG.log(Level.SEVERE, "MirrorGate: Build Publisher post may have failed. Response: {0}", callResponse.getResponseCode());
             }
+            return callResponse;
         } catch (IOException e) {
-            LOG.log(Level.SEVERE, "mirrorGate: Error posting to mirrorGate", e);
-            responseValue = "";
+            LOG.log(Level.SEVERE, "MirrorGate: Error posting to mirrorGate", e);
+            return new MirrorGateResponse(HttpStatus.SC_CONFLICT, "");
         }
-
-        return new MirrorGateResponse(responseCode, responseValue);
     }
 
     @Override
-    public boolean testConnection(String hostUrl) {
-        RestCall restCall = buildRestCall();
-        RestCall.Response callResponse = restCall.makeRestCallGet(hostUrl + "/health");
-        int responseCode = callResponse.getResponseCode();
-
-        if (responseCode == HttpStatus.SC_OK) return true;
-
-        LOG.log(Level.WARNING, "MirrorGate Test Connection Failed. Response: {0}", responseCode);
-        return false;
+    public MirrorGateResponse testConnection() {
+        MirrorGateResponse callResponse = buildRestCall().makeRestCallGet(
+                MirrorGateUtils.getMirrorGateAPIUrl() + "/health",
+                MirrorGateUtils.getMirrorGateUser(),
+                MirrorGateUtils.getMirrorGatePassword());
+        return new MirrorGateResponse(callResponse.getResponseCode(),
+                callResponse.getResponseValue().replaceAll("\"", ""));
     }
 
-    private String getMirrorGateAPIUrl(){
-        MirrorGatePublisher.DescriptorImpl mirrorGateDesc = Jenkins.getInstance().getDescriptorByType(MirrorGatePublisher.DescriptorImpl.class);
-        return mirrorGateDesc.getMirrorGateAPIUrl();
+    @Override
+    public MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO request, String URL){
+
+        try{
+            return buildRestCall().makeRestCallPost(URL, new String(MirrorGateUtils.convertObjectToJsonBytes(request)),null, null);
+        }catch (IOException e){
+            LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + URL, e);
+            return new MirrorGateResponse(HttpStatus.SC_CONFLICT, "");
+        }
     }
 
     protected RestCall buildRestCall() {

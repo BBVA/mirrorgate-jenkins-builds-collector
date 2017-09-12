@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -38,13 +40,20 @@ public class RestCall {
         return new HttpClient();
     }
 
-    public Response makeRestCallPost(String url, String jsonString) {
-        Response response;
-        HttpClient client = getHttpClient();
+    public MirrorGateResponse makeRestCallPost(String url, String jsonString, String user, String password) {
 
+        MirrorGateResponse response;
         PostMethod post = new PostMethod(url);
-
         try {
+            HttpClient client = getHttpClient();
+
+            if (user != null && password != null) {
+                client.getState().setCredentials(
+                        AuthScope.ANY,
+                        new UsernamePasswordCredentials(user, password));
+                post.setDoAuthentication(true);
+            }
+
             StringRequestEntity requestEntity = new StringRequestEntity(
                     jsonString,
                     "application/json",
@@ -53,33 +62,40 @@ public class RestCall {
             int responseCode = client.executeMethod(post);
             String responseString = post.getResponseBodyAsStream() != null ?
                     getResponseString(post.getResponseBodyAsStream()) : "";
-            response = new Response(responseCode, responseString);
+            response = new MirrorGateResponse(responseCode, responseString);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
-            response = new Response(HttpStatus.SC_BAD_REQUEST, "");
+            response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             post.releaseConnection();
         }
         return response;
     }
 
-    public Response makeRestCallGet(String url) {
-
-        Response response;
-        HttpClient client = getHttpClient();
+    public MirrorGateResponse makeRestCallGet(String url, String user, String password) {
+        MirrorGateResponse response;
         GetMethod get = new GetMethod(url);
         try {
+            HttpClient client = getHttpClient();
+
+            if (user != null && password != null) {
+                client.getState().setCredentials(
+                        AuthScope.ANY,
+                        new UsernamePasswordCredentials(user, password));
+                get.setDoAuthentication(true);
+            }
+
             get.getParams().setContentCharset("UTF-8");
             int responseCode = client.executeMethod(get);
             String responseString = get.getResponseBodyAsStream() != null ?
                     getResponseString(get.getResponseBodyAsStream()) : "";
-            response = new Response(responseCode, responseString);
+            response = new MirrorGateResponse(responseCode, responseString);
         } catch (HttpException e) {
             LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
-            response = new Response(HttpStatus.SC_BAD_REQUEST, "");
+            response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
-            response = new Response(HttpStatus.SC_BAD_REQUEST, "");
+            response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             get.releaseConnection();
         }
@@ -94,25 +110,6 @@ public class RestCall {
             outputStream.write(byteArray, 0, count);
         }
         return new String(outputStream.toByteArray(), "UTF-8");
-    }
-
-    public static class Response {
-        private final int responseCode;
-        private final String responseString;
-
-        public Response(int responseCode, String responseString) {
-            this.responseCode = responseCode;
-            this.responseString = responseString;
-        }
-
-        public int getResponseCode() {
-            return responseCode;
-        }
-
-        public String getResponseString() {
-            return responseString;
-        }
-
     }
 
 }

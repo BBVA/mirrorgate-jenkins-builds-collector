@@ -28,12 +28,11 @@ buildscript {
 
     dependencies {
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.18.1'
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.22.0'
     }
 }
 
-apply plugin: 'net.linguica.maven-settings'
-apply plugin: 'org.jenkins-ci.jpi'
+apply plugin: 'jpi'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'maven'
@@ -121,9 +120,11 @@ uploadArchives {
 defaultTasks 'clean', 'jpi'
 
 dependencies {
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+
+    jenkinsPlugins group: 'org.jenkins-ci.plugins', name: 'credentials', version: '2.1.13', ext: 'jar'
+    jenkinsPlugins group: 'org.jenkins-ci.plugins', name: 'plain-credentials', version: '1.4', ext: 'jar'
     
     testCompile group: 'org.powermock', name: 'powermock-mockito-release-full', version: '1.6.4'
 }

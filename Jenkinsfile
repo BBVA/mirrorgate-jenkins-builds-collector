@@ -17,56 +17,55 @@
 node('global') {
     withEnv(['CI=true']) {
 
-        stage(' Checkout SCM ') {
+        stage('Checkout SCM') {
             checkout(scm)
         }
 
-        stage('API - Clean app') {
+        stage('Clean') {
             sh "./gradlew clean"
         }
 
-        stage('API - Build app') {
+        stage('Build plugin') {
             sh "./gradlew build"
         }
 
-        stage('API - Run tests') {
+        stage('Run tests') {
             sh "./gradlew test jacocoTestReport"
         }
     }
 
     if(env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') {
 
-        try{
+        stage('Publish puglin') {
 
-            withCredentials([usernamePassword(
-                              credentialsId   : "bot-mirrorgate-st",
-                              usernameVariable: 'mavenUser',
-                              passwordVariable: 'mavenPassword')]) {
+            try{
 
-                if(env.BRANCH_NAME == 'develop'){
+                withCredentials([usernamePassword(
+                                  credentialsId   : "bot-mirrorgate-st",
+                                  usernameVariable: 'mavenUser',
+                                  passwordVariable: 'mavenPassword')]) {
 
-                    sh "./gradlew uploadArchives"
+                    if(env.BRANCH_NAME == 'develop'){
 
-                } else if(env.BRANCH_NAME == 'master'){
+                        sh "./gradlew uploadArchives"
 
-                    withCredentials([usernamePassword(
-                                    credentialsId   : 'bot-mirrorgate-gpg',
-                                    usernameVariable: 'GPG_ID',
-                                    passwordVariable: 'GPG_PASSWORD'),
-                                file(
-                                    credentialsId: 'mirrorgate-secring',
-                                    variable: 'FILE'),]) {
-
-                                        sh "./gradlew uploadArchive -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
-
+                    } else if(env.BRANCH_NAME == 'master'){
+                        withCredentials([usernamePassword(
+                                        credentialsId   : 'bot-mirrorgate-gpg',
+                                        usernameVariable: 'GPG_ID',
+                                        passwordVariable: 'GPG_PASSWORD'),
+                                    file(
+                                        credentialsId: 'mirrorgate-secring',
+                                        variable: 'FILE'),]) {
+                                            sh "./gradlew uploadArchive -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
+                                        }
                     }
 
                 }
 
+            } catch(Exception e) {
+                currentBuild.result = "UNSTABLE"
             }
-
-        } catch(Exception e) {
-            currentBuild.result = "UNSTABLE"
         }
     }
 
