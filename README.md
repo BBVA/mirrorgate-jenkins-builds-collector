@@ -30,4 +30,4 @@ from local disk.
 4. Add the credentials to be used for the API call. This field can be empty if no credentials are needed.
 ![Image](media/images/mirrorgate-jenkins-plugin-global-configuration.png)
 
-4. You can, additionally, configure extra URLs that will receive the build information. This is done via POST and they don't use credentials. 
+5. You can, additionally, configure extra URLs that will receive the build information. This is done via POST and they don't use credentials. 

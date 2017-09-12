@@ -67,48 +67,18 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
 
     @Override
-    public List<String> sendBuildDataToExtraEndpoints(BuildDTO request){
+    public MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO request, String URL){
 
-        List<String> extraUrl = getURLList(MirrorGateUtils.getExtraUrls());
+        try{
 
-        List<String> results = new ArrayList<>();
-
-        if(!extraUrl.isEmpty()){
-            results = extraUrl
-                .stream()
-                .map(u -> {
-                    String result = null;
-
-                    try{
-                        MirrorGateResponse response =
-                            buildRestCall().makeRestCallPost(u, new String(MirrorGateUtils.convertObjectToJsonBytes(request)),null, null);
-                        if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST){
-                            result = u;
-                            LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + u);
-                        }
-                    }catch (IOException e){
-                        LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + u, e);
-                    }
-
-                    return result;
-                }).collect(Collectors.toList());
+            return buildRestCall().makeRestCallPost(URL, new String(MirrorGateUtils.convertObjectToJsonBytes(request)),null, null);
+        }catch (IOException e){
+            LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + URL, e);
+            return new MirrorGateResponse(HttpStatus.SC_CONFLICT, "");
         }
-
-        return results;
     }
 
     protected RestCall buildRestCall() {
         return new RestCall();
-    }
-
-
-    private List<String> getURLList(String commaSeparatedList){
-
-        String[] urlArray = commaSeparatedList.split(",");
-
-        return Arrays.stream(urlArray)
-            .map(String::trim)
-            .filter( u -> (u !=null && !u.isEmpty()) )
-            .collect(Collectors.toList());
     }
 }

@@ -45,5 +45,5 @@ public interface MirrorGateService {
      * @param requestBuild
      * @return Boolean
      */
-    List<String> sendBuildDataToExtraEndpoints(BuildDTO requestBuild);
+    MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO requestBuild, String URL);
 }

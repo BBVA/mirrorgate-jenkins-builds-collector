@@ -21,9 +21,12 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.TaskListener;
 import hudson.model.listeners.ItemListener;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpStatus;
@@ -63,7 +66,8 @@ public class MirrorGateItemListener extends ItemListener {
                             + "Build Complete Data. {0}", buildResponse.toString());
                 }
 
-                getMirrorGateService().sendBuildDataToExtraEndpoints(builder.getBuildData());
+                sendBuildExtraData(builder);
+
             }
         });
 
@@ -72,5 +76,14 @@ public class MirrorGateItemListener extends ItemListener {
 
     protected MirrorGateService getMirrorGateService() {
         return service;
+    }
+
+    private void sendBuildExtraData(BuildBuilder builder) {
+        List<String> extraUrl = MirrorGateUtils.getURLList();
+
+        extraUrl.forEach(u -> {
+            MirrorGateResponse response = getMirrorGateService()
+                .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
+        });
     }
 }

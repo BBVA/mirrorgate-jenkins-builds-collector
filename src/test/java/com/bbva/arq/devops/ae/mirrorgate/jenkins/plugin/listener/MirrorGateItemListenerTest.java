@@ -71,6 +71,8 @@ public class MirrorGateItemListenerTest extends TestCase {
     private final String buildSample = "http://localhost:8080/job/MirrorGate"
             + "/job/mirrorgate-jenkins-builds-collector/job/test/5/";
 
+    private final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
+
     @Before
     @Override
     public void setUp() {
@@ -83,6 +85,10 @@ public class MirrorGateItemListenerTest extends TestCase {
                 .thenReturn(MIRRORGATE_URL);
         PowerMockito.when(MirrorGateUtils.getUsernamePasswordCredentials())
                 .thenReturn(null);
+        PowerMockito.when(MirrorGateUtils.getExtraUrls())
+            .thenReturn(EXTRA_URL);
+
+
 
         Arrays.fill(jobs, createMockingJob());
 

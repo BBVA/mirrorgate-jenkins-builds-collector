@@ -67,6 +67,7 @@ public class MirrorGateRunListenerTest extends TestCase {
             + "/job/mirrorgate-jenkins-builds-collector/job/test/5/";
 
     private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+    private final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
 
     @Before
     @Override
@@ -81,6 +82,9 @@ public class MirrorGateRunListenerTest extends TestCase {
         PowerMockito.when(MirrorGateUtils.getUsernamePasswordCredentials())
                 .thenReturn(null);
 
+        PowerMockito.when(MirrorGateUtils.getExtraUrls())
+            .thenReturn(EXTRA_URL);
+
         build = createMockingBuild();
         service = mock(MirrorGateService.class);
 
@@ -90,6 +94,7 @@ public class MirrorGateRunListenerTest extends TestCase {
     @Test
     public void onStartedBuildTest() {
         when(service.publishBuildData(any())).thenReturn(responseOk);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
 
         listener.onStarted(build, TaskListener.NULL);
 
@@ -99,6 +104,7 @@ public class MirrorGateRunListenerTest extends TestCase {
     @Test
     public void onStartedBuildTestWhenServiceResponseError() {
         when(service.publishBuildData(any())).thenReturn(responseError);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseError);
 
         listener.onStarted(build, TaskListener.NULL);
 
@@ -108,6 +114,7 @@ public class MirrorGateRunListenerTest extends TestCase {
     @Test
     public void onCompletedSuccessBuildTest() {
         when(service.publishBuildData(any())).thenReturn(responseOk);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
         when(build.getResult()).thenReturn(Result.SUCCESS);
 
         listener.onCompleted(build, TaskListener.NULL);
@@ -118,6 +125,7 @@ public class MirrorGateRunListenerTest extends TestCase {
     @Test
     public void onCompletedFailureBuildTest() {
         when(service.publishBuildData(any())).thenReturn(responseOk);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
         when(build.getResult()).thenReturn(Result.FAILURE);
 
         listener.onCompleted(build, TaskListener.NULL);
@@ -128,6 +136,7 @@ public class MirrorGateRunListenerTest extends TestCase {
     @Test
     public void onCompletedBuildWhenTestServiceResponseError() {
         when(service.publishBuildData(any())).thenReturn(responseError);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
         when(build.getResult()).thenReturn(Result.FAILURE);
 
         listener.onCompleted(build, TaskListener.NULL);
