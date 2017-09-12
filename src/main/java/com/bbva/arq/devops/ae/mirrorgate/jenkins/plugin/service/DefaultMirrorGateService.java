@@ -21,8 +21,12 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.httpclient.HttpStatus;
 
 public class DefaultMirrorGateService implements MirrorGateService {
@@ -62,8 +66,49 @@ public class DefaultMirrorGateService implements MirrorGateService {
                 callResponse.getResponseValue().replaceAll("\"", ""));
     }
 
+    @Override
+    public List<String> sendBuildDataToExtraEndpoints(BuildDTO request){
+
+        List<String> extraUrl = getURLList(MirrorGateUtils.getExtraUrls());
+
+        List<String> results = new ArrayList<>();
+
+        if(!extraUrl.isEmpty()){
+            results = extraUrl
+                .stream()
+                .map(u -> {
+                    String result = null;
+
+                    try{
+                        MirrorGateResponse response =
+                            buildRestCall().makeRestCallPost(u, new String(MirrorGateUtils.convertObjectToJsonBytes(request)),null, null);
+                        if (response.getResponseCode() == HttpStatus.SC_BAD_REQUEST){
+                            result = u;
+                            LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + u);
+                        }
+                    }catch (IOException e){
+                        LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + u, e);
+                    }
+
+                    return result;
+                }).collect(Collectors.toList());
+        }
+
+        return results;
+    }
 
     protected RestCall buildRestCall() {
         return new RestCall();
+    }
+
+
+    private List<String> getURLList(String commaSeparatedList){
+
+        String[] urlArray = commaSeparatedList.split(",");
+
+        return Arrays.stream(urlArray)
+            .map(String::trim)
+            .filter( u -> (u !=null && !u.isEmpty()) )
+            .collect(Collectors.toList());
     }
 }

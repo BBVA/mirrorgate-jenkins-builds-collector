@@ -56,12 +56,14 @@ public class MirrorGateItemListener extends ItemListener {
                         .publishBuildData(builder.getBuildData());
 
                 if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                    LOG.log(Level.WARNING, "MirrorGate: Published Build "
+                    LOG.log(Level.FINE, "MirrorGate: Published Build "
                             + "Complete Data. {0}", buildResponse.toString());
                 } else {
-                    LOG.log(Level.FINE, "MirrorGate: Failed Publishing "
+                    LOG.log(Level.WARNING, "MirrorGate: Failed Publishing "
                             + "Build Complete Data. {0}", buildResponse.toString());
                 }
+
+                getMirrorGateService().sendBuildDataToExtraEndpoints(builder.getBuildData());
             }
         });
 

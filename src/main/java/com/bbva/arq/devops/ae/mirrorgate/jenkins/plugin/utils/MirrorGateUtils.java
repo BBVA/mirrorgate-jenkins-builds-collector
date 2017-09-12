@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Run;
 import java.io.IOException;
+import java.util.List;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 
@@ -58,6 +59,11 @@ public class MirrorGateUtils {
         return Jenkins.getInstance().getDescriptorByType(
                 MirrorGatePublisher.DescriptorImpl.class)
                 .getMirrorGateAPIUrl();
+    }
+
+    public static String getExtraUrls() {
+        return Jenkins.getInstance().getDescriptorByType(
+            MirrorGatePublisher.DescriptorImpl.class).getExtraURLs();
     }
 
     public static String getMirrorGateUser() {

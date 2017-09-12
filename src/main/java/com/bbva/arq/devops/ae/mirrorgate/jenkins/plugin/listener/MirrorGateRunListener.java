@@ -28,6 +28,7 @@ import hudson.console.HyperlinkNote;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import org.apache.commons.httpclient.HttpStatus;
@@ -67,6 +68,8 @@ public class MirrorGateRunListener extends RunListener<Run> {
                     + "Build Complete Data. " + buildResponse.toString());
         }
 
+        sendBuildExtraData(builder, listener);
+
         LOG.fine("onStarted ends");
     }
 
@@ -94,6 +97,8 @@ public class MirrorGateRunListener extends RunListener<Run> {
                     + "Build Complete Data. " + buildResponse.toString());
         }
 
+        sendBuildExtraData(builder, listener);
+
         LOG.fine("onCompleted ends");
     }
 
@@ -111,5 +116,14 @@ public class MirrorGateRunListener extends RunListener<Run> {
         String image = ImgConsoleNote.encodeTo(MirrorGateUtils.getBase64image());
 
         return mirrorgateUrl +" "+ image;
+    }
+
+    private void sendBuildExtraData(BuildBuilder builder, TaskListener listener){
+
+        List<String> failedURLs = getMirrorGateService().sendBuildDataToExtraEndpoints(builder.getBuildData());
+
+        failedURLs.forEach( u -> {
+            listener.getLogger().println("POST to "+u+" failed!");
+        });
     }
 }

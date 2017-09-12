@@ -30,6 +30,8 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -59,6 +61,7 @@ public class MirrorGatePublisher extends Publisher {
 
         private String mirrorGateAPIUrl;
         private String mirrorgateCredentialsId;
+        private String extraURLs;
 
         public DescriptorImpl() {
             load();
@@ -72,11 +75,17 @@ public class MirrorGatePublisher extends Publisher {
             return mirrorgateCredentialsId;
         }
 
+        public String getExtraURLs() {
+            return extraURLs;
+        }
+
         @Override
         public boolean configure(StaplerRequest sr, JSONObject formData)
                 throws Descriptor.FormException {
             mirrorGateAPIUrl = sr.getParameter("mirrorGateAPIUrl");
             mirrorgateCredentialsId = sr.getParameter("_.mirrorgateCredentialsId");
+            extraURLs = sr.getParameter("extraURLs");
+
             save();
             return super.configure(sr, formData);
         }
