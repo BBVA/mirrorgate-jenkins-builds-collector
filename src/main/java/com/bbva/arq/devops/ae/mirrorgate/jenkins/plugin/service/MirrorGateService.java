@@ -18,7 +18,6 @@ package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
-import java.util.List;
 
 public interface MirrorGateService {
 
@@ -43,6 +42,7 @@ public interface MirrorGateService {
      * Publish Build Data to an endpoint
      *
      * @param requestBuild
+     * @param URL
      * @return Boolean
      */
     MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO requestBuild, String URL);

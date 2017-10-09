@@ -102,10 +102,16 @@ public class MirrorGatePublisher extends Publisher {
                 @QueryParameter("mirrorgateCredentialsId") final String credentialsId)
                 throws Descriptor.FormException {
             MirrorGateService testMirrorGateService = getMirrorGateService();
-            MirrorGateResponse response = testMirrorGateService.testConnection();
-            return response.getResponseCode() == HttpStatus.SC_OK
-                    ? FormValidation.ok("Success")
-                    : FormValidation.error("Failure<" + response.getResponseCode() + ">");
+            if (testMirrorGateService != null) {
+                MirrorGateResponse response
+                        = testMirrorGateService.testConnection();
+                return response.getResponseCode() == HttpStatus.SC_OK
+                        ? FormValidation.ok("Success")
+                        : FormValidation.error("Failure<"
+                                + response.getResponseCode() + ">");
+            } else {
+                return FormValidation.error("Failure");
+            }
         }
 
         public ListBoxModel doFillMirrorgateCredentialsIdItems(

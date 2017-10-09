@@ -103,7 +103,6 @@ public class MirrorGateRunListener extends RunListener<Run> {
     }
 
     protected MirrorGateService getMirrorGateService() {
-
         return service;
     }
 

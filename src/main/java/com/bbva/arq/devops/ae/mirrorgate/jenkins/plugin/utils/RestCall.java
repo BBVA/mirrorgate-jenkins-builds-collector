@@ -35,7 +35,6 @@ public class RestCall {
 
     private static final Logger LOGGER = Logger.getLogger(RestCall.class.getName());
 
-    //Fixme: Need refactoring to remove code duplication.
     public HttpClient getHttpClient() {
         return new HttpClient();
     }

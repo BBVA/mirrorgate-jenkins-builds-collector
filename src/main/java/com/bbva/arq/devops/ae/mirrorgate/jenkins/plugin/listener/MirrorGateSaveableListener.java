@@ -52,24 +52,22 @@ public class MirrorGateSaveableListener extends SaveableListener {
 
         if (o instanceof Job) {
             Job job = (Job) o;
-            if (!job.isBuildable()) {
-                if (job.getLastBuild() != null) {
+            if (!job.isBuildable() && job.getLastBuild() != null) {
 
-                    BuildBuilder builder = new BuildBuilder(
-                            job.getLastBuild(), BuildStatus.NotBuildable);
-                    MirrorGateResponse buildResponse = getMirrorGateService()
-                            .publishBuildData(builder.getBuildData());
+                BuildBuilder builder = new BuildBuilder(
+                        job.getLastBuild(), BuildStatus.NotBuildable);
+                MirrorGateResponse buildResponse = getMirrorGateService()
+                        .publishBuildData(builder.getBuildData());
 
-                    if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                        LOG.log(Level.FINE, "MirrorGate: Published Build "
-                                + "Complete Data. {0}", buildResponse.toString());
-                    } else {
-                        LOG.log(Level.WARNING, "MirrorGate: Failed Publishing "
-                                + "Build Complete Data. {0}", buildResponse.toString());
-                    }
-
-                    sendBuildExtraData(builder);
+                if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
+                    LOG.log(Level.FINE, "MirrorGate: Published Build "
+                            + "Complete Data. {0}", buildResponse.toString());
+                } else {
+                    LOG.log(Level.WARNING, "MirrorGate: Failed Publishing "
+                            + "Build Complete Data. {0}", buildResponse.toString());
                 }
+
+                sendBuildExtraData(builder);
             }
 
         }
