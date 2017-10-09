@@ -61,7 +61,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     @Spy
     DefaultMirrorGateService service = new DefaultMirrorGateService();
 
-    private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+    private static final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
     @Before
     @Override

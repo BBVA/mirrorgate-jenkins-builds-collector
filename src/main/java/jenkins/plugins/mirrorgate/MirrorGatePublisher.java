@@ -30,8 +30,6 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -103,18 +101,11 @@ public class MirrorGatePublisher extends Publisher {
                 @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl,
                 @QueryParameter("mirrorgateCredentialsId") final String credentialsId)
                 throws Descriptor.FormException {
-
             MirrorGateService testMirrorGateService = getMirrorGateService();
-            if (testMirrorGateService != null) {
-                MirrorGateResponse response
-                        = testMirrorGateService.testConnection();
-                return response.getResponseCode() == HttpStatus.SC_OK
-                        ? FormValidation.ok("Success")
-                        : FormValidation.error("Failure<"
-                                + response.getResponseCode() + ">");
-            } else {
-                return FormValidation.error("Failure");
-            }
+            MirrorGateResponse response = testMirrorGateService.testConnection();
+            return response.getResponseCode() == HttpStatus.SC_OK
+                    ? FormValidation.ok("Success")
+                    : FormValidation.error("Failure<" + response.getResponseCode() + ">");
         }
 
         public ListBoxModel doFillMirrorgateCredentialsIdItems(

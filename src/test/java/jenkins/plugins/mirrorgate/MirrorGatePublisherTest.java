@@ -49,7 +49,7 @@ public class MirrorGatePublisherTest extends TestCase {
     MirrorGatePublisherStub.DescriptorImplStub descriptor
             = spy(new MirrorGatePublisherStub.DescriptorImplStub());
 
-    private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+    private static final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
     @Before
     @Override

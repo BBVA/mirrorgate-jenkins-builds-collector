@@ -63,7 +63,7 @@ public class RestCall {
             String responseString = post.getResponseBodyAsStream() != null ?
                     getResponseString(post.getResponseBodyAsStream()) : "";
             response = new MirrorGateResponse(responseCode, responseString);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
             response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {

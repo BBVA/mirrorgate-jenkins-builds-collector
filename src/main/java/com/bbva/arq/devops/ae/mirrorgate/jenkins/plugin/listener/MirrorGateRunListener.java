@@ -28,10 +28,8 @@ import hudson.console.HyperlinkNote;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.apache.commons.httpclient.HttpStatus;
 

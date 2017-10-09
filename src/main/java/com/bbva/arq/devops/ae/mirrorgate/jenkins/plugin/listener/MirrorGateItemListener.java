@@ -24,7 +24,6 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
 import hudson.model.Item;
-import hudson.model.TaskListener;
 import hudson.model.listeners.ItemListener;
 import java.util.List;
 import java.util.logging.Level;
@@ -85,9 +84,9 @@ public class MirrorGateItemListener extends ItemListener {
                 .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
 
             if (response.getResponseCode() != HttpStatus.SC_CREATED) {
-                LOG.log(Level.WARNING, "POST to " + u + " failed with code: "+response.getResponseCode());
+                LOG.log(Level.WARNING, "POST to {0} failed with code: {1}", new Object[]{u, response.getResponseCode()});
             } else {
-                LOG.log(Level.FINE, "POST to " + u + " succeeded!");
+                LOG.log(Level.FINE, "POST to {0} succeeded!", u);
             }
         });
     }
