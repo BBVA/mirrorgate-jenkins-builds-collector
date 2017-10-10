@@ -66,12 +66,12 @@ public class MirrorGateItemListenerTest extends TestCase {
     private final MirrorGateResponse responseError
             = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
-    private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+    private final static String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
-    private final String buildSample = "http://localhost:8080/job/MirrorGate"
+    private final static String BUILD_SAMPLE = "http://localhost:8080/job/MirrorGate"
             + "/job/mirrorgate-jenkins-builds-collector/job/test/5/";
 
-    private final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
+    private static final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
 
     @Before
     @Override
@@ -121,7 +121,7 @@ public class MirrorGateItemListenerTest extends TestCase {
         Run build = mock(Run.class);
 
         when(job.getLastBuild()).thenReturn(build);
-        PowerMockito.when(job.getAbsoluteUrl()).thenReturn(buildSample);
+        PowerMockito.when(job.getAbsoluteUrl()).thenReturn(BUILD_SAMPLE);
         when(build.getParent()).thenReturn(job);
 
         return job;

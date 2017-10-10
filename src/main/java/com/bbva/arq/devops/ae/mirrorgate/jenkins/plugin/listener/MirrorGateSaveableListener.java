@@ -23,37 +23,39 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateServic
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
-import hudson.model.Item;
-import hudson.model.listeners.ItemListener;
+import hudson.XmlFile;
+import hudson.model.Job;
+import hudson.model.Saveable;
+import hudson.model.listeners.SaveableListener;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.httpclient.HttpStatus;
 
 @Extension
-public class MirrorGateItemListener extends ItemListener {
+public class MirrorGateSaveableListener extends SaveableListener {
 
-    private static final Logger LOG = Logger.getLogger(MirrorGateItemListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(MirrorGateSaveableListener.class.getName());
 
     private final MirrorGateService service;
 
-    public MirrorGateItemListener() {
+    public MirrorGateSaveableListener() {
         this.service = new DefaultMirrorGateService();
 
-        LOG.fine(">>> MirrorGateItemListener Initialised");
+        LOG.fine(">>> MirrorGateSaveableListener Initialised");
     }
 
     @Override
-    public void onDeleted(final Item item) {
+    public void onChange(Saveable o, XmlFile file) {
 
-        LOG.fine("onDeletedItem starts");
+        LOG.fine(">>> MirrorGateSaveableListener onChange starts");
 
-        item.getAllJobs().forEach((job) -> {
-
-            if(job.getLastBuild() != null) {
+        if (o instanceof Job) {
+            Job job = (Job) o;
+            if (!job.isBuildable() && job.getLastBuild() != null) {
 
                 BuildBuilder builder = new BuildBuilder(
-                        job.getLastBuild(), BuildStatus.Deleted);
+                        job.getLastBuild(), BuildStatus.NotBuildable);
                 MirrorGateResponse buildResponse = getMirrorGateService()
                         .publishBuildData(builder.getBuildData());
 
@@ -67,9 +69,12 @@ public class MirrorGateItemListener extends ItemListener {
 
                 sendBuildExtraData(builder);
             }
-        });
 
-        LOG.fine("onDeletedItem ends");
+        }
+
+        super.onChange(o, file); //To change body of generated methods, choose Tools | Templates.
+
+        LOG.fine(">>> MirrorGateSaveableListener onChange ends");
     }
 
     protected MirrorGateService getMirrorGateService() {
@@ -81,7 +86,7 @@ public class MirrorGateItemListener extends ItemListener {
 
         extraUrl.forEach(u -> {
             MirrorGateResponse response = getMirrorGateService()
-                .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
+                    .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
 
             if (response.getResponseCode() != HttpStatus.SC_CREATED) {
                 LOG.log(Level.WARNING, "POST to {0} failed with code: {1}", new Object[]{u, response.getResponseCode()});

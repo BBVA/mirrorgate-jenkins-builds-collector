@@ -21,12 +21,8 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.apache.commons.httpclient.HttpStatus;
 
 public class DefaultMirrorGateService implements MirrorGateService {
@@ -42,7 +38,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
         try {
             MirrorGateResponse callResponse = buildRestCall().makeRestCallPost(
                     MirrorGateUtils.getMirrorGateAPIUrl() + "/api/builds",
-                    new String(MirrorGateUtils.convertObjectToJsonBytes(request)),
+                    MirrorGateUtils.convertObjectToJson(request),
                     MirrorGateUtils.getMirrorGateUser(),
                     MirrorGateUtils.getMirrorGatePassword());
 
@@ -70,7 +66,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
     public MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO request, String URL){
 
         try{
-            return buildRestCall().makeRestCallPost(URL, new String(MirrorGateUtils.convertObjectToJsonBytes(request)),null, null);
+            return buildRestCall().makeRestCallPost(URL, MirrorGateUtils.convertObjectToJson(request), null, null);
         }catch (IOException e){
             LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + URL, e);
             return new MirrorGateResponse(HttpStatus.SC_CONFLICT, "");
