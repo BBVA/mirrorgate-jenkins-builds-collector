@@ -32,8 +32,7 @@ public enum BuildStatus {
     Aborted,
     InProgress,
     NotBuilt,
-    Unknown,
-    NotBuildable;
+    Unknown;
 
     private static final Map<String, BuildStatus> MAPPING = new HashMap<>();
 

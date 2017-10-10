@@ -53,9 +53,8 @@ public class MirrorGateSaveableListener extends SaveableListener {
         if (o instanceof Job) {
             Job job = (Job) o;
             if (!job.isBuildable() && job.getLastBuild() != null) {
-
                 BuildBuilder builder = new BuildBuilder(
-                        job.getLastBuild(), BuildStatus.NotBuildable);
+                        job.getLastBuild(), BuildStatus.Deleted);
                 MirrorGateResponse buildResponse = getMirrorGateService()
                         .publishBuildData(builder.getBuildData());
 
@@ -66,13 +65,11 @@ public class MirrorGateSaveableListener extends SaveableListener {
                     LOG.log(Level.WARNING, "MirrorGate: Failed Publishing "
                             + "Build Complete Data. {0}", buildResponse.toString());
                 }
-
                 sendBuildExtraData(builder);
             }
-
         }
 
-        super.onChange(o, file); //To change body of generated methods, choose Tools | Templates.
+        super.onChange(o, file);
 
         LOG.fine(">>> MirrorGateSaveableListener onChange ends");
     }
@@ -95,4 +92,5 @@ public class MirrorGateSaveableListener extends SaveableListener {
             }
         });
     }
+
 }
