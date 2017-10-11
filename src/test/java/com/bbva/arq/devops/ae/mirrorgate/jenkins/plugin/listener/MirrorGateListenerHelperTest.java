@@ -27,6 +27,7 @@ import hudson.model.Job;
 import hudson.model.Run;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Random;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import junit.framework.TestCase;
@@ -42,7 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Job.class, Jenkins.class, MirrorGateUtils.class})
-public class MirrorGateItemListenerTest extends TestCase {
+public class MirrorGateListenerHelperTest extends TestCase {
 
     @Mock
     Jenkins jenkins;
@@ -51,27 +52,22 @@ public class MirrorGateItemListenerTest extends TestCase {
     MirrorGatePublisher.DescriptorImpl descriptor;
 
     @Mock
-    Item item = mock(Item.class);
-
-    @Mock
     MirrorGateService service = mock(MirrorGateService.class);
 
     @Spy
-    MirrorGateItemListener listener = new MirrorGateItemListener();
-
-    Job[] jobs = new Job[10];
+    MirrorGateListenerHelper helper = new MirrorGateListenerHelper();
 
     private final MirrorGateResponse responseOk
             = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
     private final MirrorGateResponse responseError
             = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
-    private final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+    private final static String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
-    private final String buildSample = "http://localhost:8080/job/MirrorGate"
+    private final static String BUILD_SAMPLE = "http://localhost:8080/job/MirrorGate"
             + "/job/mirrorgate-jenkins-builds-collector/job/test/5/";
 
-    private final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
+    private static final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
 
     @Before
     @Override
@@ -86,34 +82,82 @@ public class MirrorGateItemListenerTest extends TestCase {
         PowerMockito.when(MirrorGateUtils.getUsernamePasswordCredentials())
                 .thenReturn(null);
         PowerMockito.when(MirrorGateUtils.getExtraUrls())
-            .thenReturn(EXTRA_URL);
+                .thenReturn(EXTRA_URL);
 
-
-
-        Arrays.fill(jobs, createMockingJob());
-
-        when(item.getAllJobs()).thenReturn((Collection) Arrays.asList(jobs));
-        when(listener.getMirrorGateService()).thenReturn(service);
+        when(helper.getMirrorGateService()).thenReturn(service);
     }
 
     @Test
-    public void onDeletedTestWhenServiceResponseOK() {
+    public void sendBuildResponseOK() {
         when(service.publishBuildData(any())).thenReturn(responseOk);
         when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
 
-        listener.onDeleted(item);
+        helper.sendBuild(createMockingBuild());
+
+        verify(service, times(1)).publishBuildData(any());
+    }
+
+    @Test
+    public void sendBuildResponseError() {
+        when(service.publishBuildData(any())).thenReturn(responseError);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
+
+        helper.sendBuild(createMockingBuild());
+
+        verify(service, times(1)).publishBuildData(any());
+    }
+
+    @Test
+    public void sendBuildFromJobResponseOK() {
+        when(service.publishBuildData(any())).thenReturn(responseOk);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
+
+        helper.sendBuildFromJob(createMockingJob());
+
+        verify(service, times(1)).publishBuildData(any());
+    }
+
+    @Test
+    public void sendBuildFromJobResponseError() {
+        when(service.publishBuildData(any())).thenReturn(responseError);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseError);
+
+        helper.sendBuildFromJob(createMockingJob());
+
+        verify(service, times(1)).publishBuildData(any());
+    }
+
+    @Test
+    public void sendBuildFromItemResponseOK() {
+        when(service.publishBuildData(any())).thenReturn(responseOk);
+        when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
+
+        Job[] jobs = new Job[new Random().nextInt(10)];
+        Arrays.fill(jobs, createMockingJob());
+
+        helper.sendBuildFromItem(createMockingItem(jobs));
 
         verify(service, times(jobs.length)).publishBuildData(any());
     }
 
     @Test
-    public void onDeletedTestWhenServiceResponseError() {
+    public void sendBuildFromItemResponseError() {
         when(service.publishBuildData(any())).thenReturn(responseError);
         when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseError);
 
-        listener.onDeleted(item);
+        Job[] jobs = new Job[new Random().nextInt(10)];
+        Arrays.fill(jobs, createMockingJob());
+
+        helper.sendBuildFromItem(createMockingItem(jobs));
 
         verify(service, times(jobs.length)).publishBuildData(any());
+    }
+
+    private Item createMockingItem(Job[] jobs) {
+        Item item = mock(Item.class);
+
+        when(item.getAllJobs()).thenReturn((Collection) Arrays.asList(jobs));
+        return item;
     }
 
     private Job createMockingJob() {
@@ -121,10 +165,21 @@ public class MirrorGateItemListenerTest extends TestCase {
         Run build = mock(Run.class);
 
         when(job.getLastBuild()).thenReturn(build);
-        PowerMockito.when(job.getAbsoluteUrl()).thenReturn(buildSample);
+        PowerMockito.when(job.getAbsoluteUrl()).thenReturn(BUILD_SAMPLE);
         when(build.getParent()).thenReturn(job);
 
         return job;
+    }
+
+    private Run createMockingBuild() {
+        Job job = PowerMockito.mock(Job.class);
+        Run run = mock(Run.class);
+
+        when(job.getLastBuild()).thenReturn(run);
+        PowerMockito.when(job.getAbsoluteUrl()).thenReturn(BUILD_SAMPLE);
+        when(run.getParent()).thenReturn(job);
+
+        return run;
     }
 }
 

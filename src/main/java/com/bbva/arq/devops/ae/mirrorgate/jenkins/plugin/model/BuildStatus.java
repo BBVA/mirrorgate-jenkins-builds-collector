@@ -17,6 +17,7 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -38,12 +39,12 @@ public enum BuildStatus {
     static {
         MAPPING.put("not_built", NotBuilt);
         for (BuildStatus buildStatus : values()) {
-            MAPPING.put(buildStatus.toString().toLowerCase(), buildStatus);
+            MAPPING.put(buildStatus.toString().toLowerCase(Locale.ENGLISH), buildStatus);
         }
     }
 
     public static BuildStatus fromString(String value) {
-        String key = value.toLowerCase();
+        String key = value.toLowerCase(Locale.ENGLISH);
         return MAPPING.containsKey(key) ? MAPPING.get(key): Unknown;
     }
 

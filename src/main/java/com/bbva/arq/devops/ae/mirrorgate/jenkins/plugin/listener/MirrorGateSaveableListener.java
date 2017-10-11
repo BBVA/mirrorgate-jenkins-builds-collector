@@ -17,33 +17,39 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
 import hudson.Extension;
-import hudson.model.Item;
-import hudson.model.listeners.ItemListener;
+import hudson.XmlFile;
+import hudson.model.Job;
+import hudson.model.Saveable;
+import hudson.model.listeners.SaveableListener;
 import java.util.logging.Logger;
 
 @Extension
-public class MirrorGateItemListener extends ItemListener {
+public class MirrorGateSaveableListener extends SaveableListener {
 
-    private static final Logger LOG = Logger.getLogger(MirrorGateItemListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(MirrorGateSaveableListener.class.getName());
 
     private final MirrorGateListenerHelper helper;
 
-    public MirrorGateItemListener() {
+    public MirrorGateSaveableListener() {
         this.helper = new MirrorGateListenerHelper();
 
-        LOG.fine(">>> MirrorGateItemListener Initialised");
+        LOG.fine(">>> MirrorGateSaveableListener Initialised");
     }
 
     @Override
-    public void onDeleted(final Item item) {
-        LOG.fine("onDeletedItem starts");
+    public void onChange(Saveable o, XmlFile file) {
 
-        helper.sendBuildFromItem(item);
+        LOG.fine(">>> MirrorGateSaveableListener onChange starts");
 
-        LOG.fine("onDeletedItem ends");
-    }
+        if (o instanceof Job) {
+            Job job = (Job) o;
+            if (!job.isBuildable()) {
+                helper.sendBuildFromJob(job);
+            }
+        }
 
-    protected MirrorGateListenerHelper getMirrorgateHelper() {
-        return helper;
+        super.onChange(o, file);
+
+        LOG.fine(">>> MirrorGateSaveableListener onChange ends");
     }
 }

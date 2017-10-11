@@ -35,7 +35,6 @@ public class RestCall {
 
     private static final Logger LOGGER = Logger.getLogger(RestCall.class.getName());
 
-    //Fixme: Need refactoring to remove code duplication.
     public HttpClient getHttpClient() {
         return new HttpClient();
     }
@@ -63,7 +62,7 @@ public class RestCall {
             String responseString = post.getResponseBodyAsStream() != null ?
                     getResponseString(post.getResponseBodyAsStream()) : "";
             response = new MirrorGateResponse(responseCode, responseString);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
             response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {

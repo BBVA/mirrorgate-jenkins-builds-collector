@@ -99,17 +99,15 @@ public class BuildBuilder {
         // Use introspective class to avoid plugins compatibility problems
         try {
             Method method = run.getClass().getMethod("getChangeSets");
-            if (method != null) {
-                method.setAccessible(true);
-                ((List<ChangeLogSet>) method.invoke(run, new Object[]{})).forEach(cset -> {
-                    for (Object object : ((ChangeLogSet) cset).getItems()) {
-                        ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
-                        if (!culprits.contains(change.getAuthor().getFullName())) {
-                            culprits.add(change.getAuthor().getFullName());
-                        }
+            method.setAccessible(true);
+            ((List<ChangeLogSet>) method.invoke(run, new Object[]{})).forEach(cset -> {
+                for (Object object : ((ChangeLogSet) cset).getItems()) {
+                    ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
+                    if (!culprits.contains(change.getAuthor().getFullName())) {
+                        culprits.add(change.getAuthor().getFullName());
                     }
-                });
-            }
+                }
+            });
         } catch (SecurityException | IllegalAccessException |
                 IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
             Logger.getLogger(MirrorGateRunListener.class.getName()).log(Level.SEVERE, null, ex);

@@ -42,10 +42,10 @@ public class MirrorGateUtils {
         return BASE64IMAGE;
     }
 
-    public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
+    public static String convertObjectToJson(Object object) throws IOException {
         ObjectMapper mapper = new CustomObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return mapper.writeValueAsBytes(object);
+        return mapper.writeValueAsString(object);
     }
 
     public static String getBuildUrl(Run<?, ?> run) {
