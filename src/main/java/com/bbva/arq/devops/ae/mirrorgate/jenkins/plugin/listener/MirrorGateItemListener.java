@@ -16,78 +16,34 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder.BuildBuilder;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildStatus;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.listeners.ItemListener;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.HttpStatus;
 
 @Extension
 public class MirrorGateItemListener extends ItemListener {
 
     private static final Logger LOG = Logger.getLogger(MirrorGateItemListener.class.getName());
 
-    private final MirrorGateService service;
+    private final MirrorGateListenerHelper helper;
 
     public MirrorGateItemListener() {
-        this.service = new DefaultMirrorGateService();
+        this.helper = new MirrorGateListenerHelper();
 
         LOG.fine(">>> MirrorGateItemListener Initialised");
     }
 
     @Override
     public void onDeleted(final Item item) {
-
         LOG.fine("onDeletedItem starts");
 
-        item.getAllJobs().forEach((job) -> {
-
-            if(job.getLastBuild() != null) {
-
-                BuildBuilder builder = new BuildBuilder(
-                        job.getLastBuild(), BuildStatus.Deleted);
-                MirrorGateResponse buildResponse = getMirrorGateService()
-                        .publishBuildData(builder.getBuildData());
-
-                if (buildResponse.getResponseCode() == HttpStatus.SC_CREATED) {
-                    LOG.log(Level.FINE, "MirrorGate: Published Build "
-                            + "Complete Data. {0}", buildResponse.toString());
-                } else {
-                    LOG.log(Level.WARNING, "MirrorGate: Failed Publishing "
-                            + "Build Complete Data. {0}", buildResponse.toString());
-                }
-
-                sendBuildExtraData(builder);
-            }
-        });
+        helper.sendBuildFromItem(item);
 
         LOG.fine("onDeletedItem ends");
     }
 
-    protected MirrorGateService getMirrorGateService() {
-        return service;
-    }
-
-    private void sendBuildExtraData(BuildBuilder builder) {
-        List<String> extraUrl = MirrorGateUtils.getURLList();
-
-        extraUrl.forEach(u -> {
-            MirrorGateResponse response = getMirrorGateService()
-                .sendBuildDataToExtraEndpoints(builder.getBuildData(), u);
-
-            if (response.getResponseCode() != HttpStatus.SC_CREATED) {
-                LOG.log(Level.WARNING, "POST to {0} failed with code: {1}", new Object[]{u, response.getResponseCode()});
-            } else {
-                LOG.log(Level.FINE, "POST to {0} succeeded!", u);
-            }
-        });
+    protected MirrorGateListenerHelper getMirrorgateHelper() {
+        return helper;
     }
 }
