@@ -69,13 +69,15 @@ public class MirrorGateListenerHelper {
                 msg = "MirrorGate: Published Build Complete Data. " + response.toString();
                 level = Level.FINE;
             } else {
-                msg = "MirrorGate: Failed Publishing Build Complete Data. " + response.toString();
+                msg = "MirrorGate: Build Status could not been sent to MirrorGate. Please contact with " +
+                        "MirrorGate Team for further information (mirrorgate.group@bbva.com).";
                 level = Level.WARNING;
             }
 
-            if (listener != null) {
+            if (listener != null && level == Level.FINE) {
                 listener.getLogger().println("Follow this project's builds progress at: "
                         + createMirrorgateLink(builder.getBuildData().getProjectName()));
+
                 listener.getLogger().println(msg);
             }
             LOG.log(level, msg);
@@ -104,7 +106,7 @@ public class MirrorGateListenerHelper {
                 level = Level.WARNING;
             }
 
-            if (listener != null) {
+            if (listener != null && level == Level.FINE) {
                 listener.getLogger().println(msg);
             }
             LOG.log(level, msg);
