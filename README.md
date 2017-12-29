@@ -6,7 +6,7 @@
 
 ## Download
 
-You can download the collector's hpi from [Sonatype OSS](https://oss.sonatype.org/content/repositories/snapshots/com/bbva/arq/devops/ae/mirrorgate/mirrorgate-publisher/)
+You can download the collector's hpi from [Sonatype OSS](https://oss.sonatype.org/content/repositories/releases/com/bbva/arq/devops/ae/mirrorgate/mirrorgate-publisher/)
 
 # Development instructions
 
