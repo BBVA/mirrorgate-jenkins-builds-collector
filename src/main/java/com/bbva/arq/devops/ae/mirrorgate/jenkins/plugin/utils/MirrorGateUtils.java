@@ -16,6 +16,7 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -97,5 +98,16 @@ public class MirrorGateUtils {
             .map(String::trim)
             .filter( u -> (u !=null && !u.isEmpty()) )
             .collect(Collectors.toList());
+    }
+
+    public static void parseBuildUrl(String buildUrl, BuildDTO request) {
+        String[] buildInfo = buildUrl.split("/job/");
+        request.setBuildUrl(buildUrl);
+        request.setProjectName(buildInfo[1].split("/")[0].replace(" ", "_"));
+
+        if (buildInfo.length >= 3) {
+            request.setRepoName(buildInfo[buildInfo.length - 2].split("/")[0]);
+            request.setBranch(buildInfo[buildInfo.length - 1].split("/")[0]);
+        }
     }
 }

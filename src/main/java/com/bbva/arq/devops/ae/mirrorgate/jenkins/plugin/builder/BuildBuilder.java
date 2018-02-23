@@ -56,22 +56,11 @@ public class BuildBuilder {
         // Get culprits if build comes from a SCM Source
         setCulprits(run);
 
-        parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
+        MirrorGateUtils.parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
     }
 
     public BuildDTO getBuildData() {
         return request;
-    }
-
-    private void parseBuildUrl(String buildUrl, BuildDTO request) {
-        String[] buildInfo = buildUrl.split("/job/");
-        request.setBuildUrl(buildUrl);
-        request.setProjectName(buildInfo[1].split("/")[0].replace(" ", "_"));
-
-        if (buildInfo.length >= 3) {
-            request.setRepoName(buildInfo[buildInfo.length - 2].split("/")[0]);
-            request.setBranch(buildInfo[buildInfo.length - 1].split("/")[0]);
-        }
     }
 
     private void setCulprits(Run run) {
