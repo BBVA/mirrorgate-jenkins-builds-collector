@@ -66,18 +66,11 @@ public class BuildBuilder {
     private void parseBuildUrl(String buildUrl, BuildDTO request) {
         String[] buildInfo = buildUrl.split("/job/");
         request.setBuildUrl(buildUrl);
-        request.setProjectName(buildInfo[1].split("/")[0]);
+        request.setProjectName(buildInfo[1].split("/")[0].replace(" ", "_"));
 
-        /* A Job show branchs of a repository */
-        if(buildInfo.length == 3) {
-            request.setRepoName(buildInfo[1].split("/")[0]);
-            request.setBranch(buildInfo[2].split("/")[0]);
-        }
-
-        /* A Job show many repositositories*/
-        if(buildInfo.length > 3) {
-            request.setRepoName(buildInfo[2].split("/")[0]);
-            request.setBranch(buildInfo[3].split("/")[0]);
+        if (buildInfo.length >= 3) {
+            request.setRepoName(buildInfo[buildInfo.length - 2].split("/")[0]);
+            request.setBranch(buildInfo[buildInfo.length - 1].split("/")[0]);
         }
     }
 
