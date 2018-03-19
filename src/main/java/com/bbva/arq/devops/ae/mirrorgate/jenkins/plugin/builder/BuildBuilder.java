@@ -23,6 +23,7 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.model.Cause.UserIdCause;
 import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BuildBuilder {
+
+    private static final Logger LOG = Logger.getLogger(BuildBuilder.class.getName());
 
     private final Run<?, ?> run;
     private BuildDTO request;
@@ -56,29 +59,15 @@ public class BuildBuilder {
         // Get culprits if build comes from a SCM Source
         setCulprits(run);
 
-        parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
+        try {
+            MirrorGateUtils.parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
+        } catch (UnsupportedEncodingException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
     }
 
     public BuildDTO getBuildData() {
         return request;
-    }
-
-    private void parseBuildUrl(String buildUrl, BuildDTO request) {
-        String[] buildInfo = buildUrl.split("/job/");
-        request.setBuildUrl(buildUrl);
-        request.setProjectName(buildInfo[1].split("/")[0]);
-
-        /* A Job show branchs of a repository */
-        if(buildInfo.length == 3) {
-            request.setRepoName(buildInfo[1].split("/")[0]);
-            request.setBranch(buildInfo[2].split("/")[0]);
-        }
-
-        /* A Job show many repositositories*/
-        if(buildInfo.length > 3) {
-            request.setRepoName(buildInfo[2].split("/")[0]);
-            request.setBranch(buildInfo[3].split("/")[0]);
-        }
     }
 
     private void setCulprits(Run run) {

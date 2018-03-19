@@ -16,11 +16,14 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Run;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +36,10 @@ public class MirrorGateUtils {
 
     public static final String APPLICATION_JSON_VALUE = "application/json";
 
-
     private MirrorGateUtils() {
     }
 
-
-    public static String getBase64image(){
+    public static String getBase64image() {
         return BASE64IMAGE;
     }
 
@@ -48,9 +49,9 @@ public class MirrorGateUtils {
         return mapper.writeValueAsString(object);
     }
 
-    public static String getBuildUrl(Run<?, ?> run) {
-        return run.getParent().getAbsoluteUrl()
-                + String.valueOf(run.getNumber()) + "/";
+    public static String getBuildUrl(Run<?, ?> run) throws UnsupportedEncodingException {
+        return URLDecoder.decode(run.getParent().getAbsoluteUrl()
+            + String.valueOf(run.getNumber()) + "/", "UTF-8");
     }
 
     public static String getBuildNumber(Run<?, ?> run) {
@@ -97,5 +98,16 @@ public class MirrorGateUtils {
             .map(String::trim)
             .filter( u -> (u !=null && !u.isEmpty()) )
             .collect(Collectors.toList());
+    }
+
+    public static void parseBuildUrl(String buildUrl, BuildDTO request) {
+        String[] buildInfo = buildUrl.split("/job/");
+        request.setBuildUrl(buildUrl);
+        request.setProjectName(buildInfo[1].split("/")[0]);
+
+        if (buildInfo.length >= 3) {
+            request.setRepoName(buildInfo[buildInfo.length - 2].split("/")[0]);
+            request.setBranch(buildInfo[buildInfo.length - 1].split("/")[0]);
+        }
     }
 }
