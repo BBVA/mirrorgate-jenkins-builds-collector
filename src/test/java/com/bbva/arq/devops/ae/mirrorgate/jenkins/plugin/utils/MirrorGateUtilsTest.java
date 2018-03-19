@@ -47,23 +47,23 @@ public class MirrorGateUtilsTest {
         MirrorGateUtils.parseBuildUrl(BUILD_URL4, build4);
         MirrorGateUtils.parseBuildUrl(BUILD_URL5, build5);
 
-        assertEquals(build1.getProjectName(), PROJECT_NAME.replace(" ", "_"));
+        assertEquals(build1.getProjectName(), PROJECT_NAME);
         assertEquals(build1.getRepoName(), REPOSITORY_NAME);
         assertEquals(build1.getBranch(), BRANCH_NAME);
 
-        assertEquals(build2.getProjectName(), PROJECT_NAME.replace(" ", "_"));
+        assertEquals(build2.getProjectName(), PROJECT_NAME);
         assertEquals(build2.getRepoName(), REPOSITORY_NAME);
         assertEquals(build2.getBranch(), BRANCH_NAME);
 
-        assertEquals(build3.getProjectName(), PROJECT_NAME.replace(" ", "_"));
+        assertEquals(build3.getProjectName(), PROJECT_NAME);
         assertEquals(build3.getRepoName(), REPOSITORY_NAME);
         assertEquals(build3.getBranch(), BRANCH_NAME);
 
-        assertEquals(build4.getProjectName(), REPOSITORY_NAME.replace(" ", "_"));
+        assertEquals(build4.getProjectName(), REPOSITORY_NAME);
         assertEquals(build4.getRepoName(), REPOSITORY_NAME);
         assertEquals(build4.getBranch(), BRANCH_NAME);
 
-        assertEquals(build5.getProjectName(), PROJECT_NAME.replace(" ", "_"));
+        assertEquals(build5.getProjectName(), PROJECT_NAME);
         assertEquals(build5.getRepoName(), null);
         assertEquals(build5.getBranch(), null);
     }
