@@ -28,8 +28,8 @@ buildscript {
 
     dependencies {
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.22.0'
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.28.1'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
     }
 }
 
@@ -53,24 +53,31 @@ signing {
 
 repositories {
     mavenCentral()
+    jcenter()
+    maven {
+        url 'https://plugins.gradle.org/m2/'
+    }
+    maven {
+        url 'http://repo.jenkins-ci.org/releases/'
+    }
 }
 
 jacocoTestReport {
     reports {
         xml.enabled false
         csv.enabled false
-        html.destination "${buildDir}/reports/coverage"
+        html.destination file("${buildDir}/reports/coverage")
     }
 }
 
 jenkinsPlugin {
     // always use latest LTS!
-    coreVersion = '2.7.1'
+    coreVersion = '2.159'
     shortName = pluginName
     displayName = jenkinsDisplayName
 }
 
-configurations.archives.artifacts.clear();
+configurations.archives.artifacts.clear()
 artifacts {
     archives file: project.file("build/libs/mirrorgate-publisher.hpi")
 }
@@ -121,11 +128,12 @@ uploadArchives {
 defaultTasks 'clean', 'jpi'
 
 dependencies {
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+    compile 'org.apache.commons:commons-lang3:3.8.1'
 
-    jenkinsPlugins group: 'org.jenkins-ci.plugins', name: 'credentials', version: '2.1.13', ext: 'jar'
-    jenkinsPlugins group: 'org.jenkins-ci.plugins', name: 'plain-credentials', version: '1.4', ext: 'jar'
-    
-    testCompile group: 'org.powermock', name: 'powermock-mockito-release-full', version: '1.6.4'
+    jenkinsPlugins 'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.3-2.0'
+    jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.18'
+    jenkinsPlugins 'org.jenkins-ci.plugins:plain-credentials:1.5'
+
+    testCompile 'org.powermock:powermock-mockito-release-full:1.6.4'
 }
