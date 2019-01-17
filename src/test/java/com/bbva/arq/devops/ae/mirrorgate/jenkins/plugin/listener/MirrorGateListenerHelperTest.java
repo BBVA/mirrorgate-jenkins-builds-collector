@@ -31,7 +31,7 @@ import java.util.Random;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import junit.framework.TestCase;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

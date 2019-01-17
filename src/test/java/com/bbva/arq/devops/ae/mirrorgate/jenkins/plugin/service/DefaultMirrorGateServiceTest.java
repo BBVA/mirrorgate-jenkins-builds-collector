@@ -17,22 +17,21 @@
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
-import java.io.IOException;
-import java.util.Arrays;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGatePublisher;
 import junit.framework.TestCase;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,8 +41,16 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Jenkins.class})
+@PrepareForTest({Jenkins.class, HttpClients.class})
 public class DefaultMirrorGateServiceTest extends TestCase {
 
     @Mock
@@ -53,7 +60,13 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     MirrorGatePublisher.DescriptorImpl descriptor;
 
     @Mock
-    HttpClient htppClient;
+    CloseableHttpClient httpClient;
+
+    @Mock
+    CloseableHttpResponse httpResponse;
+
+    @Mock
+    StatusLine statusLine;
 
     @Spy
     RestCall restCall = new RestCall();
@@ -65,20 +78,27 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
+        PowerMockito.mockStatic(HttpClients.class);
+
         PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
-        PowerMockito.when(jenkins.getDescriptorByType(any()))
-                .thenReturn(descriptor);
+        PowerMockito.when(jenkins.getDescriptorByType(any())).thenReturn(descriptor);
 
-        htppClient = mock(HttpClient.class);
+        httpClient = mock(CloseableHttpClient.class);
+        httpResponse = mock(CloseableHttpResponse.class);
+        statusLine = mock(StatusLine.class);
 
-        when(restCall.getHttpClient()).thenReturn(htppClient);
+        PowerMockito.when(HttpClients.createDefault()).thenReturn(httpClient);
+
         when(service.buildRestCall()).thenReturn(restCall);
+        when(httpResponse.getStatusLine()).thenReturn(statusLine);
+        when(httpResponse.getEntity()).thenReturn(new StringEntity("Test", Charset.defaultCharset()));
     }
 
     @Test
     public void testSuccessfulPublishBuildDataTest() throws IOException {
-        when(htppClient.executeMethod(any(PostMethod.class)))
-                .thenReturn(HttpStatus.SC_OK);
+        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+        when(httpClient.execute(any(HttpPost.class), any(HttpClientContext.class)))
+                .thenReturn(httpResponse);
 
         MirrorGateResponse response = service.publishBuildData(makeBuildRequest());
 
@@ -87,8 +107,9 @@ public class DefaultMirrorGateServiceTest extends TestCase {
 
     @Test
     public void testFailedPublishBuildDataTest() throws IOException {
-        when(htppClient.executeMethod(any(PostMethod.class)))
-                .thenReturn(HttpStatus.SC_NOT_FOUND);
+        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_NOT_FOUND);
+        when(httpClient.execute(any(HttpPost.class), any(HttpClientContext.class)))
+                .thenReturn(httpResponse);
 
         MirrorGateResponse response = service.publishBuildData(makeBuildRequest());
 
@@ -97,8 +118,9 @@ public class DefaultMirrorGateServiceTest extends TestCase {
 
     @Test
     public void testSuccessConnectionTest() throws IOException {
-        when(htppClient.executeMethod(any(GetMethod.class)))
-                .thenReturn(HttpStatus.SC_OK);
+        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+        when(httpClient.execute(any(HttpGet.class), any(HttpClientContext.class)))
+                .thenReturn(httpResponse);
 
         assertEquals(service.testConnection().getResponseCode(),
                 HttpStatus.SC_OK);
@@ -106,8 +128,9 @@ public class DefaultMirrorGateServiceTest extends TestCase {
 
     @Test
     public void testFailedConnectionTest() throws IOException {
-        when(htppClient.executeMethod(any(GetMethod.class)))
-                .thenReturn(HttpStatus.SC_NOT_FOUND);
+        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_NOT_FOUND);
+        when(httpClient.execute(any(HttpGet.class), any(HttpClientContext.class)))
+                .thenReturn(httpResponse);
 
         assertEquals(service.testConnection().getResponseCode(),
                 HttpStatus.SC_NOT_FOUND);

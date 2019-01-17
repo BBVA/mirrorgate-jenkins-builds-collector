@@ -16,99 +16,88 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
-import java.io.ByteArrayOutputStream;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 
 
 public class RestCall {
 
     private static final Logger LOGGER = Logger.getLogger(RestCall.class.getName());
 
-    public HttpClient getHttpClient() {
-        return new HttpClient();
-    }
-
     public MirrorGateResponse makeRestCallPost(String url, String jsonString, String user, String password) {
 
-        MirrorGateResponse response;
-        PostMethod post = new PostMethod(url);
-        try {
-            HttpClient client = getHttpClient();
+        HttpClientContext localContext = HttpClientContext.create();
+        HttpPost post = new HttpPost(url);
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
 
             if (user != null && password != null) {
-                client.getState().setCredentials(
-                        AuthScope.ANY,
+                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(AuthScope.ANY,
                         new UsernamePasswordCredentials(user, password));
-                post.setDoAuthentication(true);
+                localContext.setCredentialsProvider(credentialsProvider);
             }
 
-            StringRequestEntity requestEntity = new StringRequestEntity(
+            StringEntity requestEntity = new StringEntity(
                     jsonString,
-                    "application/json",
-                    "UTF-8");
-            post.setRequestEntity(requestEntity);
-            int responseCode = client.executeMethod(post);
-            String responseString = post.getResponseBodyAsStream() != null ?
-                    getResponseString(post.getResponseBodyAsStream()) : "";
-            response = new MirrorGateResponse(responseCode, responseString);
+                    ContentType.APPLICATION_JSON);
+            post.setEntity(requestEntity);
+
+            try (CloseableHttpResponse response = client.execute(post, localContext)) {
+                int responseCode = response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                String responseString = EntityUtils.toString(entity, "UTF-8");
+                return new MirrorGateResponse(responseCode, responseString);
+            }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "MirrorGate: Error posting to MirrorGate", e);
-            response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
         } finally {
             post.releaseConnection();
         }
-        return response;
+        return new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
     }
 
     public MirrorGateResponse makeRestCallGet(String url, String user, String password) {
-        MirrorGateResponse response;
-        GetMethod get = new GetMethod(url);
-        try {
-            HttpClient client = getHttpClient();
+
+        HttpGet get = new HttpGet(url);
+        HttpClientContext localContext = HttpClientContext.create();
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
 
             if (user != null && password != null) {
-                client.getState().setCredentials(
-                        AuthScope.ANY,
-                        new UsernamePasswordCredentials(user, password));
-                get.setDoAuthentication(true);
+                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(AuthScope.ANY, new
+                        UsernamePasswordCredentials(user, password));
+                localContext.setCredentialsProvider(credentialsProvider);
             }
 
-            get.getParams().setContentCharset("UTF-8");
-            int responseCode = client.executeMethod(get);
-            String responseString = get.getResponseBodyAsStream() != null ?
-                    getResponseString(get.getResponseBodyAsStream()) : "";
-            response = new MirrorGateResponse(responseCode, responseString);
-        } catch (HttpException e) {
-            LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
-            response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
+            try (CloseableHttpResponse response = client.execute(get, localContext)) {
+                int responseCode = response.getStatusLine().getStatusCode();
+                HttpEntity entity = response.getEntity();
+                String responseString = EntityUtils.toString(entity, "UTF-8");
+                return new MirrorGateResponse(responseCode, responseString);
+            }
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error connecting to MirrorGate", e);
-            response = new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
+            LOGGER.log(Level.SEVERE, "MirrorGate: Error connecting to MirrorGate", e);
         } finally {
             get.releaseConnection();
         }
-        return response;
-    }
-
-    private String getResponseString(InputStream in) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        byte[] byteArray = new byte[1024];
-        int count;
-        while ((count = in.read(byteArray, 0, byteArray.length)) > 0) {
-            outputStream.write(byteArray, 0, count);
-        }
-        return new String(outputStream.toByteArray(), "UTF-8");
+        return new MirrorGateResponse(HttpStatus.SC_BAD_REQUEST, "");
     }
 
 }

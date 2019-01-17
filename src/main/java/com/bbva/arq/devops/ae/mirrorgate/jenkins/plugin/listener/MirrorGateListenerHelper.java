@@ -27,10 +27,11 @@ import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import org.apache.http.HttpStatus;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.HttpStatus;
 
 public class MirrorGateListenerHelper {
 
