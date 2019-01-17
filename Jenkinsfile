@@ -26,7 +26,7 @@ node('global') {
         }
 
         stage('Build plugin') {
-            sh "./gradlew build"
+            sh "./gradlew build jpi"
         }
 
         stage('Run tests') {
