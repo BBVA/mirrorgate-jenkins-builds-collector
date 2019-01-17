@@ -72,7 +72,7 @@ jacocoTestReport {
 
 jenkinsPlugin {
     // always use latest LTS!
-    coreVersion = '2.159'
+    coreVersion = '2.160'
     shortName = pluginName
     displayName = jenkinsDisplayName
 }
@@ -131,7 +131,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
     compile 'org.apache.commons:commons-lang3:3.8.1'
 
-    jenkinsPlugins 'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.3-2.0'
+    jenkinsPlugins 'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.5-3.0'
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.18'
     jenkinsPlugins 'org.jenkins-ci.plugins:plain-credentials:1.5'
 
