@@ -26,11 +26,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jenkinsci.Symbol;
 
+import javax.annotation.Nonnull;
+
 public class ImgConsoleNote extends ConsoleNote {
 
     private final String base64image;
 
-    public ImgConsoleNote(String base64image) {
+    private ImgConsoleNote(String base64image) {
         this.base64image = base64image;
     }
 
@@ -40,10 +42,6 @@ public class ImgConsoleNote extends ConsoleNote {
 
         text.addMarkup(charPos, charPos, "<img src=" + base64image + ">", "</img>");
         return null;
-    }
-
-    protected String extraAttributes() {
-        return "";
     }
 
     public static String encodeTo(String base64image) {
@@ -60,6 +58,7 @@ public class ImgConsoleNote extends ConsoleNote {
     @Symbol("hyperlink")
     public static class DescriptorImpl extends ConsoleAnnotationDescriptor {
 
+        @Nonnull
         public String getDisplayName() {
             return "Hyperlinks";
         }

@@ -43,7 +43,4 @@ public class MirrorGateItemListener extends ItemListener {
         LOG.fine("onDeletedItem ends");
     }
 
-    protected MirrorGateListenerHelper getMirrorgateHelper() {
-        return helper;
-    }
 }

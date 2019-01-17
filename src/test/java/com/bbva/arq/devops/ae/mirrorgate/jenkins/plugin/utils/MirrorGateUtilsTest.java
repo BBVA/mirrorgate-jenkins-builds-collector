@@ -16,22 +16,23 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 
-import static junit.framework.Assert.assertEquals;
-
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 public class MirrorGateUtilsTest {
 
-    public static final String PROJECT_NAME = "MirrorGate Project";
-    public static final String REPOSITORY_NAME = "mirrorgate";
-    public static final String BRANCH_NAME = "master";
+    private static final String PROJECT_NAME = "MirrorGate Project";
+    private static final String REPOSITORY_NAME = "mirrorgate";
+    private static final String BRANCH_NAME = "master";
 
-    public static final String BUILD_URL1 = "https://fake/job/" + PROJECT_NAME + "/job/Fake Job/job/Fake Job/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
-    public static final String BUILD_URL2 = "https://fake/job/" + PROJECT_NAME + "/job/Fake Job/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
-    public static final String BUILD_URL3 = "https://fake/job/" + PROJECT_NAME + "/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
-    public static final String BUILD_URL4 = "https://fake/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
-    public static final String BUILD_URL5 = "https://fake/job/" + PROJECT_NAME + "/1/console";
+    private static final String BUILD_URL1 = "https://fake/job/" + PROJECT_NAME + "/job/Fake Job/job/Fake Job/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
+    private static final String BUILD_URL2 = "https://fake/job/" + PROJECT_NAME + "/job/Fake Job/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
+    private static final String BUILD_URL3 = "https://fake/job/" + PROJECT_NAME + "/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
+    private static final String BUILD_URL4 = "https://fake/job/" + REPOSITORY_NAME + "/job/" + BRANCH_NAME + "/1/console";
+    private static final String BUILD_URL5 = "https://fake/job/" + PROJECT_NAME + "/1/console";
 
     @Test
     public void parseBuildUrlTest() {
@@ -64,7 +65,7 @@ public class MirrorGateUtilsTest {
         assertEquals(build4.getBranch(), BRANCH_NAME);
 
         assertEquals(build5.getProjectName(), PROJECT_NAME);
-        assertEquals(build5.getRepoName(), null);
-        assertEquals(build5.getBranch(), null);
+        assertNull(build5.getRepoName());
+        assertNull(build5.getBranch());
     }
 }

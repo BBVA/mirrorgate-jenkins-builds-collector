@@ -64,6 +64,7 @@ node('global') {
                 }
 
             } catch(Exception e) {
+                logger warning "Error publishing plugin {}" e
                 currentBuild.result = "UNSTABLE"
             }
         }

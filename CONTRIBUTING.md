@@ -32,7 +32,7 @@ Before you submit an issue, please search the issue tracker, maybe an issue for 
 We want to fix all the issues as soon as possible, but before fixing a bug we need to reproduce and confirm it. Please provide information with your issue like:
 
 - version of MirrorGate being used
-- relevant infraestruture details
+- relevant infrastructure details
 - OS version
 
 You can file new issues by filling out our [new issue form](https://github.com/bbva/mirrorgate-jenkins-builds-collector/issues/new).

@@ -21,7 +21,7 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import jenkins.model.Jenkins;
-import jenkins.plugins.mirrorgate.MirrorGatePublisher;
+import jenkins.plugins.mirrorgate.MirrorGateRecorder;
 import junit.framework.TestCase;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -43,7 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -57,7 +57,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     Jenkins jenkins;
 
     @Mock
-    MirrorGatePublisher.DescriptorImpl descriptor;
+    MirrorGateRecorder.DescriptorImpl descriptor;
 
     @Mock
     CloseableHttpClient httpClient;
@@ -69,10 +69,10 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     StatusLine statusLine;
 
     @Spy
-    RestCall restCall = new RestCall();
+    private RestCall restCall = new RestCall();
 
     @Spy
-    DefaultMirrorGateService service = new DefaultMirrorGateService();
+    private DefaultMirrorGateService service = new DefaultMirrorGateService();
 
     @Before
     @Override
@@ -80,7 +80,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.mockStatic(HttpClients.class);
 
-        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
         PowerMockito.when(jenkins.getDescriptorByType(any())).thenReturn(descriptor);
 
         httpClient = mock(CloseableHttpClient.class);
@@ -144,7 +144,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         build.setEndTime(8);
         build.setDuration(5);
         build.setBuildStatus("Success");
-        build.setCulprits(Arrays.asList("foo"));
+        build.setCulprits(Collections.singletonList("foo"));
         return build;
     }
 

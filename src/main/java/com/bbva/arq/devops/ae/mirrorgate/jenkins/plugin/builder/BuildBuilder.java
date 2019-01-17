@@ -23,6 +23,7 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.model.Cause.UserIdCause;
 import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -76,12 +77,10 @@ public class BuildBuilder {
 
         // Get culprits from the causes of the build
         run.getCauses().forEach((cause -> {
-            switch (cause.getClass().getSimpleName()) {
-                case "UserIdCause":
-                    if (!culprits.contains(((UserIdCause) cause).getUserName())) {
-                        culprits.add(((UserIdCause) cause).getUserName());
-                    }
-                    break;
+            if ("UserIdCause".equals(cause.getClass().getSimpleName())) {
+                if (!culprits.contains(((UserIdCause) cause).getUserName())) {
+                    culprits.add(((UserIdCause) cause).getUserName());
+                }
             }
         }));
 
@@ -89,8 +88,8 @@ public class BuildBuilder {
         try {
             Method method = run.getClass().getMethod("getChangeSets");
             method.setAccessible(true);
-            ((List<ChangeLogSet>) method.invoke(run, new Object[]{})).forEach(cset -> {
-                for (Object object : ((ChangeLogSet) cset).getItems()) {
+            ((List) method.invoke(run, new Object[]{})).forEach(changeSet -> {
+                for (Object object : ((ChangeLogSet) changeSet).getItems()) {
                     ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
                     if (!culprits.contains(change.getAuthor().getFullName())) {
                         culprits.add(change.getAuthor().getFullName());

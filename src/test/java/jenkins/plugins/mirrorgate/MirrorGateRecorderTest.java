@@ -16,10 +16,6 @@
 
 package jenkins.plugins.mirrorgate;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import hudson.util.FormValidation;
@@ -35,19 +31,21 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.mockito.Mockito.*;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Jenkins.class})
-public class MirrorGatePublisherTest extends TestCase {
+public class MirrorGateRecorderTest extends TestCase {
 
     @Mock
     Jenkins jenkins;
 
     @Mock
-    MirrorGateService service = mock(MirrorGateService.class);
+    private MirrorGateService service = mock(MirrorGateService.class);
 
     @Spy
-    MirrorGatePublisherStub.DescriptorImplStub descriptor
-            = spy(new MirrorGatePublisherStub.DescriptorImplStub());
+    private MirrorGateRecorderStub.DescriptorImplStub descriptor
+            = spy(new MirrorGateRecorderStub.DescriptorImplStub());
 
     private static final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
@@ -55,13 +53,13 @@ public class MirrorGatePublisherTest extends TestCase {
     @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
-        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
         PowerMockito.when(jenkins.getDescriptorByType(any()))
                 .thenReturn(descriptor);
     }
 
     @Test
-    public void testDoTestOKConnectionTest() throws Exception {
+    public void testDoTestOKConnectionTest() {
         when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_OK, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
@@ -73,7 +71,7 @@ public class MirrorGatePublisherTest extends TestCase {
     }
 
     @Test
-    public void testDoTestErrorConnectionTest() throws Exception {
+    public void testDoTestErrorConnectionTest() {
         when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
@@ -85,7 +83,7 @@ public class MirrorGatePublisherTest extends TestCase {
     }
 
     @Test
-    public void testDoTestConnectionWithoutServiveConnectionTest() throws Exception {
+    public void testDoTestConnectionWithoutServiveConnectionTest() {
         when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(null);

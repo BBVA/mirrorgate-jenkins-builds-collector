@@ -74,7 +74,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
         }
     }
 
-    protected RestCall buildRestCall() {
+    RestCall buildRestCall() {
         return new RestCall();
     }
 }

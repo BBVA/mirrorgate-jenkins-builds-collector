@@ -26,11 +26,11 @@ import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Item;
 import hudson.security.ACL;
+import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Publisher;
+import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +39,9 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-public class MirrorGatePublisher extends Publisher {
+import javax.annotation.Nonnull;
+
+public class MirrorGateRecorder extends Recorder {
 
     @Override
     public DescriptorImpl getDescriptor() {
@@ -52,10 +54,7 @@ public class MirrorGatePublisher extends Publisher {
     }
 
     @Extension
-    public static class DescriptorImpl extends Descriptor<Publisher> {
-
-        protected static final Logger LOG
-                = Logger.getLogger(DescriptorImpl.class.getName());
+    public static class DescriptorImpl extends BuildStepDescriptor {
 
         private String mirrorGateAPIUrl;
         private String mirrorgateCredentialsId;
@@ -63,6 +62,11 @@ public class MirrorGatePublisher extends Publisher {
 
         public DescriptorImpl() {
             load();
+        }
+
+        @Override
+        public boolean isApplicable(Class jobType) {
+            return true;
         }
 
         public String getMirrorGateAPIUrl() {
@@ -93,14 +97,14 @@ public class MirrorGatePublisher extends Publisher {
         }
 
         @Override
+        @Nonnull
         public String getDisplayName() {
             return "MirrorGate Publisher";
         }
 
         public FormValidation doTestConnection(
                 @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl,
-                @QueryParameter("mirrorgateCredentialsId") final String credentialsId)
-                throws Descriptor.FormException {
+                @QueryParameter("mirrorgateCredentialsId") final String credentialsId) {
             MirrorGateService testMirrorGateService = getMirrorGateService();
             if (testMirrorGateService != null) {
                 MirrorGateResponse response
@@ -120,7 +124,7 @@ public class MirrorGatePublisher extends Publisher {
 
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return result.includeCurrentValue(credentialsId);
                 }
             } else if (!item.hasPermission(Item.EXTENDED_READ)
@@ -137,7 +141,7 @@ public class MirrorGatePublisher extends Publisher {
                 @QueryParameter("mirrorgateCredentialsId") String credentialsId) {
 
             if (item == null) {
-                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return FormValidation.ok();
                 }
             } else if (!item.hasPermission(Item.EXTENDED_READ)

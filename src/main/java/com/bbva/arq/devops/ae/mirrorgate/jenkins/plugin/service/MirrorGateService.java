@@ -25,7 +25,7 @@ public interface MirrorGateService {
      *
      * Publish Build Data to an endpoint
      *
-     * @param requestBuild
+     * @param requestBuild Build to Publish
      * @return MirrorGateResponse
      */
     MirrorGateResponse publishBuildData(BuildDTO requestBuild);
@@ -41,8 +41,8 @@ public interface MirrorGateService {
      *
      * Publish Build Data to an endpoint
      *
-     * @param requestBuild
-     * @param URL
+     * @param requestBuild Build to send to extra endpoints
+     * @param URL The uri to send the build
      * @return Boolean
      */
     MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO requestBuild, String URL);
