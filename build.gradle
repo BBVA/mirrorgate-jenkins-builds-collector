@@ -71,7 +71,6 @@ jacocoTestReport {
 }
 
 jenkinsPlugin {
-    // always use latest LTS!
     coreVersion = '2.160'
     shortName = pluginName
     displayName = jenkinsDisplayName
@@ -122,6 +121,16 @@ uploadArchives {
                 }
             }
         }
+    }
+}
+
+task replaceVersionInREADME {
+    ant.replaceregexp(match:'Last version of this plugin \\(v([0-9\\.]+)\\)', replace:"Last version of this plugin (v$version)", flags:'g', byline:true) {
+        fileset(dir: '.', includes: 'README.md')
+    }
+
+    ant.replaceregexp(match:'Jenkins version ([0-9\\.]+)', replace:"Jenkins version ${jenkinsPlugin.coreVersion}", flags:'g', byline:true) {
+        fileset(dir: '.', includes: 'README.md')
     }
 }
 
