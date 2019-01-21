@@ -22,7 +22,7 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGat
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
-import hudson.console.HyperlinkNote;
+import hudson.console.MirrorGateHyperlinkNote;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -113,7 +113,7 @@ class MirrorGateListenerHelper {
     }
 
     private String createMirrorGateLink(String projectName) {
-        String mirrorGateUrl = HyperlinkNote.encodeTo(
+        String mirrorGateUrl = MirrorGateHyperlinkNote.encodeTo(
                 MirrorGateUtils.getMirrorGateAPIUrl() + "/dashboard.html?board=" + projectName,
                 "MirrorGate");
 
