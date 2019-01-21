@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
 
-  <f:section title="${%Global MirrorGate Publisher Settings}" name="mirrorgate-publisher">
+  <f:section title="${%MirrorGate Publisher Settings}" name="mirrorgate-publisher">
     <f:entry title="${%MirrorGate Server URL}" help="/plugin/mirrorgate-publisher/help-globalConfig-mirrorGateBuildServerUrl.html">
         <f:textbox field="mirrorGateAPIUrl" name="mirrorGateAPIUrl" value="${descriptor.getMirrorGateAPIUrl()}" />
     </f:entry>
