@@ -54,7 +54,4 @@ public class MirrorGateRunListener extends RunListener<Run> {
         LOG.fine("onCompleted ends");
     }
 
-    protected MirrorGateListenerHelper getMirrorgateHelper() {
-        return helper;
-    }
 }

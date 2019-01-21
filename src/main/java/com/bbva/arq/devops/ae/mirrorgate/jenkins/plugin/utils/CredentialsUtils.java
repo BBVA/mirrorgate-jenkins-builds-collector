@@ -18,15 +18,15 @@ package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.security.ACL;
-import java.util.Collections;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
+import java.util.Collections;
 
-public class CredentialsUtils {
+
+class CredentialsUtils {
 
     private CredentialsUtils() {
     }
@@ -45,7 +45,6 @@ public class CredentialsUtils {
      * Get the credentials identified by the given id from the Jenkins
      * credential store.
      *
-     * @param <T>
      * @param credentialsId The id for the credentials
      * @param credentialsClass The class of credentials to return
      * @return Jenkins credentials
@@ -59,7 +58,7 @@ public class CredentialsUtils {
 
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(credentialsClass,
-                        Jenkins.getInstance(), ACL.SYSTEM, Collections.<DomainRequirement>emptyList()),
+                        Jenkins.get(), ACL.SYSTEM, Collections.emptyList()),
                 CredentialsMatchers.withId(credentialsId)
         );
     }

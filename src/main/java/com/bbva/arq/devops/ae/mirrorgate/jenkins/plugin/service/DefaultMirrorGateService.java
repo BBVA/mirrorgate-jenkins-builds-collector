@@ -20,10 +20,11 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
+import org.apache.http.HttpStatus;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.HttpStatus;
 
 public class DefaultMirrorGateService implements MirrorGateService {
 
@@ -73,7 +74,7 @@ public class DefaultMirrorGateService implements MirrorGateService {
         }
     }
 
-    protected RestCall buildRestCall() {
+    RestCall buildRestCall() {
         return new RestCall();
     }
 }

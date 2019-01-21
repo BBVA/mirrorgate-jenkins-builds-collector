@@ -22,17 +22,18 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGat
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
-import hudson.console.HyperlinkNote;
+import hudson.console.MirrorGateHyperlinkNote;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import org.apache.http.HttpStatus;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.HttpStatus;
 
-public class MirrorGateListenerHelper {
+class MirrorGateListenerHelper {
 
     private static final Logger LOG = Logger.getLogger(MirrorGateListenerHelper.class.getName());
 
@@ -54,7 +55,7 @@ public class MirrorGateListenerHelper {
         this.sendBuildFromJob(job, null);
     }
 
-    public void sendBuildFromJob(Job job, TaskListener listener) {
+    private void sendBuildFromJob(Job job, TaskListener listener) {
         if (job != null && job.getLastBuild() != null) {
             BuildStatus status = job.isBuildable() ? (job.getLastBuild().getResult() != null
                     ? BuildStatus.fromString(job.getLastBuild().getResult().toString())
@@ -76,7 +77,7 @@ public class MirrorGateListenerHelper {
 
             if (listener != null && level == Level.FINE) {
                 listener.getLogger().println("Follow this project's builds progress at: "
-                        + createMirrorgateLink(builder.getBuildData().getProjectName()));
+                        + createMirrorGateLink(builder.getBuildData().getProjectName()));
 
                 listener.getLogger().println(msg);
             }
@@ -87,9 +88,7 @@ public class MirrorGateListenerHelper {
     }
 
     public void sendBuildFromItem(Item item) {
-        item.getAllJobs().forEach((job) -> {
-            this.sendBuildFromJob(job);
-        });
+        item.getAllJobs().forEach(this::sendBuildFromJob);
     }
 
     private void sendBuildExtraData(BuildBuilder builder, TaskListener listener) {
@@ -113,17 +112,17 @@ public class MirrorGateListenerHelper {
         });
     }
 
-    private String createMirrorgateLink(String projectName) {
-        String mirrorgateUrl = HyperlinkNote.encodeTo(
+    private String createMirrorGateLink(String projectName) {
+        String mirrorGateUrl = MirrorGateHyperlinkNote.encodeTo(
                 MirrorGateUtils.getMirrorGateAPIUrl() + "/dashboard.html?board=" + projectName,
                 "MirrorGate");
 
         String image = ImgConsoleNote.encodeTo(MirrorGateUtils.getBase64image());
 
-        return mirrorgateUrl + " " + image;
+        return mirrorGateUrl + " " + image;
     }
 
-    protected MirrorGateService getMirrorGateService() {
+    MirrorGateService getMirrorGateService() {
         return service;
     }
 

@@ -16,22 +16,16 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Random;
 import jenkins.model.Jenkins;
-import jenkins.plugins.mirrorgate.MirrorGatePublisher;
+import jenkins.plugins.mirrorgate.MirrorGateRecorder;
 import junit.framework.TestCase;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +35,12 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Random;
+
+import static org.mockito.Mockito.*;
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Job.class, Jenkins.class, MirrorGateUtils.class})
 public class MirrorGateListenerHelperTest extends TestCase {
@@ -49,13 +49,13 @@ public class MirrorGateListenerHelperTest extends TestCase {
     Jenkins jenkins;
 
     @Mock
-    MirrorGatePublisher.DescriptorImpl descriptor;
+    MirrorGateRecorder.DescriptorImpl descriptor;
 
     @Mock
-    MirrorGateService service = mock(MirrorGateService.class);
+    private MirrorGateService service = mock(MirrorGateService.class);
 
     @Spy
-    MirrorGateListenerHelper helper = new MirrorGateListenerHelper();
+    private MirrorGateListenerHelper helper = new MirrorGateListenerHelper();
 
     private final MirrorGateResponse responseOk
             = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
@@ -73,7 +73,7 @@ public class MirrorGateListenerHelperTest extends TestCase {
     @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
-        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
         PowerMockito.when(jenkins.getDescriptorByType(any()))
                 .thenReturn(descriptor);
 

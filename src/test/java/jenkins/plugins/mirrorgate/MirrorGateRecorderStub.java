@@ -16,9 +16,9 @@
 
 package jenkins.plugins.mirrorgate;
 
-public class MirrorGatePublisherStub extends MirrorGatePublisher {
+class MirrorGateRecorderStub extends MirrorGateRecorder {
 
-    public static class DescriptorImplStub extends MirrorGatePublisher.DescriptorImpl {
+    public static class DescriptorImplStub extends MirrorGateRecorder.DescriptorImpl {
 
         @Override
         public synchronized void load() {
