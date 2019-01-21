@@ -125,7 +125,7 @@ uploadArchives {
 }
 
 task replaceVersionInREADME {
-    ant.replaceregexp(match:'Last version of this plugin \\(v([0-9\\.]+)\\)', replace:"Last version of this plugin (v$version)", flags:'g', byline:true) {
+    ant.replaceregexp(match:'Last version of this plugin \\(v([0-9\\.]+(-SNAPSHOT)?)\\)', replace:"Last version of this plugin (v$version)", flags:'g', byline:true) {
         fileset(dir: '.', includes: 'README.md')
     }
 
