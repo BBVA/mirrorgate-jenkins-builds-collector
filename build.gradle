@@ -71,7 +71,7 @@ jacocoTestReport {
 }
 
 jenkinsPlugin {
-    coreVersion = '2.160'
+    coreVersion = '2.161'
     shortName = pluginName
     displayName = jenkinsDisplayName
 }
