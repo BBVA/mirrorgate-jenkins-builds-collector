@@ -27,6 +27,7 @@ import jenkins.plugins.mirrorgate.MirrorGateRecorder;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,15 +101,24 @@ public class MirrorGateUtils {
     }
 
     public static void parseBuildUrl(String buildUrl, BuildDTO request) {
+        List<String> keywords = new ArrayList<>();
         String[] buildInfo = buildUrl.split("/job/");
+        String projectName = buildInfo[1].split("/")[0];
+
         request.setBuildUrl(buildUrl);
-        request.setProjectName(buildInfo[1].split("/")[0]);
+        request.setProjectName(projectName);
+        keywords.add(buildUrl);
+        keywords.add(projectName);
 
         if (buildInfo.length >= 3) {
-            request.setRepoName(buildInfo[buildInfo.length - 2].split("/")[0]);
-            request.setBranch(buildInfo[buildInfo.length - 1].split("/")[0]);
+            String repoName = buildInfo[buildInfo.length - 2].split("/")[0];
+            String branch = buildInfo[buildInfo.length - 1].split("/")[0];
+            request.setRepoName(repoName);
+            request.setBranch(branch);
+            keywords.add(repoName);
+            keywords.add(branch);
         }
 
-        request.setKeywords(Arrays.asList(buildInfo));
+        request.setKeywords(keywords);
     }
 }
