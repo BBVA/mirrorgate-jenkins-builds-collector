@@ -20,6 +20,7 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -77,7 +78,7 @@ public class MirrorGateUtilsTest {
         assertNull(build5.getRepoName());
         assertNull(build5.getBranch());
         assertTrue(build5.getKeywords().containsAll(
-                Arrays.asList(PROJECT_NAME)));
+                Collections.singletonList(PROJECT_NAME)));
         assertFalse(build5.getKeywords().contains(REPOSITORY_NAME));
         assertFalse(build5.getKeywords().contains(BRANCH_NAME));
     }
