@@ -21,14 +21,15 @@ import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Run;
+import jenkins.model.Jenkins;
+import jenkins.plugins.mirrorgate.MirrorGateRecorder;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import jenkins.model.Jenkins;
-import jenkins.plugins.mirrorgate.MirrorGateRecorder;
 
 public class MirrorGateUtils {
 
@@ -49,7 +50,7 @@ public class MirrorGateUtils {
 
     public static String getBuildUrl(Run<?, ?> run) throws UnsupportedEncodingException {
         return URLDecoder.decode(run.getParent().getAbsoluteUrl()
-            + run.getNumber() + "/", "UTF-8");
+                + run.getNumber() + "/", "UTF-8");
     }
 
     public static String getBuildNumber(Run<?, ?> run) {
@@ -64,7 +65,7 @@ public class MirrorGateUtils {
 
     public static String getExtraUrls() {
         return Jenkins.get().getDescriptorByType(
-            MirrorGateRecorder.DescriptorImpl.class).getExtraURLs();
+                MirrorGateRecorder.DescriptorImpl.class).getExtraURLs();
     }
 
     public static String getMirrorGateUser() {
@@ -87,15 +88,15 @@ public class MirrorGateUtils {
                 credentialsId, UsernamePasswordCredentials.class);
     }
 
-    public static List<String> getURLList(){
+    public static List<String> getURLList() {
 
         String commaSeparatedList = getExtraUrls();
         String[] urlArray = commaSeparatedList.split(",");
 
         return Arrays.stream(urlArray)
-            .map(String::trim)
-            .filter(u -> !u.isEmpty())
-            .collect(Collectors.toList());
+                .map(String::trim)
+                .filter(u -> !u.isEmpty())
+                .collect(Collectors.toList());
     }
 
     public static void parseBuildUrl(String buildUrl, BuildDTO request) {
@@ -107,5 +108,7 @@ public class MirrorGateUtils {
             request.setRepoName(buildInfo[buildInfo.length - 2].split("/")[0]);
             request.setBranch(buildInfo[buildInfo.length - 1].split("/")[0]);
         }
+
+        request.setKeywords(Arrays.asList(buildInfo));
     }
 }
