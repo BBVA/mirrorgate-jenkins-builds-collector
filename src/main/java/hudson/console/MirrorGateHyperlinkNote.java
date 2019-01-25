@@ -20,6 +20,7 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
@@ -64,6 +65,7 @@ public class MirrorGateHyperlinkNote extends HyperlinkNote {
     @Extension
     @Symbol("MirrorGateHyperLink")
     public static class DescriptorImpl extends HyperlinkNote.DescriptorImpl {
+        @Nonnull
         public String getDisplayName() {
             return "MirrorGateHyperLink";
         }

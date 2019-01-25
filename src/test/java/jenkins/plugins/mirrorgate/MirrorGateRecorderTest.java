@@ -83,7 +83,7 @@ public class MirrorGateRecorderTest extends TestCase {
     }
 
     @Test
-    public void testDoTestConnectionWithoutServiveConnectionTest() {
+    public void testDoTestConnectionWithoutServiceConnectionTest() {
         when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(null);

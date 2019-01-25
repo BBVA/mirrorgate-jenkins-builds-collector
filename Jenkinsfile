@@ -36,7 +36,7 @@ node('global') {
 
     if(env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'develop') {
 
-        stage('Publish puglin') {
+        stage('Publish plugin') {
 
             try{
 
