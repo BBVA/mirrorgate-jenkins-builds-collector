@@ -16,6 +16,7 @@
 
 package jenkins.plugins.mirrorgate;
 
+import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import hudson.util.FormValidation;
@@ -75,18 +76,6 @@ public class MirrorGateRecorderTest extends TestCase {
         when(service.testConnection())
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
-
-        FormValidation result = descriptor.doTestConnection(
-                MIRRORGATE_URL, null);
-
-        assertEquals(FormValidation.Kind.ERROR, result.kind);
-    }
-
-    @Test
-    public void testDoTestConnectionWithoutServiceConnectionTest() {
-        when(service.testConnection())
-                .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
-        when(descriptor.getMirrorGateService()).thenReturn(null);
 
         FormValidation result = descriptor.doTestConnection(
                 MIRRORGATE_URL, null);

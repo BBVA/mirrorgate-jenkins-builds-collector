@@ -77,8 +77,7 @@ public class MirrorGateUtilsTest {
         assertEquals(build5.getProjectName(), PROJECT_NAME);
         assertNull(build5.getRepoName());
         assertNull(build5.getBranch());
-        assertTrue(build5.getKeywords().containsAll(
-                Collections.singletonList(PROJECT_NAME)));
+        assertTrue(build5.getKeywords().contains(PROJECT_NAME));
         assertFalse(build5.getKeywords().contains(REPOSITORY_NAME));
         assertFalse(build5.getKeywords().contains(BRANCH_NAME));
     }
