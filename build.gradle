@@ -28,7 +28,7 @@ buildscript {
 
     dependencies {
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.28.1'
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.29.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
     }
 }
@@ -71,7 +71,7 @@ jacocoTestReport {
 }
 
 jenkinsPlugin {
-    coreVersion = '2.161'
+    coreVersion = '2.164'
     shortName = pluginName
     displayName = jenkinsDisplayName
 }
