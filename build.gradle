@@ -45,12 +45,7 @@ sourceCompatibility = 1.8
 
 def isReleaseVersion = !version.endsWith("SNAPSHOT")
 def user = hasProperty('mavenUser') ? mavenUser : System.getenv('mavenUser')
-def password = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mavenPassword')
-
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
+def pass = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mavenPassword')
 
 repositories {
     mavenCentral()
@@ -86,24 +81,10 @@ def hpiArtifact = artifacts.add('archives', hpiFile)
 publishing {
 
     publications {
-        maven(MavenPublication) {
+        mavenJava(MavenPublication) {
             artifact hpiArtifact
-        }
-    }
 
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: user, password: password)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: user, password: password)
-            }
-
-            pom.project {
+            pom.withXml {
                 name pluginName
                 artifactId pluginName
                 packaging 'hpi'
@@ -131,7 +112,23 @@ publishing {
             }
         }
     }
+
+    repositories {
+        maven {
+            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username user
+                password pass
+            }
+        }
+    }
 }
+
+signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+    sign publishing.publications.mavenJava
+}
+
 
 task replaceVersionInREADME {
     ant.replaceregexp(match:'Last version of this plugin \\(v([0-9\\.]+(-SNAPSHOT)?)\\)', replace:"Last version of this plugin (v$version)", flags:'g', byline:true) {
@@ -155,3 +152,4 @@ dependencies {
 
     testCompile 'org.powermock:powermock-mockito-release-full:1.6.4'
 }
+
