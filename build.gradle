@@ -49,6 +49,7 @@ def password = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mav
 signing {
     required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
+    sign project.file("build/libs/mirrorgate-publisher.hpi")
 }
 
 repositories {
