@@ -37,6 +37,7 @@ apply plugin: 'jpi'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: "com.github.ben-manes.versions"
 
@@ -49,7 +50,6 @@ def password = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mav
 signing {
     required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
-    sign project.file("build/libs/mirrorgate-publisher.hpi")
 }
 
 repositories {
@@ -78,11 +78,19 @@ jenkinsPlugin {
 }
 
 configurations.archives.artifacts.clear()
-artifacts {
-    archives file: project.file("build/libs/mirrorgate-publisher.hpi")
-}
 
-uploadArchives {
+def hpiFile = file('build/libs/mirrorgate-publisher.hpi')
+
+def hpiArtifact = artifacts.add('archives', hpiFile)
+
+publishing {
+
+    publications {
+        maven(MavenPublication) {
+            artifact hpiArtifact
+        }
+    }
+
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
