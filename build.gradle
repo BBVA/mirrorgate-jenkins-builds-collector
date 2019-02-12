@@ -84,7 +84,7 @@ publishing {
         mavenJava(MavenPublication) {
             artifact hpiArtifact
 
-            pom.withXml {
+            pom {
                 name pluginName
                 artifactId pluginName
                 packaging 'hpi'
@@ -128,7 +128,6 @@ signing {
     required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign publishing.publications.mavenJava
 }
-
 
 task replaceVersionInREADME {
     ant.replaceregexp(match:'Last version of this plugin \\(v([0-9\\.]+(-SNAPSHOT)?)\\)', replace:"Last version of this plugin (v$version)", flags:'g', byline:true) {
