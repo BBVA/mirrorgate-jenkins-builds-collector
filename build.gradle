@@ -76,9 +76,7 @@ jenkinsPlugin {
 }
 
 configurations.archives.artifacts.clear()
-artifacts {
-    archives file: project.file("build/libs/mirrorgate-publisher.hpi")
-}
+artifacts.add('archives', file('build/libs/mirrorgate-publisher.hpi'))
 
 publishing {
     publications {
