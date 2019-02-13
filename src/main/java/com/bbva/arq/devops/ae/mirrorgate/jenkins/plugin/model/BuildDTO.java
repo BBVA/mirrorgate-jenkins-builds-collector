@@ -32,6 +32,8 @@ public class BuildDTO {
     private String repoName;
     private String branch;
 
+    private List<String> keywords;
+
     public String getNumber() {
         return number;
     }
@@ -112,4 +114,11 @@ public class BuildDTO {
         this.branch = branch;
     }
 
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
+    }
 }

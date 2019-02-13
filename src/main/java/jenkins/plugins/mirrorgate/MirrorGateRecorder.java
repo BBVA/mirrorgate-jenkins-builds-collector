@@ -106,16 +106,12 @@ public class MirrorGateRecorder extends Recorder {
                 @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl,
                 @QueryParameter("mirrorgateCredentialsId") final String credentialsId) {
             MirrorGateService testMirrorGateService = getMirrorGateService();
-            if (testMirrorGateService != null) {
-                MirrorGateResponse response
-                        = testMirrorGateService.testConnection();
-                return response.getResponseCode() == HttpStatus.SC_OK
-                        ? FormValidation.ok("Success")
-                        : FormValidation.error("Failure<"
-                                + response.getResponseCode() + ">");
-            } else {
-                return FormValidation.error("Failure");
-            }
+            MirrorGateResponse response
+                    = testMirrorGateService.testConnection();
+            return response.getResponseCode() == HttpStatus.SC_OK
+                    ? FormValidation.ok("Success")
+                    : FormValidation.error("Failure<"
+                    + response.getResponseCode() + ">");
         }
 
         public ListBoxModel doFillMirrorgateCredentialsIdItems(

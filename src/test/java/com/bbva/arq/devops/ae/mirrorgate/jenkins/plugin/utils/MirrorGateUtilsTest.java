@@ -19,8 +19,10 @@ package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.junit.Assert.*;
 
 public class MirrorGateUtilsTest {
 
@@ -51,21 +53,32 @@ public class MirrorGateUtilsTest {
         assertEquals(build1.getProjectName(), PROJECT_NAME);
         assertEquals(build1.getRepoName(), REPOSITORY_NAME);
         assertEquals(build1.getBranch(), BRANCH_NAME);
+        assertTrue(build1.getKeywords().containsAll(
+                Arrays.asList(PROJECT_NAME, REPOSITORY_NAME, BRANCH_NAME)));
 
         assertEquals(build2.getProjectName(), PROJECT_NAME);
         assertEquals(build2.getRepoName(), REPOSITORY_NAME);
         assertEquals(build2.getBranch(), BRANCH_NAME);
+        assertTrue(build2.getKeywords().containsAll(
+                Arrays.asList(PROJECT_NAME, REPOSITORY_NAME, BRANCH_NAME)));
 
         assertEquals(build3.getProjectName(), PROJECT_NAME);
         assertEquals(build3.getRepoName(), REPOSITORY_NAME);
         assertEquals(build3.getBranch(), BRANCH_NAME);
+        assertTrue(build3.getKeywords().containsAll(
+                Arrays.asList(PROJECT_NAME, REPOSITORY_NAME, BRANCH_NAME)));
 
         assertEquals(build4.getProjectName(), REPOSITORY_NAME);
         assertEquals(build4.getRepoName(), REPOSITORY_NAME);
         assertEquals(build4.getBranch(), BRANCH_NAME);
+        assertTrue(build4.getKeywords().containsAll(
+                Arrays.asList(REPOSITORY_NAME, BRANCH_NAME)));
 
         assertEquals(build5.getProjectName(), PROJECT_NAME);
         assertNull(build5.getRepoName());
         assertNull(build5.getBranch());
+        assertTrue(build5.getKeywords().contains(PROJECT_NAME));
+        assertFalse(build5.getKeywords().contains(REPOSITORY_NAME));
+        assertFalse(build5.getKeywords().contains(BRANCH_NAME));
     }
 }

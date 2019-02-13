@@ -28,7 +28,7 @@ buildscript {
 
     dependencies {
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.28.1'
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.29.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
     }
 }
@@ -69,7 +69,7 @@ jacocoTestReport {
 jenkinsPlugin {
     shortName = pluginName
     displayName = jenkinsDisplayName
-    coreVersion = '2.160'
+    coreVersion = '2.164'
 
     configureRepositories = false // Needed to publish in Sonatype
     configurePublishing = false // Needed to publish in Sonatype
@@ -155,4 +155,3 @@ dependencies {
 
     testCompile 'org.powermock:powermock-mockito-release-full:1.6.4'
 }
-
