@@ -70,6 +70,7 @@ jenkinsPlugin {
     coreVersion = '2.160'
     shortName = pluginName
     displayName = jenkinsDisplayName
+    configurePublishing = false
 }
 
 configurations.archives.artifacts.clear()
@@ -84,7 +85,6 @@ publishing {
         mavenJava(MavenPublication) {
             artifact hpiArtifact
             artifactId pluginName
-
 
             pom {
                 name = pluginName
