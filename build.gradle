@@ -67,8 +67,8 @@ jacocoTestReport {
 }
 
 jenkinsPlugin {
-    shortName pluginName
-    displayName jenkinsDisplayName
+    shortName = pluginName
+    displayName = jenkinsDisplayName
     coreVersion = '2.160'
 
     configureRepositories = false // Needed to publish in Sonatype
