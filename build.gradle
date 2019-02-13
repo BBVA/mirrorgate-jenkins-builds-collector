@@ -67,11 +67,12 @@ jacocoTestReport {
 }
 
 jenkinsPlugin {
+    shortName pluginName
+    displayName jenkinsDisplayName
     coreVersion = '2.160'
-    shortName = pluginName
-    displayName = jenkinsDisplayName
-    configureRepositories = false
-    configurePublishing = false
+
+    configureRepositories = false // Needed to publish in Sonatype
+    configurePublishing = false // Needed to publish in Sonatype
 }
 
 configurations.archives.artifacts.clear()
@@ -80,10 +81,8 @@ artifacts {
 }
 
 publishing {
-
     publications {
         mavenJava(MavenPublication) {
-            artifact hpiArtifact
             artifactId pluginName
 
             pom {
@@ -117,7 +116,11 @@ publishing {
 
     repositories {
         maven {
-            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            if (isReleaseVersion) {
+                url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            } else {
+                url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            }
             credentials {
                 username user
                 password pass
