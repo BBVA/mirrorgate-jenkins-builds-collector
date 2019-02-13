@@ -47,7 +47,7 @@ node('global') {
 
                     if(env.BRANCH_NAME == 'develop'){
 
-                        sh "./gradlew uploadArchives"
+                        sh "./gradlew publish"
 
                     } else if(env.BRANCH_NAME == 'master'){
                         withCredentials([usernamePassword(
@@ -57,7 +57,7 @@ node('global') {
                                     file(
                                         credentialsId: 'mirrorgate-secring',
                                         variable: 'FILE'),]) {
-                                            sh "./gradlew uploadArchive -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
+                                            sh "./gradlew publish -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
                                         }
                     }
 

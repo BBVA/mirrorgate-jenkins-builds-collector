@@ -37,6 +37,7 @@ apply plugin: 'jpi'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: "com.github.ben-manes.versions"
 
@@ -44,12 +45,7 @@ sourceCompatibility = 1.8
 
 def isReleaseVersion = !version.endsWith("SNAPSHOT")
 def user = hasProperty('mavenUser') ? mavenUser : System.getenv('mavenUser')
-def password = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mavenPassword')
-
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
+def pass = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mavenPassword')
 
 repositories {
     mavenCentral()
@@ -71,57 +67,70 @@ jacocoTestReport {
 }
 
 jenkinsPlugin {
-    coreVersion = '2.164'
     shortName = pluginName
     displayName = jenkinsDisplayName
+    coreVersion = '2.164'
+
+    configureRepositories = false // Needed to publish in Sonatype
+    configurePublishing = false // Needed to publish in Sonatype
 }
 
 configurations.archives.artifacts.clear()
-artifacts {
-    archives file: project.file("build/libs/mirrorgate-publisher.hpi")
-}
+def hpiArtifact = artifacts.add('archives', file('build/libs/mirrorgate-publisher.hpi'))
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId pluginName
+            artifact hpiArtifact
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: user, password: password)
-            }
+            pom {
+                name = pluginName
+                description = 'WallBoard application meant to give teams fast feedback in all the different areas related to software development.'
+                url = 'https://github.com/bbva/mirrorgate-jenkins-builds-collector'
 
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: user, password: password)
-            }
-
-            pom.project {
-                name pluginName
-                artifactId pluginName
                 packaging 'hpi'
-                description 'WallBoard application meant to give teams fast feedback in all the different areas related to software development.'
 
-                url 'https://github.com/bbva/mirrorgate-jenkins-builds-collector'
 
                 scm {
-                    url 'https://github.com/bbva/mirrorgate-jenkins-builds-collector'
+                    url = 'https://github.com/bbva/mirrorgate-jenkins-builds-collector'
                 }
 
                 licenses {
                     license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
 
                 developers {
                     developer {
-                        id 'mirrorgate'
-                        name 'mirrorgate.group@bbva.com'
+                        id = 'mirrorgate'
+                        name = 'mirrorgate.group@bbva.com'
                     }
                 }
             }
         }
     }
+
+    repositories {
+        maven {
+            if (isReleaseVersion) {
+                url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            } else {
+                url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            }
+            credentials {
+                username user
+                password pass
+            }
+        }
+    }
+}
+
+signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+    sign publishing.publications.mavenJava
 }
 
 task replaceVersionInREADME {
