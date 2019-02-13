@@ -70,6 +70,7 @@ jenkinsPlugin {
     coreVersion = '2.160'
     shortName = pluginName
     displayName = jenkinsDisplayName
+    configureRepositories = false
     configurePublishing = false
 }
 
