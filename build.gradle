@@ -76,12 +76,13 @@ jenkinsPlugin {
 }
 
 configurations.archives.artifacts.clear()
-artifacts.add('archives', file('build/libs/mirrorgate-publisher.hpi'))
+def hpiArtifact = artifacts.add('archives', file('build/libs/mirrorgate-publisher.hpi'))
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId pluginName
+            artifact hpiArtifact
 
             pom {
                 name = pluginName
