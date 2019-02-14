@@ -16,7 +16,6 @@
 
 package jenkins.plugins.mirrorgate;
 
-import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.DefaultMirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import hudson.util.FormValidation;
@@ -61,7 +60,7 @@ public class MirrorGateRecorderTest extends TestCase {
 
     @Test
     public void testDoTestOKConnectionTest() {
-        when(service.testConnection())
+        when(service.testConnection(MIRRORGATE_URL, null))
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_OK, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
 
@@ -73,7 +72,7 @@ public class MirrorGateRecorderTest extends TestCase {
 
     @Test
     public void testDoTestErrorConnectionTest() {
-        when(service.testConnection())
+        when(service.testConnection(MIRRORGATE_URL, null))
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
 

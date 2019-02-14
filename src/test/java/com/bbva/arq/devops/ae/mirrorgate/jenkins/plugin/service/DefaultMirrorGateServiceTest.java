@@ -74,6 +74,8 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     @Spy
     private DefaultMirrorGateService service = new DefaultMirrorGateService();
 
+    private static final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+
     @Before
     @Override
     public void setUp() {
@@ -122,7 +124,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         when(httpClient.execute(any(HttpGet.class), any(HttpClientContext.class)))
                 .thenReturn(httpResponse);
 
-        assertEquals(service.testConnection().getResponseCode(),
+        assertEquals(service.testConnection(MIRRORGATE_URL, null).getResponseCode(),
                 HttpStatus.SC_OK);
     }
 
@@ -132,7 +134,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         when(httpClient.execute(any(HttpGet.class), any(HttpClientContext.class)))
                 .thenReturn(httpResponse);
 
-        assertEquals(service.testConnection().getResponseCode(),
+        assertEquals(service.testConnection(MIRRORGATE_URL, null).getResponseCode(),
                 HttpStatus.SC_NOT_FOUND);
     }
 
