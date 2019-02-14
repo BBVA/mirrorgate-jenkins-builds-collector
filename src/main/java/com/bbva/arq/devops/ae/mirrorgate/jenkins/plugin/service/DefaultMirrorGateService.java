@@ -54,11 +54,11 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
 
     @Override
-    public MirrorGateResponse testConnection() {
+    public MirrorGateResponse testConnection(String mirrorGateAPIUrl, String credentialsId) {
         MirrorGateResponse callResponse = buildRestCall().makeRestCallGet(
-                MirrorGateUtils.getMirrorGateAPIUrl() + "/health",
-                MirrorGateUtils.getMirrorGateUser(),
-                MirrorGateUtils.getMirrorGatePassword());
+                mirrorGateAPIUrl + "/health",
+                MirrorGateUtils.getMirrorGateUser(credentialsId),
+                MirrorGateUtils.getMirrorGatePassword(credentialsId));
         return new MirrorGateResponse(callResponse.getResponseCode(),
                 callResponse.getResponseValue().replaceAll("\"", ""));
     }

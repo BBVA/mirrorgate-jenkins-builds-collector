@@ -20,7 +20,6 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.Assert.*;
 

@@ -22,7 +22,6 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse
 public interface MirrorGateService {
 
     /**
-     *
      * Publish Build Data to an endpoint
      *
      * @param requestBuild Build to Publish
@@ -33,16 +32,17 @@ public interface MirrorGateService {
     /**
      * Test a endpoint availability
      *
+     * @param mirrorGateAPIUrl   API URL of MirrorGate (It will be added a /health to the URL)
+     * @param credentialsId      Jenkins credentialsId
      * @return MirrorGateResponse
      */
-    MirrorGateResponse testConnection();
+    MirrorGateResponse testConnection(String mirrorGateAPIUrl, String credentialsId);
 
     /**
-     *
      * Publish Build Data to an endpoint
      *
      * @param requestBuild Build to send to extra endpoints
-     * @param URL The uri to send the build
+     * @param URL          The uri to send the build
      * @return Boolean
      */
     MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO requestBuild, String URL);

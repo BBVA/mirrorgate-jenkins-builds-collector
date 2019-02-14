@@ -82,9 +82,24 @@ public class MirrorGateUtils {
     }
 
     public static UsernamePasswordCredentials getUsernamePasswordCredentials() {
-        String credentialsId = Jenkins.get().getDescriptorByType(
+        return getUsernamePasswordCredentials(Jenkins.get().getDescriptorByType(
                 MirrorGateRecorder.DescriptorImpl.class)
-                .getMirrorgateCredentialsId();
+                .getMirrorgateCredentialsId());
+    }
+
+    public static String getMirrorGateUser(String credentialsIs) {
+        return MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs) != null
+                ? MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs)
+                .getUsername() : null;
+    }
+
+    public static String getMirrorGatePassword(String credentialsIs) {
+        return MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs) != null
+                ? MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs)
+                .getPassword().getPlainText() : null;
+    }
+
+    private static UsernamePasswordCredentials getUsernamePasswordCredentials(String credentialsId) {
         return CredentialsUtils.getJenkinsCredentials(
                 credentialsId, UsernamePasswordCredentials.class);
     }

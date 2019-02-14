@@ -105,9 +105,10 @@ public class MirrorGateRecorder extends Recorder {
         public FormValidation doTestConnection(
                 @QueryParameter("mirrorGateAPIUrl") final String mirrorGateAPIUrl,
                 @QueryParameter("mirrorgateCredentialsId") final String credentialsId) {
+
             MirrorGateService testMirrorGateService = getMirrorGateService();
             MirrorGateResponse response
-                    = testMirrorGateService.testConnection();
+                    = testMirrorGateService.testConnection(mirrorGateAPIUrl, credentialsId);
             return response.getResponseCode() == HttpStatus.SC_OK
                     ? FormValidation.ok("Success")
                     : FormValidation.error("Failure<"
