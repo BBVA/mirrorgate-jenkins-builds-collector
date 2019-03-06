@@ -58,7 +58,7 @@ class CredentialsUtils {
 
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(credentialsClass,
-                        Jenkins.get(), ACL.SYSTEM, Collections.emptyList()),
+                        Jenkins.getInstance(), ACL.SYSTEM, Collections.emptyList()),
                 CredentialsMatchers.withId(credentialsId)
         );
     }

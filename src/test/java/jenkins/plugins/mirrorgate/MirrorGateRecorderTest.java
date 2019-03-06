@@ -53,7 +53,7 @@ public class MirrorGateRecorderTest extends TestCase {
     @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
-        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
         PowerMockito.when(jenkins.getDescriptorByType(any()))
                 .thenReturn(descriptor);
     }

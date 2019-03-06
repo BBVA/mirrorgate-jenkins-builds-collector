@@ -82,7 +82,7 @@ public class DefaultMirrorGateServiceTest extends TestCase {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.mockStatic(HttpClients.class);
 
-        PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
+        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
         PowerMockito.when(jenkins.getDescriptorByType(any())).thenReturn(descriptor);
 
         httpClient = mock(CloseableHttpClient.class);
