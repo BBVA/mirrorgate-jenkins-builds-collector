@@ -76,26 +76,26 @@ public class BuildBuilder {
         List<String> culprits = new ArrayList<>(0);
 
         // Get culprits from the causes of the build
-        run.getCauses().forEach((cause -> {
+        for(Object cause:  run.getCauses()) {
             if ("UserIdCause".equals(cause.getClass().getSimpleName())) {
                 if (!culprits.contains(((UserIdCause) cause).getUserName())) {
                     culprits.add(((UserIdCause) cause).getUserName());
                 }
             }
-        }));
+        }
 
         // Use introspective class to avoid plugins compatibility problems
         try {
             Method method = run.getClass().getMethod("getChangeSets");
             method.setAccessible(true);
-            ((List) method.invoke(run, new Object[]{})).forEach(changeSet -> {
+            for(Object changeSet: (List) method.invoke(run, new Object[]{})) {
                 for (Object object : ((ChangeLogSet) changeSet).getItems()) {
                     ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
                     if (!culprits.contains(change.getAuthor().getFullName())) {
                         culprits.add(change.getAuthor().getFullName());
                     }
                 }
-            });
+            }
         } catch (SecurityException | IllegalAccessException |
                 IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
             Logger.getLogger(MirrorGateRunListener.class.getName()).log(Level.SEVERE, null, ex);

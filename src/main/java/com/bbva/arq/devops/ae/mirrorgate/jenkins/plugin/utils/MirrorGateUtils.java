@@ -59,13 +59,13 @@ public class MirrorGateUtils {
     }
 
     public static String getMirrorGateAPIUrl() {
-        return Jenkins.getInstance().getDescriptorByType(
+        return Jenkins.get().getDescriptorByType(
                 MirrorGateRecorder.DescriptorImpl.class)
                 .getMirrorGateAPIUrl();
     }
 
     public static String getExtraUrls() {
-        return Jenkins.getInstance().getDescriptorByType(
+        return Jenkins.get().getDescriptorByType(
                 MirrorGateRecorder.DescriptorImpl.class).getExtraURLs();
     }
 
@@ -82,7 +82,7 @@ public class MirrorGateUtils {
     }
 
     public static UsernamePasswordCredentials getUsernamePasswordCredentials() {
-        return getUsernamePasswordCredentials(Jenkins.getInstance().getDescriptorByType(
+        return getUsernamePasswordCredentials(Jenkins.get().getDescriptorByType(
                 MirrorGateRecorder.DescriptorImpl.class)
                 .getMirrorgateCredentialsId());
     }

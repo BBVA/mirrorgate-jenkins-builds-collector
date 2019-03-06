@@ -121,7 +121,7 @@ public class MirrorGateRecorder extends Recorder {
 
             StandardListBoxModel result = new StandardListBoxModel();
             if (item == null) {
-                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return result.includeCurrentValue(credentialsId);
                 }
             } else if (!item.hasPermission(Item.EXTENDED_READ)
@@ -138,7 +138,7 @@ public class MirrorGateRecorder extends Recorder {
                 @QueryParameter("mirrorgateCredentialsId") String credentialsId) {
 
             if (item == null) {
-                if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return FormValidation.ok();
                 }
             } else if (!item.hasPermission(Item.EXTENDED_READ)
