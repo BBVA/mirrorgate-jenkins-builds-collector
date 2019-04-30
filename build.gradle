@@ -28,8 +28,8 @@ buildscript {
 
     dependencies {
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.29.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.31.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.21.0'
     }
 }
 
@@ -69,7 +69,7 @@ jacocoTestReport {
 jenkinsPlugin {
     shortName = pluginName
     displayName = jenkinsDisplayName
-    coreVersion = '2.138'
+    coreVersion = '2.175'
 
     configureRepositories = false // Needed to publish in Sonatype
     configurePublishing = false // Needed to publish in Sonatype
@@ -147,11 +147,11 @@ defaultTasks 'clean', 'jpi'
 
 dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-    compile 'org.apache.commons:commons-lang3:3.8.1'
+    compile 'org.apache.commons:commons-lang3:3.9'
 
     jenkinsPlugins 'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.5-3.0'
     jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.18'
-    jenkinsPlugins 'org.jenkins-ci.plugins:plain-credentials:1.4'
+    jenkinsPlugins 'org.jenkins-ci.plugins:plain-credentials:1.5'
 
     testCompile 'org.powermock:powermock-mockito-release-full:1.6.4'
 }
