@@ -41,24 +41,24 @@ node('global') {
             try{
 
                 withCredentials([usernamePassword(
-                                  credentialsId   : "bot-mirrorgate-st",
-                                  usernameVariable: 'mavenUser',
-                                  passwordVariable: 'mavenPassword')]) {
+                        credentialsId   : "bot-mirrorgate-st",
+                        usernameVariable: 'mavenUser',
+                        passwordVariable: 'mavenPassword'
+                )]) {
 
                     if(env.BRANCH_NAME == 'develop'){
-
                         sh "./gradlew publish"
-
                     } else if(env.BRANCH_NAME == 'master'){
-                        withCredentials([usernamePassword(
-                                        credentialsId   : 'bot-mirrorgate-gpg',
-                                        usernameVariable: 'GPG_ID',
-                                        passwordVariable: 'GPG_PASSWORD'),
-                                    file(
-                                        credentialsId: 'mirrorgate-secring',
-                                        variable: 'FILE'),]) {
-                                            sh "./gradlew publish -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
-                                        }
+                        withCredentials([
+                            usernamePassword(
+                                    credentialsId   : 'bot-mirrorgate-gpg',
+                                    usernameVariable: 'GPG_ID',
+                                    passwordVariable: 'GPG_PASSWORD'
+                            ),
+                            file(credentialsId: 'mirrorgate-secring', variable: 'FILE'),
+                        ]) {
+                            sh "./gradlew publish -Dorg.gradle.project.signing.keyId=$GPG_ID -Dorg.gradle.project.signing.password=$GPG_PASSWORD -Dorg.gradle.project.signing.secretKeyRingFile=$FILE"
+                        }
                     }
 
                 }
