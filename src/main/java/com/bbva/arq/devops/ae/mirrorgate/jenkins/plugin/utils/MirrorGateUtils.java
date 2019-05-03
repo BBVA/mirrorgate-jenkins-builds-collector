@@ -116,22 +116,23 @@ public class MirrorGateUtils {
     }
 
     public static void parseBuildUrl(String buildUrl, BuildDTO request) {
-        List<String> keywords = new ArrayList<>();
         String[] buildInfo = buildUrl.split("/job/");
         String projectName = buildInfo[1].split("/")[0];
 
         request.setBuildUrl(buildUrl);
         request.setProjectName(projectName);
-        keywords.add(buildUrl);
-        keywords.add(projectName);
 
         if (buildInfo.length >= 3) {
             String repoName = buildInfo[buildInfo.length - 2].split("/")[0];
             String branch = buildInfo[buildInfo.length - 1].split("/")[0];
             request.setRepoName(repoName);
             request.setBranch(branch);
-            keywords.add(repoName);
-            keywords.add(branch);
+        }
+
+        List<String> keywords = new ArrayList<>();
+        keywords.add(buildUrl);
+        for (int i = 1; i < buildInfo.length; i++) {
+            keywords.add(buildInfo[i].split("/")[0]);
         }
 
         request.setKeywords(keywords);

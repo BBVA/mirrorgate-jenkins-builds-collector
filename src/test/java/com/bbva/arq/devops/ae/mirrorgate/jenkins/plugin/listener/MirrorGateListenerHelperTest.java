@@ -39,7 +39,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Job.class, Jenkins.class, MirrorGateUtils.class})
