@@ -19,7 +19,7 @@ Create an HPI file to install in Jenkins (HPI file will be in `target/mirrorgate
     ./gradlew clean build 
 
 # Important
-Last version of this plugin (v0.0.11) supports Jenkins version 2.233 or newer. Check previous [release versions](https://github.com/BBVA/mirrorgate-jenkins-builds-collector/releases) for Jenkins older versions.
+Last version of this plugin (v0.0.12-SNAPSHOT) supports Jenkins version 2.233 or newer. Check previous [release versions](https://github.com/BBVA/mirrorgate-jenkins-builds-collector/releases) for Jenkins older versions.
 
 The main project is JDK 1.8 compiled, if you have Jenkins running on previous Java versions, make sure to recompile core package with that previous version and then build this Jenkins plugin.
 
