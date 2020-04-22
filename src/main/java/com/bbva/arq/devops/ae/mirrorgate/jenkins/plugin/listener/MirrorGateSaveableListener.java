@@ -42,7 +42,7 @@ public class MirrorGateSaveableListener extends SaveableListener {
         LOG.fine(">>> MirrorGateSaveableListener onChange starts");
 
         if (o instanceof Job) {
-            Job job = (Job) o;
+            Job<?, ?> job = (Job<?, ?>) o;
             if (!job.isBuildable()) {
                 helper.sendBuildFromJob(job);
             }

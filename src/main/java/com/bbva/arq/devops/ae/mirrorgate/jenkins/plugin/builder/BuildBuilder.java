@@ -72,12 +72,12 @@ public class BuildBuilder {
         return request;
     }
 
-    private void setCulprits(Run run) {
+    private void setCulprits(Run<?, ?> run) {
 
         List<String> culprits = new ArrayList<>(0);
 
         // Get culprits from the causes of the build
-        for(Object cause:  run.getCauses()) {
+        for (Object cause : run.getCauses()) {
             if ("UserIdCause".equals(cause.getClass().getSimpleName())) {
                 if (!culprits.contains(((UserIdCause) cause).getUserName())) {
                     culprits.add(((UserIdCause) cause).getUserName());
@@ -89,8 +89,8 @@ public class BuildBuilder {
         try {
             Method method = run.getClass().getMethod("getChangeSets");
             method.setAccessible(true);
-            for(Object changeSet: (List) method.invoke(run, new Object[]{})) {
-                for (Object object : ((ChangeLogSet) changeSet).getItems()) {
+            for (Object changeSet : (List<?>) method.invoke(run, new Object[]{})) {
+                for (Object object : ((ChangeLogSet<?>) changeSet).getItems()) {
                     ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
                     if (!culprits.contains(change.getAuthor().getFullName())) {
                         culprits.add(change.getAuthor().getFullName());
@@ -107,7 +107,7 @@ public class BuildBuilder {
             Method method = run.getClass().getMethod("getCulprits");
             method.setAccessible(true);
 
-            Set culpritsSet = (Set) method.invoke(run, new Object[]{});
+            Set<?> culpritsSet = (Set<?>) method.invoke(run, new Object[]{});
             for (Object user : culpritsSet) {
                 if (!culprits.contains(((User) user).getFullName())) {
                     culprits.add(((User) user).getFullName());

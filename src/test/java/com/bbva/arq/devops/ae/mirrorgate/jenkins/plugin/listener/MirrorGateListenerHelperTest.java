@@ -24,7 +24,6 @@ import hudson.model.Job;
 import hudson.model.Run;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGateRecorder;
-import junit.framework.TestCase;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -39,15 +39,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
+// Needed to run PowerMockito with Java 11 https://github.com/mockito/mockito/issues/1562
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({Job.class, Jenkins.class, MirrorGateUtils.class})
-public class MirrorGateListenerHelperTest extends TestCase {
+public class MirrorGateListenerHelperTest {
 
     @Mock
     Jenkins jenkins;
@@ -56,10 +58,10 @@ public class MirrorGateListenerHelperTest extends TestCase {
     MirrorGateRecorder.DescriptorImpl descriptor;
 
     @Mock
-    private MirrorGateService service = mock(MirrorGateService.class);
+    MirrorGateService service;
 
     @Spy
-    private MirrorGateListenerHelper helper = new MirrorGateListenerHelper();
+    MirrorGateListenerHelper helper = new MirrorGateListenerHelper();
 
     private final MirrorGateResponse responseOk
             = new MirrorGateResponse(HttpStatus.SC_CREATED, "");
@@ -74,7 +76,6 @@ public class MirrorGateListenerHelperTest extends TestCase {
     private static final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
 
     @Before
-    @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
@@ -136,7 +137,7 @@ public class MirrorGateListenerHelperTest extends TestCase {
         when(service.publishBuildData(any())).thenReturn(responseOk);
         when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseOk);
 
-        Job[] jobs = new Job[new Random().nextInt(10)];
+        final Job<?, ?>[] jobs = new Job[new Random().nextInt(10)];
         Arrays.fill(jobs, createMockingJob());
 
         helper.sendBuildFromItem(createMockingItem(jobs));
@@ -149,7 +150,7 @@ public class MirrorGateListenerHelperTest extends TestCase {
         when(service.publishBuildData(any())).thenReturn(responseError);
         when(service.sendBuildDataToExtraEndpoints(any(), any())).thenReturn(responseError);
 
-        Job[] jobs = new Job[new Random().nextInt(10)];
+        final Job<?, ?>[] jobs = new Job[new Random().nextInt(10)];
         Arrays.fill(jobs, createMockingJob());
 
         helper.sendBuildFromItem(createMockingItem(jobs));
@@ -157,16 +158,16 @@ public class MirrorGateListenerHelperTest extends TestCase {
         verify(service, times(jobs.length)).publishBuildData(any());
     }
 
-    private Item createMockingItem(Job[] jobs) {
+    private Item createMockingItem(final Job<?, ?>[] jobs) {
         Item item = mock(Item.class);
 
         when(item.getAllJobs()).thenReturn((Collection) Arrays.asList(jobs));
         return item;
     }
 
-    private Job createMockingJob() {
-        Job job = PowerMockito.mock(Job.class);
-        Run build = mock(Run.class);
+    private Job<?, ?> createMockingJob() {
+        final Job job = PowerMockito.mock(Job.class);
+        final Run build = mock(Run.class);
 
         when(job.getLastBuild()).thenReturn(build);
         PowerMockito.when(job.getAbsoluteUrl()).thenReturn(BUILD_SAMPLE);
@@ -175,9 +176,9 @@ public class MirrorGateListenerHelperTest extends TestCase {
         return job;
     }
 
-    private Run createMockingBuild() {
-        Job job = PowerMockito.mock(Job.class);
-        Run run = mock(Run.class);
+    private Run<?, ?> createMockingBuild() {
+        final Job job = PowerMockito.mock(Job.class);
+        final Run run = mock(Run.class);
 
         when(job.getLastBuild()).thenReturn(run);
         PowerMockito.when(job.getAbsoluteUrl()).thenReturn(BUILD_SAMPLE);

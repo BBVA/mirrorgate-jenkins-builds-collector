@@ -43,19 +43,19 @@ class MirrorGateListenerHelper {
         this.service = new DefaultMirrorGateService();
     }
 
-    public void sendBuild(Run run) {
+    public void sendBuild(Run<?, ?> run) {
         this.sendBuildFromJob(run.getParent(), null);
     }
 
-    public void sendBuild(Run run, TaskListener listener) {
+    public void sendBuild(Run<?, ?> run, TaskListener listener) {
         this.sendBuildFromJob(run.getParent(), listener);
     }
 
-    public void sendBuildFromJob(Job job) {
+    public void sendBuildFromJob(Job<?, ?> job) {
         this.sendBuildFromJob(job, null);
     }
 
-    private void sendBuildFromJob(Job job, TaskListener listener) {
+    private void sendBuildFromJob(Job<?, ?> job, TaskListener listener) {
         if (job != null && job.getLastBuild() != null) {
             BuildStatus status = job.isBuildable() ? (job.getLastBuild().getResult() != null
                     ? BuildStatus.fromString(job.getLastBuild().getResult().toString())

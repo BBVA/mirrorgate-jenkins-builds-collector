@@ -22,30 +22,27 @@ buildscript {
             url 'https://plugins.gradle.org/m2/'
         }
         maven {
-            url 'http://repo.jenkins-ci.org/releases/'
+            url 'https://repo.jenkins-ci.org/releases/'
         }
     }
 
     dependencies {
         classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.31.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.21.0'
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.39.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.28.0'
     }
 }
 
 apply plugin: 'jpi'
 apply plugin: 'java'
 apply plugin: 'jacoco'
-apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: "com.github.ben-manes.versions"
 
-sourceCompatibility = 1.8
-
 def isReleaseVersion = !version.endsWith("SNAPSHOT")
-def user = hasProperty('mavenUser') ? mavenUser : System.getenv('mavenUser')
-def pass = hasProperty('mavenPassword') ? mavenPassword : System.getenv('mavenPassword')
+def user = hasProperty('mavenUser') ?: System.getenv('mavenUser')
+def pass = hasProperty('mavenPassword') ?: System.getenv('mavenPassword')
 
 repositories {
     mavenCentral()
@@ -54,7 +51,7 @@ repositories {
         url 'https://plugins.gradle.org/m2/'
     }
     maven {
-        url 'http://repo.jenkins-ci.org/releases/'
+        url 'https://repo.jenkins-ci.org/releases/'
     }
 }
 
@@ -69,7 +66,7 @@ jacocoTestReport {
 jenkinsPlugin {
     shortName = pluginName
     displayName = jenkinsDisplayName
-    coreVersion = '2.138'
+    coreVersion = '2.233'
 
     configureRepositories = false // Needed to publish in Sonatype
     configurePublishing = false // Needed to publish in Sonatype
@@ -146,12 +143,20 @@ task replaceVersionInREADME {
 defaultTasks 'clean', 'jpi'
 
 dependencies {
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-    compile 'org.apache.commons:commons-lang3:3.9'
+    implementation(
+        'com.fasterxml.jackson.core:jackson-databind:2.10.3',
+        'org.apache.commons:commons-lang3:3.10'
+    )
 
-    jenkinsPlugins 'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.5-3.0'
-    jenkinsPlugins 'org.jenkins-ci.plugins:credentials:2.1.18'
-    jenkinsPlugins 'org.jenkins-ci.plugins:plain-credentials:1.4'
+    /* Jenkins Plugins */
+    implementation(
+        'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.5-3.0',
+        'org.jenkins-ci.plugins:credentials:2.3.7',
+        'org.jenkins-ci.plugins:plain-credentials:1.7'
+    )
 
-    testCompile 'org.powermock:powermock-mockito-release-full:1.6.4'
+    testImplementation(
+        'org.powermock:powermock-module-junit4:2.0.7',
+        'org.powermock:powermock-api-mockito2:2.0.7'
+    )
 }

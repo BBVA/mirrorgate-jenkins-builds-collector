@@ -22,7 +22,6 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGateRecorder;
-import junit.framework.TestCase;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -38,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -45,13 +45,16 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
+// Needed to run PowerMockito with Java 11 https://github.com/mockito/mockito/issues/1562
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({Jenkins.class, HttpClients.class})
-public class DefaultMirrorGateServiceTest extends TestCase {
+public class DefaultMirrorGateServiceTest {
 
     @Mock
     Jenkins jenkins;
@@ -69,15 +72,14 @@ public class DefaultMirrorGateServiceTest extends TestCase {
     StatusLine statusLine;
 
     @Spy
-    private RestCall restCall = new RestCall();
+    RestCall restCall = new RestCall();
 
     @Spy
-    private DefaultMirrorGateService service = new DefaultMirrorGateService();
+    DefaultMirrorGateService service = new DefaultMirrorGateService();
 
     private static final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
     @Before
-    @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.mockStatic(HttpClients.class);

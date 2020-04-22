@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 
 @Extension
-public class MirrorGateRunListener extends RunListener<Run> {
+public class MirrorGateRunListener extends RunListener<Run<?, ?>> {
 
     private static final Logger LOG = Logger.getLogger(MirrorGateRunListener.class.getName());
 

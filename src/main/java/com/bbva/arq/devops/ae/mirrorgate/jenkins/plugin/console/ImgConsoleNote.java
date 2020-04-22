@@ -21,12 +21,12 @@ import hudson.MarkupText;
 import hudson.console.ConsoleAnnotationDescriptor;
 import hudson.console.ConsoleAnnotator;
 import hudson.console.ConsoleNote;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jenkinsci.Symbol;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ImgConsoleNote extends ConsoleNote {
 
@@ -37,7 +37,7 @@ public class ImgConsoleNote extends ConsoleNote {
     }
 
     @Override
-    public ConsoleAnnotator annotate(Object context, MarkupText text, int charPos) {
+    public ConsoleAnnotator<?> annotate(Object context, MarkupText text, int charPos) {
         String base64image = this.base64image;
 
         text.addMarkup(charPos, charPos, "<img src=" + base64image + ">", "</img>");

@@ -19,8 +19,8 @@ package jenkins.plugins.mirrorgate;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import hudson.util.FormValidation;
+import hudson.util.FormValidation.Kind;
 import jenkins.model.Jenkins;
-import junit.framework.TestCase;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,32 +28,35 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
+// Needed to run PowerMockito with Java 11 https://github.com/mockito/mockito/issues/1562
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({Jenkins.class})
-public class MirrorGateRecorderTest extends TestCase {
+public class MirrorGateRecorderTest {
 
     @Mock
     Jenkins jenkins;
 
     @Mock
-    private MirrorGateService service = mock(MirrorGateService.class);
+    MirrorGateService service;
 
     @Spy
-    private MirrorGateRecorderStub.DescriptorImplStub descriptor
-            = spy(new MirrorGateRecorderStub.DescriptorImplStub());
+    MirrorGateRecorderStub.DescriptorImplStub descriptor = spy(
+            new MirrorGateRecorderStub.DescriptorImplStub()
+    );
 
     private static final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
     @Before
-    @Override
     public void setUp() {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
@@ -67,10 +70,10 @@ public class MirrorGateRecorderTest extends TestCase {
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_OK, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
 
-        FormValidation result = descriptor.doTestConnection(
+        final FormValidation result = descriptor.doTestConnection(
                 MIRRORGATE_URL, null);
 
-        assertEquals(FormValidation.Kind.OK, result.kind);
+        assertEquals(Kind.OK, result.kind);
     }
 
     @Test
@@ -79,10 +82,10 @@ public class MirrorGateRecorderTest extends TestCase {
                 .thenReturn(new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, ""));
         when(descriptor.getMirrorGateService()).thenReturn(service);
 
-        FormValidation result = descriptor.doTestConnection(
+        final FormValidation result = descriptor.doTestConnection(
                 MIRRORGATE_URL, null);
 
-        assertEquals(FormValidation.Kind.ERROR, result.kind);
+        assertEquals(Kind.ERROR, result.kind);
     }
 
 }
