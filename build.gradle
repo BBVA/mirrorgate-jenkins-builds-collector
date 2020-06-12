@@ -66,7 +66,7 @@ jacocoTestReport {
 jenkinsPlugin {
     shortName = pluginName
     displayName = jenkinsDisplayName
-    coreVersion = '2.233'
+    coreVersion = '2.240'
 
     configureRepositories = false // Needed to publish in Sonatype
     configurePublishing = false // Needed to publish in Sonatype
@@ -144,14 +144,14 @@ defaultTasks 'clean', 'jpi'
 
 dependencies {
     implementation(
-        'com.fasterxml.jackson.core:jackson-databind:2.10.3',
+        'com.fasterxml.jackson.core:jackson-databind:2.11.0',
         'org.apache.commons:commons-lang3:3.10'
     )
 
     /* Jenkins Plugins */
     implementation(
-        'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.5-3.0',
-        'org.jenkins-ci.plugins:credentials:2.3.7',
+        'org.jenkins-ci.plugins:apache-httpcomponents-client-4-api:4.5.10-2.0',
+        'org.jenkins-ci.plugins:credentials:2.3.8',
         'org.jenkins-ci.plugins:plain-credentials:1.7'
     )
 
