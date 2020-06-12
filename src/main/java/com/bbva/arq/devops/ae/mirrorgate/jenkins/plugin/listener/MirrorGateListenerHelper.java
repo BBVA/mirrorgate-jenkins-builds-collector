@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.builder.BuildBuilder;
@@ -27,11 +28,10 @@ import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.apache.http.HttpStatus;
-
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpStatus;
 
 class MirrorGateListenerHelper {
 
@@ -70,8 +70,8 @@ class MirrorGateListenerHelper {
                 msg = "MirrorGate: Published Build Complete Data. " + response.toString();
                 level = Level.FINE;
             } else {
-                msg = "MirrorGate: Build Status could not been sent to MirrorGate. Please contact with " +
-                        "MirrorGate Team for further information (mirrorgate.group@bbva.com).";
+                msg = "MirrorGate: Build Status could not been sent to MirrorGate. Please contact with "
+                    + "MirrorGate Team for further information (mirrorgate.group@bbva.com).";
                 level = Level.WARNING;
             }
 

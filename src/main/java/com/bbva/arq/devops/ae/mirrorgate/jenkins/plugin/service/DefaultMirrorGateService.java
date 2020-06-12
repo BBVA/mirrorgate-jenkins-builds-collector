@@ -20,11 +20,10 @@ import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
-import org.apache.http.HttpStatus;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpStatus;
 
 public class DefaultMirrorGateService implements MirrorGateService {
 
@@ -44,7 +43,11 @@ public class DefaultMirrorGateService implements MirrorGateService {
                     MirrorGateUtils.getMirrorGatePassword());
 
             if (callResponse.getResponseCode() != HttpStatus.SC_CREATED) {
-                LOG.log(Level.SEVERE, "MirrorGate: Build Publisher post may have failed. Response: {0}", callResponse.getResponseCode());
+                LOG.log(
+                    Level.SEVERE,
+                    "MirrorGate: Build Publisher post may have failed. Response: {0}",
+                    callResponse.getResponseCode()
+                );
             }
             return callResponse;
         } catch (IOException e) {
@@ -64,12 +67,12 @@ public class DefaultMirrorGateService implements MirrorGateService {
     }
 
     @Override
-    public MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO request, String URL){
+    public MirrorGateResponse sendBuildDataToExtraEndpoints(BuildDTO request, String url) {
 
-        try{
-            return buildRestCall().makeRestCallPost(URL, MirrorGateUtils.convertObjectToJson(request), null, null);
-        }catch (IOException e){
-            LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + URL, e);
+        try {
+            return buildRestCall().makeRestCallPost(url, MirrorGateUtils.convertObjectToJson(request), null, null);
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "MirrorGate: Error posting to" + url, e);
             return new MirrorGateResponse(HttpStatus.SC_CONFLICT, "");
         }
     }

@@ -16,10 +16,17 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.model.BuildDTO;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.RestCall;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Collections;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGateRecorder;
 import org.apache.http.HttpStatus;
@@ -40,15 +47,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 // Needed to run PowerMockito with Java 11 https://github.com/mockito/mockito/issues/1562

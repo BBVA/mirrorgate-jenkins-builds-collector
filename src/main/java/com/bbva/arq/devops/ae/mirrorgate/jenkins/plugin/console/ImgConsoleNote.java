@@ -21,12 +21,11 @@ import hudson.MarkupText;
 import hudson.console.ConsoleAnnotationDescriptor;
 import hudson.console.ConsoleAnnotator;
 import hudson.console.ConsoleNote;
-import org.jenkinsci.Symbol;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import org.jenkinsci.Symbol;
 
 public class ImgConsoleNote extends ConsoleNote {
 

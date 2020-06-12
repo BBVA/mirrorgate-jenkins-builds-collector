@@ -23,8 +23,6 @@ import hudson.model.Cause.UserIdCause;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.scm.ChangeLogSet;
-
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -61,11 +59,7 @@ public class BuildBuilder {
         // Get culprits if build comes from a SCM Source
         setCulprits(run);
 
-        try {
-            MirrorGateUtils.parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
-        } catch (UnsupportedEncodingException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+        MirrorGateUtils.parseBuildUrl(MirrorGateUtils.getBuildUrl(run), request);
     }
 
     public BuildDTO getBuildData() {
@@ -92,13 +86,13 @@ public class BuildBuilder {
             for (Object changeSet : (List<?>) method.invoke(run, new Object[]{})) {
                 for (Object object : ((ChangeLogSet<?>) changeSet).getItems()) {
                     ChangeLogSet.Entry change = (ChangeLogSet.Entry) object;
-                    if (!culprits.contains(change.getAuthor().getFullName())) {
+                    if (! culprits.contains(change.getAuthor().getFullName())) {
                         culprits.add(change.getAuthor().getFullName());
                     }
                 }
             }
-        } catch (SecurityException | IllegalAccessException |
-                IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
+        } catch (SecurityException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException | NoSuchMethodException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
 
@@ -109,12 +103,12 @@ public class BuildBuilder {
 
             Set<?> culpritsSet = (Set<?>) method.invoke(run, new Object[]{});
             for (Object user : culpritsSet) {
-                if (!culprits.contains(((User) user).getFullName())) {
+                if (! culprits.contains(((User) user).getFullName())) {
                     culprits.add(((User) user).getFullName());
                 }
             }
-        } catch (SecurityException | IllegalAccessException |
-                IllegalArgumentException | InvocationTargetException | NoSuchMethodException ex) {
+        } catch (SecurityException | IllegalAccessException | IllegalArgumentException
+            | InvocationTargetException | NoSuchMethodException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
 

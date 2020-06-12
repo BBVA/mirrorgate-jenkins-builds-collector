@@ -38,7 +38,8 @@ apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
-apply plugin: "com.github.ben-manes.versions"
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'checkstyle'
 
 def isReleaseVersion = !version.endsWith("SNAPSHOT")
 def user = hasProperty('mavenUser') ?: System.getenv('mavenUser')

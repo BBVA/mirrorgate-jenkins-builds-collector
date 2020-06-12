@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package hudson.console;
 
 import hudson.Extension;
-import org.jenkinsci.Symbol;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import org.jenkinsci.Symbol;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 public class MirrorGateHyperlinkNote extends HyperlinkNote {
 
@@ -54,10 +54,10 @@ public class MirrorGateHyperlinkNote extends HyperlinkNote {
         // break the conversion.
         text = text.replace('\n', ' ');
         try {
-            return constructor.apply(url,text.length()).encode()+text;
+            return constructor.apply(url, text.length()).encode() + text;
         } catch (IOException e) {
             // impossible, but don't make this a fatal problem
-            LOGGER.log(Level.WARNING, "Failed to serialize "+HyperlinkNote.class,e);
+            LOGGER.log(Level.WARNING, "Failed to serialize " + HyperlinkNote.class, e);
             return text;
         }
     }

@@ -38,7 +38,9 @@ public class MirrorGateResponse {
     @Override
     public String toString() {
         String resp = "Response Code: " + responseCode + ". ";
-        if (StringUtils.isEmpty(responseValue)) return resp;
+        if (StringUtils.isEmpty(responseValue)) {
+            return resp;
+        }
         return resp + "Response Value= " + responseValue;
     }
 }

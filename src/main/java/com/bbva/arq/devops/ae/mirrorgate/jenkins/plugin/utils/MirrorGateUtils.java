@@ -21,20 +21,31 @@ import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.model.Run;
-import jenkins.model.Jenkins;
-import jenkins.plugins.mirrorgate.MirrorGateRecorder;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import jenkins.model.Jenkins;
+import jenkins.plugins.mirrorgate.MirrorGateRecorder;
 
 public class MirrorGateUtils {
 
-    private static final String BASE64IMAGE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAWJAAAFiQFtaJ36AAAAB3RJTUUH4QUQCwwbo7DTaQAAAyVJREFUOMt9U2lMVGcUPd+8NzDzHgNVBAYHRerCYF1Ghakpo5jaGGraatziQiNElMQlheCCaWLQ1FSo2KY/iDHBkmoixlQNQdPEGJcmVEWN1VaL4ogSNofFDovMzHvv+AOdSGM8f+69yT0nJ3cReAuS/WPoHddhHpeVbJ7gmmeyREns720Y+LOyEYCOd8D0JpHt7mFy2vLNUrKr2fB3HdPavdWIUP5JW1GqzcnOP733YFUSAJG/4+BIFdnuHo4pi8rMM3MoJ86l5JhPMT6b1rRVtMzIY1F5DUkatRfqT73LCazOL8qVzK1Upi5hxeETPHvlL/7d6qeank/r9PWMnLmJvh4/SfLzr3eVjSArzsVjJxaepuwp5IkrD9gbJHWS62p7OX7Zd7ROy6Eyu4D/ettJkjUXbhEwjQnPICIm7rAUaUGWJwOr5zuhG8DNDh3xPffR3toBgKChw6Zaht3GJuCztcV1ACAiZ2xIMEXbOkT/f1Acyfh0ogJFVXC+sQ8Dbc3QuttBWcGarxag+kABWgaBZw+bMHlcrP5NyQ/xMozBIvi6kbquCD1P7uPMtbsQRgB4/hi6ISDMKn6t2Iw1X86Dtw84e6cLpgCQ6RolebI++V42/G1BXQvCW1eFIVgg/M8R6noKNcqGb3dsRMmW1egOSqhrAeobfXDoPnimJgIAbvXIo4VpzKyxkkVtNTQN4gM79K5n+ChtEu5dPYmQAVQ/MHD5XgseXqqD3eXB0vhuTHN+iBsvVO47VJUMAEjKLr5oX7KXIt5NEZfON9heT6YWVFFduJPKrLW0zFnP3eVH2dTpZ27h/rsAIAPAy97OPFOMqZm6JlKnpITX673TgOabf8DwPQKHBhChRiHWfQDQQ6j+6eeFI6/RkfmjiEunOdEddnDyto8wJ9HqXMyt20vZ2PaCxWceMXdbacXbFwwpIQMAIOLSaxA7m6s2lIRF+gaGGAwESJKnHpNztx2pxHsxanpKtGtl0/5ffg+FjGGRQY0890Qz8ipqj/y/XYx454QM6J0Nr6uY6JJDlQ6bzZbbH9CGjAjlaNmm7KfL9xzHb/tywpxXPR+ClBpZQGEAAAAASUVORK5CYII=";
+    private static final String BASE64IMAGE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAA"
+        + "ABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAWJAAAFiQFtaJ36AAAAB3RJTUUH4QUQCwwbo7DTaQAAAyVJREFUOMt9U2lMVGcUPd+8NzDz"
+        + "HgNVBAYHRerCYF1Ghakpo5jaGGraatziQiNElMQlheCCaWLQ1FSo2KY/iDHBkmoixlQNQdPEGJcmVEWN1VaL4ogSNofFDovMzHvv+AOdS"
+        + "GM8f+69yT0nJ3cReAuS/WPoHddhHpeVbJ7gmmeyREns720Y+LOyEYCOd8D0JpHt7mFy2vLNUrKr2fB3HdPavdWIUP5JW1GqzcnOP733YF"
+        + "USAJG/4+BIFdnuHo4pi8rMM3MoJ86l5JhPMT6b1rRVtMzIY1F5DUkatRfqT73LCazOL8qVzK1Upi5hxeETPHvlL/7d6qeank/r9PWMnLm"
+        + "Jvh4/SfLzr3eVjSArzsVjJxaepuwp5IkrD9gbJHWS62p7OX7Zd7ROy6Eyu4D/ettJkjUXbhEwjQnPICIm7rAUaUGWJwOr5zuhG8DNDh3x"
+        + "PffR3toBgKChw6Zaht3GJuCztcV1ACAiZ2xIMEXbOkT/f1Acyfh0ogJFVXC+sQ8Dbc3QuttBWcGarxag+kABWgaBZw+bMHlcrP5NyQ/xM"
+        + "ozBIvi6kbquCD1P7uPMtbsQRgB4/hi6ISDMKn6t2Iw1X86Dtw84e6cLpgCQ6RolebI++V42/G1BXQvCW1eFIVgg/M8R6noKNcqGb3dsRM"
+        + "mW1egOSqhrAeobfXDoPnimJgIAbvXIo4VpzKyxkkVtNTQN4gM79K5n+ChtEu5dPYmQAVQ/MHD5XgseXqqD3eXB0vhuTHN+iBsvVO47VJU"
+        + "MAEjKLr5oX7KXIt5NEZfON9heT6YWVFFduJPKrLW0zFnP3eVH2dTpZ27h/rsAIAPAy97OPFOMqZm6JlKnpITX673TgOabf8DwPQKHBhCh"
+        + "RiHWfQDQQ6j+6eeFI6/RkfmjiEunOdEddnDyto8wJ9HqXMyt20vZ2PaCxWceMXdbacXbFwwpIQMAIOLSaxA7m6s2lIRF+gaGGAwESJKnH"
+        + "pNztx2pxHsxanpKtGtl0/5ffg+FjGGRQY0890Qz8ipqj/y/XYx454QM6J0Nr6uY6JJDlQ6bzZbbH9CGjAjlaNmm7KfL9xzHb/tywpxXPR"
+        + "+ClBpZQGEAAAAASUVORK5CYII=";
 
     private MirrorGateUtils() {
     }
@@ -49,9 +60,9 @@ public class MirrorGateUtils {
         return mapper.writeValueAsString(object);
     }
 
-    public static String getBuildUrl(Run<?, ?> run) throws UnsupportedEncodingException {
+    public static String getBuildUrl(Run<?, ?> run) {
         return URLDecoder.decode(run.getParent().getAbsoluteUrl()
-                + run.getNumber() + "/", "UTF-8");
+            + run.getNumber() + "/", StandardCharsets.UTF_8);
     }
 
     public static String getBuildNumber(Run<?, ?> run) {
@@ -66,37 +77,37 @@ public class MirrorGateUtils {
 
     public static String getExtraUrls() {
         return Jenkins.get().getDescriptorByType(
-                MirrorGateRecorder.DescriptorImpl.class).getExtraURLs();
+            MirrorGateRecorder.DescriptorImpl.class).getExtraURLs();
     }
 
     public static String getMirrorGateUser() {
         return MirrorGateUtils.getUsernamePasswordCredentials() != null
-                ? MirrorGateUtils.getUsernamePasswordCredentials()
-                .getUsername() : null;
-    }
-
-    public static String getMirrorGatePassword() {
-        return MirrorGateUtils.getUsernamePasswordCredentials() != null
-                ? MirrorGateUtils.getUsernamePasswordCredentials()
-                .getPassword().getPlainText() : null;
-    }
-
-    public static UsernamePasswordCredentials getUsernamePasswordCredentials() {
-        return getUsernamePasswordCredentials(Jenkins.get().getDescriptorByType(
-                MirrorGateRecorder.DescriptorImpl.class)
-                .getMirrorgateCredentialsId());
+            ? MirrorGateUtils.getUsernamePasswordCredentials()
+            .getUsername() : null;
     }
 
     public static String getMirrorGateUser(String credentialsIs) {
         return MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs) != null
-                ? MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs)
-                .getUsername() : null;
+            ? MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs)
+            .getUsername() : null;
+    }
+
+    public static String getMirrorGatePassword() {
+        return MirrorGateUtils.getUsernamePasswordCredentials() != null
+            ? MirrorGateUtils.getUsernamePasswordCredentials()
+            .getPassword().getPlainText() : null;
     }
 
     public static String getMirrorGatePassword(String credentialsIs) {
         return MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs) != null
-                ? MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs)
-                .getPassword().getPlainText() : null;
+            ? MirrorGateUtils.getUsernamePasswordCredentials(credentialsIs)
+            .getPassword().getPlainText() : null;
+    }
+
+    public static UsernamePasswordCredentials getUsernamePasswordCredentials() {
+        return getUsernamePasswordCredentials(Jenkins.get().getDescriptorByType(
+            MirrorGateRecorder.DescriptorImpl.class)
+            .getMirrorgateCredentialsId());
     }
 
     private static UsernamePasswordCredentials getUsernamePasswordCredentials(String credentialsId) {

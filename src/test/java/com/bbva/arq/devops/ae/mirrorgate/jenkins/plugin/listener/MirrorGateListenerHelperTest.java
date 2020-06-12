@@ -16,12 +16,21 @@
 
 package com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.listener;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.service.MirrorGateService;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateResponse;
 import com.bbva.arq.devops.ae.mirrorgate.jenkins.plugin.utils.MirrorGateUtils;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.Run;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Random;
 import jenkins.model.Jenkins;
 import jenkins.plugins.mirrorgate.MirrorGateRecorder;
 import org.apache.http.HttpStatus;
@@ -34,16 +43,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Random;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 // Needed to run PowerMockito with Java 11 https://github.com/mockito/mockito/issues/1562
@@ -68,9 +67,9 @@ public class MirrorGateListenerHelperTest {
     private final MirrorGateResponse responseError
             = new MirrorGateResponse(HttpStatus.SC_NOT_FOUND, "");
 
-    private final static String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
+    private static final String MIRRORGATE_URL = "http://localhost:8080/mirrorgate";
 
-    private final static String BUILD_SAMPLE = "http://localhost:8080/job/MirrorGate"
+    private static final String BUILD_SAMPLE = "http://localhost:8080/job/MirrorGate"
             + "/job/mirrorgate-jenkins-builds-collector/job/test/5/";
 
     private static final String EXTRA_URL = "http://localhost:8080/test, http://localhost:8080/test2,   ";
